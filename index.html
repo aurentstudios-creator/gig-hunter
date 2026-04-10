@@ -3,77 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurent Gig Hunter</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Aurent Studios | Gig Hunter</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+<body class="bg-slate-50 text-slate-900">
 
-    <nav class="bg-blue-600 p-4 shadow-lg text-white">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">Aurent Gig Hunter</h1>
-            <span id="install-btn" class="hidden bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-bold cursor-pointer">Install App</span>
-        </div>
-    </nav>
-
-    <div class="container mx-auto p-4 max-w-2xl">
-        <div id="gigs-container" class="space-y-4">
-            <p class="text-center text-gray-500 mt-10">Fetching the latest gigs...</p>
+    <div id="onboarding-overlay" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-shield-halved text-blue-600 text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Welcome to Aurent</h2>
+            <p class="text-slate-500 text-sm mb-6">By entering, you agree to our Terms. We provide gig leads; always verify clients before working. Never pay for interviews.</p>
+            <button onclick="acceptTerms()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">I Agree & Start 7-Day Trial</button>
         </div>
     </div>
 
+    <div id="paywall-overlay" class="fixed inset-0 z-[90] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-2 border-blue-500">
+            <h2 class="text-2xl font-bold mb-2">Trial Expired ⚡</h2>
+            <p class="text-slate-500 text-sm mb-6">Your 7-day free access has ended. To keep receiving high-value gigs, unlock premium access.</p>
+            <div class="bg-slate-50 rounded-2xl p-4 mb-6">
+                <span class="text-3xl font-black text-slate-900">Ksh 50</span>
+                <span class="text-slate-400">/ monthly</span>
+            </div>
+            <button onclick="window.location.href='https://wa.me/YOUR_NUMBER?text=I_want_to_pay_for_Aurent_Gigs'" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl mb-3">Pay via M-PESA</button>
+            <p class="text-[10px] text-slate-400 uppercase tracking-widest">Secure Payment via Aurent Studios</p>
+        </div>
+    </div>
+
+    <nav class="sticky top-0 z-50 glass border-b p-4">
+        <div class="container mx-auto flex justify-between items-center max-w-4xl">
+            <div class="flex items-center gap-2">
+                <div class="bg-slate-900 text-white p-2 rounded-lg font-black text-xs">AS</div>
+                <h1 class="text-xl font-extrabold tracking-tight">AURENT<span class="text-blue-600">STUDIOS</span></h1>
+            </div>
+            <div id="trial-badge" class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold"></div>
+        </div>
+    </nav>
+
+    <main id="main-content" class="container mx-auto p-4 max-w-4xl">
+        <div id="gigs-container" class="grid gap-4"></div>
+    </main>
+
     <script>
         const SUPABASE_URL = "https://nujhdywfoosjwxoxiito.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_KEY = "YOUR_KEY_HERE";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function loadGigs() {
-            const { data, error } = await supabase
-                .from('gigs')
-                .select('*')
-                .order('created_at', { ascending: false });
+        function checkAccess() {
+            const firstVisit = localStorage.getItem('aurent_first_visit');
+            const termsAccepted = localStorage.getItem('aurent_terms_accepted');
 
-            const container = document.getElementById('gigs-container');
-            container.innerHTML = '';
+            if (!termsAccepted) {
+                document.getElementById('onboarding-overlay').classList.remove('hidden');
+            }
 
-            if (data) {
-                data.forEach(gig => {
-                    const card = `
-                        <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-                            <h2 class="text-lg font-bold text-blue-800">${gig.title}</h2>
-                            <p class="text-gray-600 mt-2 text-sm">${gig.description.substring(0, 200)}...</p>
-                            <div class="mt-4 flex justify-between items-center">
-                                <span class="text-xs text-gray-400">${new Date(gig.created_at).toLocaleDateString()}</span>
-                                <button onclick="shareGig('${gig.title}')" class="text-blue-500 font-bold text-sm">Share</button>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += card;
+            if (firstVisit) {
+                const now = new Date().getTime();
+                const diffDays = Math.floor((now - firstVisit) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays < 7) {
+                    document.getElementById('trial-badge').innerText = `${7 - diffDays} Days Left in Trial`;
+                } else {
+                    document.getElementById('main-content').classList.add('blur-content');
+                    document.getElementById('paywall-overlay').classList.remove('hidden');
+                    document.getElementById('trial-badge').innerText = `Trial Expired`;
+                }
+            }
+        }
+
+        function acceptTerms() {
+            localStorage.setItem('aurent_terms_accepted', 'true');
+            localStorage.setItem('aurent_first_visit', new Date().getTime());
+            document.getElementById('onboarding-overlay').classList.add('hidden');
+            
+            // Request Notification Permission
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        console.log("Notifications enabled");
+                    }
                 });
             }
+            location.reload();
         }
 
-        function shareGig(title) {
-            window.open(`https://wa.me/?text=Check out this gig: ${title}`);
-        }
-
-        loadGigs();
-
-        // Simple Install Logic
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-btn').classList.remove('hidden');
-        });
-
-        document.getElementById('install-btn').addEventListener('click', () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+        async function fetchGigs() {
+            const { data, error } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false });
+            if (data) {
+                document.getElementById('gigs-container').innerHTML = data.map(gig => `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <h3 class="text-lg font-bold mb-2">${gig.title}</h3>
+                        <p class="text-slate-600 text-sm mb-4">${gig.description}</p>
+                        <div class="text-xs text-slate-400">${new Date(gig.created_at).toLocaleDateString()}</div>
+                    </div>
+                `).join('');
             }
-        });
+        }
+
+        checkAccess();
+        fetchGigs();
     </script>
 </body>
 </html>
