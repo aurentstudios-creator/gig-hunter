@@ -4,110 +4,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aurent Studios | Gig Hunter</title>
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .blur-content { filter: blur(12px); pointer-events: none; user-select: none; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .onboarding-active { overflow: hidden; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-50 text-slate-900 font-sans">
 
     <div id="onboarding-overlay" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-shield-halved text-blue-600 text-2xl"></i>
+            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
+                <i class="fa-solid fa-handshake-angle text-2xl"></i>
             </div>
-            <h2 class="text-2xl font-bold mb-2">Welcome to Aurent</h2>
-            <p class="text-slate-500 text-sm mb-6">By entering, you agree to our Terms. We provide gig leads; always verify clients before working. Never pay for interviews.</p>
-            <button onclick="acceptTerms()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">I Agree & Start 7-Day Trial</button>
+            <h2 class="text-2xl font-bold mb-2">Aurent Studios</h2>
+            <p class="text-slate-500 text-sm mb-6">By entering, you agree to our Terms. We provide gig leads; please verify all clients independently. Never pay for job interviews.</p>
+            <button onclick="acceptTerms()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                I Agree & Start 7-Day Trial
+            </button>
         </div>
     </div>
 
-    <div id="paywall-overlay" class="fixed inset-0 z-[90] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-2 border-blue-500">
-            <h2 class="text-2xl font-bold mb-2">Trial Expired ⚡</h2>
-            <p class="text-slate-500 text-sm mb-6">Your 7-day free access has ended. To keep receiving high-value gigs, unlock premium access.</p>
-            <div class="bg-slate-50 rounded-2xl p-4 mb-6">
-                <span class="text-3xl font-black text-slate-900">Ksh 50</span>
-                <span class="text-slate-400">/ monthly</span>
+    <div id="paywall-overlay" class="fixed inset-0 z-[90] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-t-4 border-blue-600">
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">Trial Expired ⚡</h2>
+            <p class="text-slate-500 text-sm mb-6">Your 7-day free access has ended. Unlock premium access to continue receiving high-value gigs.</p>
+            
+            <div class="bg-slate-100 rounded-2xl py-4 px-6 mb-6">
+                <div class="text-3xl font-black text-slate-900">Ksh 50</div>
+                <div class="text-xs text-slate-400 font-bold uppercase tracking-wider">Per Month</div>
             </div>
-            <button onclick="window.location.href='https://wa.me/YOUR_NUMBER?text=I_want_to_pay_for_Aurent_Gigs'" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl mb-3">Pay via M-PESA</button>
-            <p class="text-[10px] text-slate-400 uppercase tracking-widest">Secure Payment via Aurent Studios</p>
+
+            <button onclick="window.location.href='https://wa.me/2547XXXXXXXX?text=I_want_to_pay_for_Aurent_Gigs'" 
+                class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl mb-4 hover:bg-green-700 transition flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp"></i> Pay via M-PESA
+            </button>
+
+            <div class="border-t border-slate-100 pt-4 mt-2">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Have a Promoter Code?</p>
+                <div class="flex gap-2">
+                    <input type="text" id="promo-input" placeholder="Enter Code" 
+                        class="w-full px-4 py-2 bg-slate-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="checkPromo()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold">Apply</button>
+                </div>
+                <p id="promo-msg" class="text-[10px] mt-2 font-bold"></p>
+            </div>
         </div>
     </div>
 
-    <nav class="sticky top-0 z-50 glass border-b p-4">
+    <nav class="sticky top-0 z-50 glass border-b border-slate-200 px-4 py-3">
         <div class="container mx-auto flex justify-between items-center max-w-4xl">
-            <div class="flex items-center gap-2">
-                <div class="bg-slate-900 text-white p-2 rounded-lg font-black text-xs">AS</div>
-                <h1 class="text-xl font-extrabold tracking-tight">AURENT<span class="text-blue-600">STUDIOS</span></h1>
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-900 text-white h-10 w-10 flex items-center justify-center rounded-xl font-black italic shadow-lg">AS</div>
+                <div>
+                    <h1 class="text-lg font-black leading-tight tracking-tighter">AURENT<span class="text-blue-600">STUDIOS</span></h1>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Gig Hunter v2.0</p>
+                </div>
             </div>
-            <div id="trial-badge" class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold"></div>
+            <div id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider"></div>
         </div>
     </nav>
 
-    <main id="main-content" class="container mx-auto p-4 max-w-4xl">
-        <div id="gigs-container" class="grid gap-4"></div>
+    <main id="main-content" class="container mx-auto p-4 max-w-2xl min-h-screen">
+        <div id="gigs-container" class="space-y-4 py-4">
+            <div class="animate-pulse flex flex-col gap-4">
+                <div class="h-40 bg-slate-200 rounded-3xl"></div>
+                <div class="h-40 bg-slate-200 rounded-3xl"></div>
+            </div>
+        </div>
     </main>
 
     <script>
+        // --- CONFIGURATION ---
         const SUPABASE_URL = "https://nujhdywfoosjwxoxiito.supabase.co";
-        const SUPABASE_KEY = "YOUR_KEY_HERE";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // --- ACCESS CONTROL LOGIC ---
         function checkAccess() {
             const firstVisit = localStorage.getItem('aurent_first_visit');
             const termsAccepted = localStorage.getItem('aurent_terms_accepted');
+            const isPremium = localStorage.getItem('aurent_premium_access');
+            const badge = document.getElementById('status-badge');
 
+            // 1. Force Terms Overlay
             if (!termsAccepted) {
                 document.getElementById('onboarding-overlay').classList.remove('hidden');
+                document.body.classList.add('onboarding-active');
+                return;
             }
 
+            // 2. Check for Premium Bypass
+            if (isPremium === 'true') {
+                badge.innerText = "VIP ACCESS";
+                badge.className += " bg-blue-100 text-blue-600";
+                return; 
+            }
+
+            // 3. Handle Trial Countdown
             if (firstVisit) {
                 const now = new Date().getTime();
-                const diffDays = Math.floor((now - firstVisit) / (1000 * 60 * 60 * 24));
+                const diffTime = now - parseInt(firstVisit);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
                 
-                if (diffDays < 7) {
-                    document.getElementById('trial-badge').innerText = `${7 - diffDays} Days Left in Trial`;
-                } else {
+                if (diffDays >= 7) {
+                    // Lock the content
                     document.getElementById('main-content').classList.add('blur-content');
                     document.getElementById('paywall-overlay').classList.remove('hidden');
-                    document.getElementById('trial-badge').innerText = `Trial Expired`;
+                    badge.innerText = "EXPIRED";
+                    badge.className += " bg-red-100 text-red-600";
+                } else {
+                    // Show remaining days
+                    const daysLeft = 7 - diffDays;
+                    badge.innerText = `${daysLeft} DAYS TRIAL`;
+                    badge.className += " bg-green-100 text-green-600";
                 }
             }
         }
 
-        function acceptTerms() {
+        async function acceptTerms() {
             localStorage.setItem('aurent_terms_accepted', 'true');
-            localStorage.setItem('aurent_first_visit', new Date().getTime());
-            document.getElementById('onboarding-overlay').classList.add('hidden');
+            localStorage.setItem('aurent_first_visit', new Date().getTime().toString());
             
-            // Request Notification Permission
+            // Notification Logic
             if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        console.log("Notifications enabled");
-                    }
-                });
+                await Notification.requestPermission();
             }
+            
             location.reload();
         }
 
-        async function fetchGigs() {
-            const { data, error } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false });
+        async function checkPromo() {
+            const code = document.getElementById('promo-input').value.trim();
+            const msg = document.getElementById('promo-msg');
+
+            const { data, error } = await _supabase
+                .from('promo_codes')
+                .select('*')
+                .eq('code_text', code)
+                .eq('is_active', true)
+                .single();
+
             if (data) {
-                document.getElementById('gigs-container').innerHTML = data.map(gig => `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <h3 class="text-lg font-bold mb-2">${gig.title}</h3>
-                        <p class="text-slate-600 text-sm mb-4">${gig.description}</p>
-                        <div class="text-xs text-slate-400">${new Date(gig.created_at).toLocaleDateString()}</div>
+                msg.innerText = "SUCCESS! ACCESS UNLOCKED.";
+                msg.className = "text-[10px] mt-2 font-bold text-green-600";
+                localStorage.setItem('aurent_premium_access', 'true');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                msg.innerText = "INVALID OR EXPIRED CODE.";
+                msg.className = "text-[10px] mt-2 font-bold text-red-600";
+            }
+        }
+
+        // --- DATA FETCHING ---
+        async function fetchGigs() {
+            const { data, error } = await _supabase
+                .from('gigs')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('gigs-container');
+            if (data) {
+                container.innerHTML = data.map(gig => `
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 transition hover:shadow-md">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-black text-slate-800 leading-tight">${gig.title}</h3>
+                            <span class="bg-blue-50 text-blue-600 text-[9px] font-black px-2 py-1 rounded">GIG</span>
+                        </div>
+                        <p class="text-slate-500 text-sm whitespace-pre-wrap mb-4">${gig.description.substring(0, 300)}...</p>
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-50">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                                <i class="fa-regular fa-calendar-check mr-1"></i> ${new Date(gig.created_at).toLocaleDateString()}
+                            </span>
+                            <button onclick="share('${gig.title}')" class="text-blue-600 font-black text-xs uppercase tracking-widest">
+                                Share <i class="fa-solid fa-share ml-1"></i>
+                            </button>
+                        </div>
                     </div>
                 `).join('');
             }
         }
 
+        function share(title) {
+            const url = window.location.href;
+            window.open(`https://wa.me/?text=New Gig Found on Aurent Studios: ${title} %0A%0ASee details here: ${url}`);
+        }
+
+        // --- INIT ---
         checkAccess();
         fetchGigs();
     </script>
