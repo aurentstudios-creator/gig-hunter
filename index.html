@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurent Gig Hunter</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <nav class="bg-blue-600 p-4 shadow-lg text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Aurent Gig Hunter</h1>
+            <span id="install-btn" class="hidden bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-bold cursor-pointer">Install App</span>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 max-w-2xl">
+        <div id="gigs-container" class="space-y-4">
+            <p class="text-center text-gray-500 mt-10">Fetching the latest gigs...</p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://nujhdywfoosjwxoxiito.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loadGigs() {
+            const { data, error } = await supabase
+                .from('gigs')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('gigs-container');
+            container.innerHTML = '';
+
+            if (data) {
+                data.forEach(gig => {
+                    const card = `
+                        <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+                            <h2 class="text-lg font-bold text-blue-800">${gig.title}</h2>
+                            <p class="text-gray-600 mt-2 text-sm">${gig.description.substring(0, 200)}...</p>
+                            <div class="mt-4 flex justify-between items-center">
+                                <span class="text-xs text-gray-400">${new Date(gig.created_at).toLocaleDateString()}</span>
+                                <button onclick="shareGig('${gig.title}')" class="text-blue-500 font-bold text-sm">Share</button>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += card;
+                });
+            }
+        }
+
+        function shareGig(title) {
+            window.open(`https://wa.me/?text=Check out this gig: ${title}`);
+        }
+
+        loadGigs();
+
+        // Simple Install Logic
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-btn').classList.remove('hidden');
+        });
+
+        document.getElementById('install-btn').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+            }
+        });
+    </script>
+</body>
+</html>
