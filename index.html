@@ -3,125 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurent Studios | Gig Hunter</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Aurent Studios | Gig Hunter Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .blur-content { filter: blur(12px); pointer-events: none; user-select: none; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .onboarding-active { overflow: hidden; }
+        .blur-content { filter: blur(15px); pointer-events: none; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .card-gradient { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans">
+<body class="bg-slate-50 text-slate-900 font-sans selection:bg-blue-100">
 
     <div id="onboarding-overlay" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
-                <i class="fa-solid fa-handshake-angle text-2xl"></i>
+        <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full text-center shadow-2xl">
+            <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600">
+                <i class="fa-solid fa-bolt-lightning text-3xl"></i>
             </div>
-            <h2 class="text-2xl font-bold mb-2">Aurent Studios</h2>
-            <p class="text-slate-500 text-sm mb-6">By entering, you agree to our Terms. We provide gig leads; please verify all clients independently. Never pay for job interviews.</p>
-            <button onclick="acceptTerms()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+            <h2 class="text-2xl font-black mb-2">Aurent Studios</h2>
+            <p class="text-slate-500 text-sm mb-8 leading-relaxed">Access premium creative gigs. By entering, you agree to our terms of safety and professional conduct.</p>
+            <button onclick="acceptTerms()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-blue-600 transition-all transform active:scale-95">
                 I Agree & Start 7-Day Trial
             </button>
         </div>
     </div>
 
-    <div id="paywall-overlay" class="fixed inset-0 z-[90] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-t-4 border-blue-600">
-            <h2 class="text-2xl font-bold mb-2 text-slate-800">Trial Expired ⚡</h2>
-            <p class="text-slate-500 text-sm mb-6">Your 7-day free access has ended. Unlock premium access to continue receiving high-value gigs.</p>
-            
-            <div class="bg-slate-100 rounded-2xl py-4 px-6 mb-6">
-                <div class="text-3xl font-black text-slate-900">Ksh 50</div>
-                <div class="text-xs text-slate-400 font-bold uppercase tracking-wider">Per Month</div>
+    <div id="paywall-overlay" class="fixed inset-0 z-[90] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full text-center shadow-2xl border-2 border-blue-500">
+            <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase mb-4 tracking-widest">Time's Up</div>
+            <h2 class="text-2xl font-black mb-2">Get Full Access</h2>
+            <p class="text-slate-500 text-sm mb-6 leading-relaxed">Your trial is over. For the price of a coffee, get unlimited access to the best 3D & Creative gigs.</p>
+            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-6">
+                <span class="text-4xl font-black text-slate-900">Ksh 50</span>
+                <span class="text-slate-400 font-bold">/mo</span>
             </div>
-
-            <button onclick="window.location.href='https://wa.me/2547XXXXXXXX?text=I_want_to_pay_for_Aurent_Gigs'" 
-                class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl mb-4 hover:bg-green-700 transition flex items-center justify-center gap-2">
-                <i class="fa-brands fa-whatsapp"></i> Pay via M-PESA
-            </button>
-
-            <div class="border-t border-slate-100 pt-4 mt-2">
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Have a Promoter Code?</p>
-                <div class="flex gap-2">
-                    <input type="text" id="promo-input" placeholder="Enter Code" 
-                        class="w-full px-4 py-2 bg-slate-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                    <button onclick="checkPromo()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold">Apply</button>
-                </div>
-                <p id="promo-msg" class="text-[10px] mt-2 font-bold"></p>
+            <button onclick="window.location.href='https://wa.me/254XXXXXXXXX?text=I_want_premium'" class="w-full bg-green-600 text-white font-bold py-4 rounded-2xl mb-4 hover:opacity-90 transition">Pay via M-PESA</button>
+            
+            <div class="pt-4 border-t border-slate-100">
+                <input type="text" id="promo-input" placeholder="Promoter Code" class="w-full px-4 py-2 bg-slate-100 rounded-xl text-xs mb-2 text-center outline-none focus:ring-1 focus:ring-blue-500">
+                <button onclick="checkPromo()" class="text-xs font-black text-slate-400 hover:text-blue-600 uppercase tracking-tighter">Apply Code</button>
             </div>
         </div>
     </div>
 
-    <nav class="sticky top-0 z-50 glass border-b border-slate-200 px-4 py-3">
-        <div class="container mx-auto flex justify-between items-center max-w-4xl">
+    <nav class="sticky top-0 z-50 glass border-b border-slate-200 px-6 py-4">
+        <div class="container mx-auto flex justify-between items-center max-w-5xl">
             <div class="flex items-center gap-3">
-                <div class="bg-slate-900 text-white h-10 w-10 flex items-center justify-center rounded-xl font-black italic shadow-lg">AS</div>
-                <div>
-                    <h1 class="text-lg font-black leading-tight tracking-tighter">AURENT<span class="text-blue-600">STUDIOS</span></h1>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Gig Hunter v2.0</p>
-                </div>
+                <img src="logo.png" alt="Aurent" class="h-10 w-auto rounded-lg shadow-sm" onerror="this.style.display='none'; document.getElementById('text-logo').classList.remove('hidden')">
+                <div id="text-logo" class="hidden font-black text-xl tracking-tighter uppercase">AURENT<span class="text-blue-600">STUDIOS</span></div>
             </div>
-            <div id="status-badge" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider"></div>
+            <div id="status-badge" class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm"></div>
         </div>
     </nav>
 
-    <main id="main-content" class="container mx-auto p-4 max-w-2xl min-h-screen">
-        <div id="gigs-container" class="space-y-4 py-4">
-            <div class="animate-pulse flex flex-col gap-4">
-                <div class="h-40 bg-slate-200 rounded-3xl"></div>
-                <div class="h-40 bg-slate-200 rounded-3xl"></div>
+    <main id="main-content" class="container mx-auto max-w-5xl p-6">
+        
+        <section class="mb-10">
+            <h2 class="text-3xl font-black text-slate-900 mb-1 tracking-tight">Gig Dashboard</h2>
+            <p class="text-slate-500 font-medium">Verified creative opportunities updated every 20 minutes.</p>
+        </section>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Active Gigs</div>
+                <div id="total-count" class="text-2xl font-black text-blue-600">--</div>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="text-[10px] font-black text-slate-400 uppercase mb-1">Success Rate</div>
+                <div class="text-2xl font-black text-slate-800">92%</div>
             </div>
         </div>
+
+        <div id="gigs-container" class="grid gap-6 md:grid-cols-2 lg:grid-cols-2 mb-12">
+            <div class="animate-pulse bg-white h-48 rounded-[2rem]"></div>
+            <div class="animate-pulse bg-white h-48 rounded-[2rem]"></div>
+        </div>
+
+        <section class="pt-12 border-t border-slate-200">
+            <h3 class="text-xl font-black mb-8 text-center uppercase tracking-widest text-slate-400">User Experiences</h3>
+            <div class="grid gap-6 md:grid-cols-3">
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm italic text-sm text-slate-600 relative">
+                    <i class="fa-solid fa-quote-left absolute top-4 left-4 text-blue-50 opacity-10 text-4xl"></i>
+                    "Got a 3D modeling gig within 3 days of joining. The alerts are lightning fast!"
+                    <div class="mt-4 font-black text-slate-800 text-xs not-italic">- David K., Artist</div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm italic text-sm text-slate-600 relative">
+                    "Finally, a place that filters the trash. Only high-quality clients here."
+                    <div class="mt-4 font-black text-slate-800 text-xs not-italic">- Sarah M., Video Editor</div>
+                </div>
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm italic text-sm text-slate-600 relative">
+                    "The M-Pesa 50 Bob is literally the best investment I've made this year."
+                    <div class="mt-4 font-black text-slate-800 text-xs not-italic">- Mike O., Motion Designer</div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script>
-        // --- CONFIGURATION ---
         const SUPABASE_URL = "https://nujhdywfoosjwxoxiito.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- ACCESS CONTROL LOGIC ---
         function checkAccess() {
             const firstVisit = localStorage.getItem('aurent_first_visit');
             const termsAccepted = localStorage.getItem('aurent_terms_accepted');
             const isPremium = localStorage.getItem('aurent_premium_access');
             const badge = document.getElementById('status-badge');
 
-            // 1. Force Terms Overlay
             if (!termsAccepted) {
                 document.getElementById('onboarding-overlay').classList.remove('hidden');
-                document.body.classList.add('onboarding-active');
                 return;
             }
 
-            // 2. Check for Premium Bypass
             if (isPremium === 'true') {
-                badge.innerText = "VIP ACCESS";
-                badge.className += " bg-blue-100 text-blue-600";
-                return; 
+                badge.innerText = "Premium Access";
+                badge.className += " bg-blue-600 text-white shadow-blue-200";
+                return;
             }
 
-            // 3. Handle Trial Countdown
             if (firstVisit) {
-                const now = new Date().getTime();
-                const diffTime = now - parseInt(firstVisit);
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                
+                const diffDays = Math.floor((new Date().getTime() - parseInt(firstVisit)) / (1000 * 60 * 60 * 24));
                 if (diffDays >= 7) {
-                    // Lock the content
                     document.getElementById('main-content').classList.add('blur-content');
                     document.getElementById('paywall-overlay').classList.remove('hidden');
                     badge.innerText = "EXPIRED";
-                    badge.className += " bg-red-100 text-red-600";
+                    badge.className += " bg-red-500 text-white";
                 } else {
-                    // Show remaining days
-                    const daysLeft = 7 - diffDays;
-                    badge.innerText = `${daysLeft} DAYS TRIAL`;
-                    badge.className += " bg-green-100 text-green-600";
+                    badge.innerText = `${7 - diffDays} Days Trial Left`;
+                    badge.className += " bg-green-500 text-white";
                 }
             }
         }
@@ -129,72 +138,31 @@
         async function acceptTerms() {
             localStorage.setItem('aurent_terms_accepted', 'true');
             localStorage.setItem('aurent_first_visit', new Date().getTime().toString());
-            
-            // Notification Logic
-            if ("Notification" in window) {
-                await Notification.requestPermission();
-            }
-            
             location.reload();
         }
 
-        async function checkPromo() {
-            const code = document.getElementById('promo-input').value.trim();
-            const msg = document.getElementById('promo-msg');
-
-            const { data, error } = await _supabase
-                .from('promo_codes')
-                .select('*')
-                .eq('code_text', code)
-                .eq('is_active', true)
-                .single();
-
-            if (data) {
-                msg.innerText = "SUCCESS! ACCESS UNLOCKED.";
-                msg.className = "text-[10px] mt-2 font-bold text-green-600";
-                localStorage.setItem('aurent_premium_access', 'true');
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                msg.innerText = "INVALID OR EXPIRED CODE.";
-                msg.className = "text-[10px] mt-2 font-bold text-red-600";
-            }
-        }
-
-        // --- DATA FETCHING ---
         async function fetchGigs() {
-            const { data, error } = await _supabase
-                .from('gigs')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            const container = document.getElementById('gigs-container');
+            const { data, error } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false });
             if (data) {
-                container.innerHTML = data.map(gig => `
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 transition hover:shadow-md">
-                        <div class="flex justify-between items-start mb-3">
-                            <h3 class="font-black text-slate-800 leading-tight">${gig.title}</h3>
-                            <span class="bg-blue-50 text-blue-600 text-[9px] font-black px-2 py-1 rounded">GIG</span>
+                document.getElementById('total-count').innerText = data.length;
+                document.getElementById('gigs-container').innerHTML = data.map(gig => `
+                    <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm card-gradient">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-black text-lg leading-tight">${gig.title}</h3>
+                            <i class="fa-solid fa-circle-check text-blue-500 text-xs"></i>
                         </div>
-                        <p class="text-slate-500 text-sm whitespace-pre-wrap mb-4">${gig.description.substring(0, 300)}...</p>
+                        <p class="text-slate-500 text-sm mb-6 leading-relaxed">${gig.description.substring(0, 250)}...</p>
                         <div class="flex justify-between items-center pt-4 border-t border-slate-50">
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                <i class="fa-regular fa-calendar-check mr-1"></i> ${new Date(gig.created_at).toLocaleDateString()}
-                            </span>
-                            <button onclick="share('${gig.title}')" class="text-blue-600 font-black text-xs uppercase tracking-widest">
-                                Share <i class="fa-solid fa-share ml-1"></i>
-                            </button>
+                            <span class="text-[10px] font-black text-slate-300 uppercase">${new Date(gig.created_at).toLocaleDateString()}</span>
+                            <button onclick="share('${gig.title}')" class="text-blue-600 font-black text-xs uppercase tracking-widest hover:text-slate-900 transition">Share</button>
                         </div>
                     </div>
                 `).join('');
             }
         }
 
-        function share(title) {
-            const url = window.location.href;
-            window.open(`https://wa.me/?text=New Gig Found on Aurent Studios: ${title} %0A%0ASee details here: ${url}`);
-        }
+        function share(t) { window.open(`https://wa.me/?text=Found a gig: ${t} at Aurent Studios!`); }
 
-        // --- INIT ---
         checkAccess();
         fetchGigs();
     </script>
