@@ -6,118 +6,80 @@
     <title>Aurent Studios | Creative Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; color: #1a1a1a; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #111; overflow-x: hidden; }
         
         /* FIXED COLOR WATERMARK */
         .watermark-bg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 500px;
-            max-width: 80vw;
-            opacity: 0.08;
-            z-index: 0;
-            pointer-events: none;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 500px; max-width: 80vw; opacity: 0.1; z-index: -1; pointer-events: none;
         }
 
-        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid #f1f5f9; }
-        .blur-lock { filter: blur(25px); pointer-events: none; user-select: none; }
+        .nav-btn { font-weight: 800; font-size: 0.75rem; letter-spacing: 0.2em; color: #94a3b8; transition: 0.3s; }
+        .nav-btn.active { color: #1d4ed8; }
+
+        .gig-image { width: 100%; height: 350px; object-fit: cover; border-radius: 2rem; }
+        .card-border { border-bottom: 1px solid #f1f5f9; padding-bottom: 3rem; margin-bottom: 3rem; }
         
-        .nav-btn { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.2em; color: #64748b; transition: 0.3s; }
-        .nav-btn.active { color: #1d4ed8; border-bottom: 2px solid #1d4ed8; }
-        
-        .gig-card { background: white; border: 1px solid #f1f5f9; transition: transform 0.3s ease; }
-        .gig-card:hover { transform: translateY(-5px); }
-        
-        /* Overlays */
-        .overlay { position: fixed; inset: 0; z-index: 100; background: rgba(255,255,255,0.98); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .overlay { position: fixed; inset: 0; z-index: 1000; background: #fff; display: flex; align-items: center; justify-content: center; }
+        .blur-lock { filter: blur(20px); pointer-events: none; }
     </style>
 </head>
-<body class="pb-20">
+<body>
 
-    <img src="logo.png" class="watermark-bg" alt="" onerror="this.src='logo.jpg'">
+    <img src="logo.png" class="watermark-bg" onerror="this.src='logo.jpg'">
 
-    <div id="terms-overlay" class="overlay hidden">
+    <div id="onboard-overlay" class="overlay hidden px-6">
         <div class="max-w-md w-full text-center">
             <img src="logo.png" class="h-20 mx-auto mb-8" onerror="this.src='logo.jpg'">
-            <h2 class="text-2xl font-extrabold mb-4">Terms of Access</h2>
-            <div class="text-left text-sm text-slate-500 bg-slate-50 p-6 rounded-3xl mb-8 h-48 overflow-y-auto border">
-                <p class="mb-4">Welcome to Aurent Studios. By accessing this dashboard, you agree to the following:</p>
-                <ul class="list-disc pl-4 space-y-2">
-                    <li>Gigs are for professional use only.</li>
-                    <li>7-day complimentary trial for new members.</li>
-                    <li>Premium access required after trial (Ksh 50/mo).</li>
-                    <li>No sharing of internal lead links.</li>
-                </ul>
-            </div>
-            <button onclick="acceptTerms()" class="w-full bg-blue-600 text-white font-bold py-5 rounded-2xl shadow-lg shadow-blue-200 uppercase text-xs tracking-widest">I Agree & Start Trial</button>
+            <h2 class="text-3xl font-extrabold mb-4 tracking-tight">Access The Pipeline</h2>
+            <p class="text-slate-500 mb-8 leading-relaxed">By clicking agree, you accept our 7-day trial terms and <b>enable desktop notifications</b> for instant gig alerts.</p>
+            <button onclick="grantAccess()" class="w-full bg-blue-600 text-white font-bold py-5 rounded-2xl shadow-xl shadow-blue-200 uppercase text-xs tracking-widest">Agree & Enable Alerts</button>
         </div>
     </div>
 
-    <div id="paywall-overlay" class="overlay hidden">
+    <div id="paywall-overlay" class="overlay hidden px-6">
         <div class="max-w-md w-full text-center">
-            <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-lock text-3xl"></i>
+            <h2 class="text-4xl font-black mb-4">Trial Ended</h2>
+            <p class="text-slate-500 mb-8">Access to high-ticket internal leads requires a premium membership.</p>
+            <div class="bg-slate-50 p-8 rounded-[2rem] border mb-8">
+                <span class="text-5xl font-black">Ksh 50</span><span class="text-slate-400">/mo</span>
             </div>
-            <h2 class="text-3xl font-black mb-2">Trial Expired</h2>
-            <p class="text-slate-500 mb-10">To continue accessing the creative vault, please upgrade to Premium.</p>
-            <div class="bg-slate-50 border p-6 rounded-3xl mb-8">
-                <span class="text-4xl font-black">Ksh 50</span><span class="text-slate-400">/mo</span>
-            </div>
-            <button onclick="window.location.href='https://wa.me/2547XXXXXXXX?text=Upgrade_Aurent'" class="w-full bg-slate-900 text-white font-bold py-5 rounded-2xl mb-4 uppercase text-xs tracking-widest">Pay via M-PESA</button>
-            <button onclick="showPromo()" class="text-xs font-bold text-blue-600 uppercase">Use Promo Code</button>
-            <div id="promo-area" class="mt-4 hidden">
-                <input type="text" id="promo-input" placeholder="Enter Code" class="w-full p-4 bg-slate-100 rounded-xl text-center outline-none border focus:border-blue-500">
-                <button onclick="checkPromo()" class="mt-2 text-[10px] font-black uppercase text-slate-400">Submit</button>
-            </div>
+            <a href="https://wa.me/2547XXXXXXXX?text=Upgrade_Aurent" class="block w-full bg-black text-white font-bold py-5 rounded-2xl uppercase text-xs tracking-widest">Upgrade via M-PESA</a>
         </div>
     </div>
 
-    <nav class="sticky top-0 z-50 glass-nav px-8 py-5 flex justify-between items-center">
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-xl z-[100] border-b border-slate-50 px-8 py-6 flex justify-between items-center">
         <img src="logo.png" class="h-10" onerror="this.src='logo.jpg'">
-        <div class="flex gap-6">
-            <button onclick="switchTab('gigs')" class="nav-btn active" id="btn-gigs">GIGS</button>
-            <button onclick="switchTab('testimonials')" class="nav-btn" id="btn-testimonials">TESTIMONIALS</button>
-            <button onclick="switchTab('contact')" class="nav-btn" id="btn-contact">CONTACT</button>
+        <div class="flex gap-8">
+            <button onclick="setTab('gigs')" id="t-gigs" class="nav-btn active">GIGS</button>
+            <button onclick="setTab('test')" id="t-test" class="nav-btn">REVIEWS</button>
+            <button onclick="setTab('cont')" id="t-cont" class="nav-btn">CONTACT</button>
         </div>
     </nav>
 
-    <main id="main-content" class="container mx-auto max-w-5xl px-6 pt-12 relative z-10">
+    <main id="app" class="mt-32 max-w-5xl mx-auto px-6">
         
-        <section id="sec-gigs" class="tab-content">
-            <div class="mb-12">
-                <h1 class="text-3xl font-black tracking-tight mb-2">Creative Dashboard</h1>
-                <p id="trial-days" class="text-xs font-bold text-blue-600 uppercase tracking-widest"></p>
-            </div>
-            <div id="gigs-container" class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="h-80 bg-slate-50 animate-pulse rounded-[2.5rem]"></div>
-                <div class="h-80 bg-slate-50 animate-pulse rounded-[2.5rem]"></div>
-            </div>
+        <section id="s-gigs">
+            <div id="feed" class="space-y-16">
+                </div>
         </section>
 
-        <section id="sec-testimonials" class="tab-content hidden">
-            <h1 class="text-3xl font-black tracking-tight mb-12 text-center">Member Success</h1>
+        <section id="s-test" class="hidden py-12">
+            <h2 class="text-4xl font-extrabold mb-12 text-center">Member Results</h2>
             <div class="grid gap-8">
-                <div class="bg-slate-50 p-10 rounded-[2.5rem] border">
-                    <p class="text-xl font-light italic text-slate-600">"The 10-minute updates are a game changer. Landed a 3D project worth 60k KES last week."</p>
-                    <p class="mt-6 font-bold text-blue-600 text-xs">— Brian O. / 3D Artist</p>
-                </div>
-                <div class="bg-slate-50 p-10 rounded-[2.5rem] border">
-                    <p class="text-xl font-light italic text-slate-600">"Aurent Studios is the only place providing high-ticket leads without the clutter of social media."</p>
-                    <p class="mt-6 font-bold text-blue-600 text-xs">— Sarah W. / UI/UX</p>
+                <div class="bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100">
+                    <p class="text-2xl font-light italic text-slate-600">"The sync is incredible. I saw the post here 15 minutes before the groups and got the job."</p>
+                    <p class="mt-6 font-bold text-blue-600">— John S. / Editor</p>
                 </div>
             </div>
         </section>
 
-        <section id="sec-contact" class="tab-content hidden text-center py-20">
-            <h1 class="text-4xl font-black mb-6">Get in Touch</h1>
-            <p class="text-slate-500 mb-10">Questions? Partnership? We are here.</p>
-            <a href="mailto:aurentstudios@gmail.com" class="text-2xl font-bold text-blue-600 border-b-2 border-blue-600 pb-2">aurentstudios@gmail.com</a>
-            <div class="mt-20 text-slate-300 text-[10px] font-bold tracking-[0.5em] uppercase">Aurent Studios Official Platform</div>
+        <section id="s-cont" class="hidden py-24 text-center">
+            <h2 class="text-5xl font-black mb-6">Contact</h2>
+            <p class="text-xl text-slate-400 mb-12">Official Support Line</p>
+            <a href="mailto:aurentstudios@gmail.com" class="text-2xl font-bold border-b-2 border-black pb-1">aurentstudios@gmail.com</a>
         </section>
 
     </main>
@@ -127,75 +89,65 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // -- TAB LOGIC --
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`sec-${tab}`).classList.remove('hidden');
-            document.getElementById(`btn-${tab}`).classList.add('active');
-            window.scrollTo(0,0);
+        function setTab(t) {
+            ['s-gigs','s-test','s-cont'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['t-gigs','t-test','t-cont'].forEach(n => document.getElementById(n).classList.remove('active'));
+            document.getElementById('s-'+t).classList.remove('hidden');
+            document.getElementById('t-'+t).classList.add('active');
         }
 
-        // -- BUSINESS LOGIC (Trial/Terms) --
-        function checkBusinessRules() {
-            const accepted = localStorage.getItem('aurent_accepted');
-            const premium = localStorage.getItem('aurent_premium');
-            const start = localStorage.getItem('aurent_start');
-
-            if (!accepted) {
-                document.getElementById('terms-overlay').classList.remove('hidden');
-                return;
-            }
-
-            if (premium === 'true') return;
-
-            const daysPassed = Math.floor((new Date().getTime() - parseInt(start)) / (1000 * 60 * 60 * 24));
-            if (daysPassed >= 7) {
-                document.getElementById('main-content').classList.add('blur-lock');
-                document.getElementById('paywall-overlay').classList.remove('hidden');
-            } else {
-                document.getElementById('trial-days').innerText = `${7 - daysPassed} Days remaining in your trial`;
-            }
-        }
-
-        function acceptTerms() {
-            localStorage.setItem('aurent_accepted', 'true');
-            localStorage.setItem('aurent_start', new Date().getTime().toString());
+        async function grantAccess() {
+            if ("Notification" in window) await Notification.requestPermission();
+            localStorage.setItem('aurent_auth', 'true');
+            localStorage.setItem('aurent_timer', new Date().getTime());
             location.reload();
         }
 
-        function showPromo() { document.getElementById('promo-area').classList.toggle('hidden'); }
-        async function checkPromo() {
-            const code = document.getElementById('promo-input').value.trim();
-            const { data } = await _supabase.from('promo_codes').select('*').eq('code_text', code).eq('is_active', true).single();
-            if (data) { localStorage.setItem('aurent_premium', 'true'); location.reload(); }
+        function checkAuth() {
+            const authed = localStorage.getItem('aurent_auth');
+            const premium = localStorage.getItem('aurent_premium');
+            const start = localStorage.getItem('aurent_timer');
+
+            if (!authed) {
+                document.getElementById('onboard-overlay').classList.remove('hidden');
+                return;
+            }
+
+            if (premium !== 'true') {
+                const diff = (new Date().getTime() - parseInt(start)) / (1000 * 60 * 60 * 24);
+                if (diff >= 7) {
+                    document.getElementById('app').classList.add('blur-lock');
+                    document.getElementById('paywall-overlay').classList.remove('hidden');
+                }
+            }
         }
 
-        // -- FETCH GIGS --
-        async function fetchGigs() {
-            const { data } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false });
+        async function fetchFeed() {
+            const { data } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
             if (data) {
-                document.getElementById('gigs-container').innerHTML = data.map(gig => `
-                    <div class="gig-card rounded-[2.5rem] overflow-hidden flex flex-col">
-                        ${gig.image_link ? `<img src="${gig.image_link}" class="w-full h-64 object-cover">` : ''}
-                        <div class="p-10">
-                            <div class="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-4">Official Lead</div>
-                            <h3 class="text-xl font-extrabold mb-4 leading-tight">${gig.title}</h3>
-                            <p class="text-slate-500 text-sm leading-relaxed mb-10">${gig.description}</p>
-                            <div class="flex gap-4">
-                                <button onclick="window.location.href='https://wa.me/2547XXXXXXXX'" class="flex-1 bg-blue-600 text-white font-bold py-4 rounded-2xl text-[10px] uppercase tracking-widest">Apply Now</button>
-                                <button onclick="shareGig('${gig.title}')" class="px-6 border rounded-2xl text-slate-400"><i class="fa-solid fa-share-nodes"></i></button>
-                            </div>
+                // Notif logic
+                const last = localStorage.getItem('last_id');
+                if (last && data[0].id > last) {
+                    new Notification("New Gig from Aurent Studios!", { body: data[0].title });
+                }
+                localStorage.setItem('last_id', data[0].id);
+
+                document.getElementById('feed').innerHTML = data.map(gig => `
+                    <div class="card-border">
+                        ${gig.image_link ? `<img src="${gig.image_link}" class="gig-image mb-8 shadow-2xl shadow-slate-200">` : ''}
+                        <div class="max-w-2xl">
+                            <h3 class="text-3xl font-black mb-4 tracking-tight">${gig.title}</h3>
+                            <p class="text-slate-500 leading-relaxed mb-8">${gig.description}</p>
+                            <button onclick="window.location.href='https://wa.me/2547XXXXXXXX'" class="bg-blue-600 text-white font-bold px-10 py-4 rounded-xl text-xs uppercase tracking-widest">Apply Now</button>
                         </div>
                     </div>
                 `).join('');
             }
         }
 
-        function shareGig(t) { window.open(`https://wa.me/?text=Found a gig on Aurent Studios: ${t}`); }
-
-        checkBusinessRules();
-        fetchGigs();
+        checkAuth();
+        fetchFeed();
+        setInterval(fetchFeed, 30000); // Live update every 30 seconds
     </script>
 </body>
 </html>
