@@ -15,13 +15,18 @@
             font-family: 'Space Grotesk', sans-serif; 
             background-color: #030303; 
             color: #ffffff;
-            /* Enhanced Drafting Grid */
             background-image: 
                 linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
             background-size: 40px 40px;
             scroll-behavior: smooth;
         }
+
+        /* Custom Scrollbar for Descriptions */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(37, 99, 235, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(37, 99, 235, 0.8); }
 
         .ambient-glow {
             position: fixed; top: 0; left: 50%; transform: translateX(-50%);
@@ -30,12 +35,11 @@
             z-index: -1; pointer-events: none;
         }
 
-        /* 100% BULLETPROOF CSS WATERMARK */
         .css-watermark {
             position: fixed;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-size: 18vw; font-weight: 900; font-style: italic;
-            color: rgba(255, 255, 255, 0.02); /* Barely visible, highly premium */
+            color: rgba(255, 255, 255, 0.02); 
             z-index: 0; pointer-events: none; user-select: none;
             letter-spacing: -0.05em;
         }
@@ -60,7 +64,6 @@
         
         .overlay { position: fixed; inset: 0; z-index: 1000; background: #030303; display: flex; align-items: center; justify-content: center; padding: 2rem; }
 
-        /* Animation for cards sliding in */
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -214,6 +217,12 @@
             loadFeed();
         }
 
+        // JS TEXT CLEANER (Removes redundant titles if needed)
+        function cleanDescription(text) {
+            // Removes duplicate 'NEW JOB ALERT' text if it exists so the meat of the post stands out more
+            return text.replace(/🚨 NEW JOB ALERT 🚨/gi, '').trim();
+        }
+
         async function loadFeed() {
             const { data, error } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
             
@@ -236,13 +245,14 @@
                         
                         <div class="flex-1 flex flex-col">
                             <div class="text-[9px] font-black uppercase tracking-widest text-blue-500 mb-2">Verified Lead</div>
-                            <h3 class="text-xl md:text-3xl font-black mb-4 tracking-tight leading-tight">${gig.title}</h3>
-                            <p class="text-slate-400 text-sm leading-relaxed mb-8 whitespace-pre-wrap line-clamp-4">${gig.description}</p>
+                            <h3 class="text-xl md:text-2xl font-black mb-4 tracking-tight leading-tight">${gig.title}</h3>
+                            
+                            <div class="text-slate-300 text-sm leading-relaxed mb-8 whitespace-pre-wrap max-h-48 overflow-y-auto pr-3">${cleanDescription(gig.description)}</div>
                             
                             <div class="flex gap-4 mt-auto pt-6 border-t border-white/5">
                                 <a href="${gig.apply_link && gig.apply_link !== '#' ? gig.apply_link : 'https://wa.me/2547XXXXXXXX'}" target="_blank" 
                                    class="bg-white text-black hover:bg-blue-600 hover:text-white transition-all duration-300 font-black px-8 py-4 rounded-lg text-[10px] uppercase tracking-[0.2em] text-center flex-1 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(37,99,235,0.4)]">
-                                   Open Brief
+                                   Apply for Job
                                 </a>
                                 <button onclick="window.open('https://wa.me/?text=Check this gig on Aurent Vault: ${encodeURIComponent(gig.title)}')" 
                                         class="px-6 border border-white/10 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
