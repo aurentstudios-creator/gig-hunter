@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurent Studios | Creative Hub</title>
+    <title>Aurent Studios | Gig Hunter</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #1a1a1a; scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #1a1a1a; }
         
         .watermark-bg {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -19,7 +19,6 @@
         .nav-link { font-weight: 800; font-size: 0.7rem; letter-spacing: 0.2em; color: #94a3b8; transition: 0.3s; }
         .nav-link.active { color: #1d4ed8; border-bottom: 2px solid #1d4ed8; }
         
-        .gig-card { border-bottom: 1px solid #f1f5f9; padding-bottom: 4rem; }
         .overlay { position: fixed; inset: 0; z-index: 1000; background: #fff; display: flex; align-items: center; justify-content: center; padding: 2rem; }
     </style>
 </head>
@@ -29,10 +28,19 @@
 
     <div id="onboard-overlay" class="overlay hidden">
         <div class="max-w-md w-full text-center">
-            <img src="logo.png" class="h-24 mx-auto mb-10" onerror="this.src='logo.jpg'">
-            <h2 class="text-3xl font-extrabold mb-4 tracking-tight">Welcome to the Studio</h2>
-            <p class="text-slate-500 mb-10 leading-relaxed text-sm">Agreeing grants you a 7-day trial and enables <b>real-time gig alerts</b> directly to your desktop.</p>
-            <button onclick="startApp()" class="w-full bg-blue-600 text-white font-bold py-5 rounded-2xl shadow-xl shadow-blue-100 uppercase text-xs tracking-widest">Agree & Enter</button>
+            <img src="logo.png" class="h-24 mx-auto mb-8" onerror="this.src='logo.jpg'">
+            <h1 class="text-3xl font-extrabold mb-2 tracking-tight uppercase">Welcome to Aurent Gig Hunter</h1>
+            <p class="text-blue-600 font-bold italic mb-8">"We have to discover to find" — Founder, Aurent Gigs</p>
+            
+            <div class="text-left bg-slate-50 p-6 rounded-3xl mb-8 border border-slate-100 text-xs text-slate-500 leading-relaxed">
+                <b class="text-slate-900 block mb-2 uppercase">Terms & Conditions</b>
+                • Gigs are synced every 10 minutes.<br>
+                • 7-day complimentary trial included.<br>
+                • Desktop notifications must be enabled for real-time alerts.<br>
+                • Premium access (Ksh 50) required after trial.
+            </div>
+
+            <button onclick="startApp()" class="w-full bg-black text-white font-bold py-5 rounded-2xl shadow-xl uppercase text-xs tracking-widest">Agree & Enter Dashboard</button>
         </div>
     </div>
 
@@ -42,40 +50,30 @@
             <span class="font-black text-xs tracking-tighter uppercase italic">AURENT</span>
         </div>
         <div class="flex gap-8">
-            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active">DASHBOARD</button>
+            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active">GIGS</button>
             <button onclick="tab('test')" id="t-test" class="nav-link">TESTIMONIALS</button>
             <button onclick="tab('cont')" id="t-cont" class="nav-link">CONTACT</button>
         </div>
     </nav>
 
-    <main id="content-wrap" class="mt-32 max-w-4xl mx-auto px-6">
-        
+    <main class="mt-32 max-w-4xl mx-auto px-6">
         <section id="s-gigs">
-            <div class="mb-20">
-                <h1 class="text-5xl font-black tracking-tighter mb-4">The Pipeline</h1>
-                <p id="trial-info" class="text-xs font-bold text-blue-600 uppercase tracking-widest"></p>
-            </div>
-            <div id="feed" class="space-y-20">
-                <div class="h-96 bg-slate-50 animate-pulse rounded-[3rem]"></div>
-            </div>
+            <div id="feed" class="space-y-24">
+                </div>
         </section>
 
         <section id="s-test" class="hidden py-12">
-            <h2 class="text-4xl font-extrabold mb-16">Community Success</h2>
-            <div class="space-y-12">
-                <div class="border-l-4 border-blue-600 pl-8">
-                    <p class="text-2xl font-light italic text-slate-600 mb-4">"The 5-minute sync found me a 3D architecture gig before it even reached the WhatsApp groups. Aurent is essential."</p>
-                    <p class="font-black text-[10px] uppercase text-slate-400">— Kevin O. / 3D Artist</p>
-                </div>
+            <h2 class="text-4xl font-extrabold mb-16">Testimonials</h2>
+            <div class="border-l-4 border-blue-600 pl-8 mb-12">
+                <p class="text-2xl font-light italic text-slate-600">"Aurent found me a 3D architecture project in Nairobi within 3 hours."</p>
+                <p class="mt-4 font-black text-[10px] uppercase text-slate-400">— Kevin O. / 3D Artist</p>
             </div>
         </section>
 
         <section id="s-cont" class="hidden py-20 text-center">
-            <h2 class="text-5xl font-black mb-6">Let's Connect</h2>
-            <p class="text-xl text-slate-400 mb-10 italic">Inquiries & Partnerships</p>
-            <a href="mailto:aurentstudios@gmail.com" class="text-3xl font-bold border-b-4 border-black pb-2 hover:text-blue-600 transition">aurentstudios@gmail.com</a>
+            <h2 class="text-5xl font-black mb-10">Contact</h2>
+            <a href="mailto:aurentstudios@gmail.com" class="text-2xl font-bold border-b-4 border-black pb-2 hover:text-blue-600 transition">aurentstudios@gmail.com</a>
         </section>
-
     </main>
 
     <script>
@@ -97,36 +95,33 @@
             location.reload();
         }
 
-        function checkUser() {
-            const init = localStorage.getItem('aurent_init');
-            const start = localStorage.getItem('aurent_day');
-            if (!init) { document.getElementById('onboard-overlay').classList.remove('hidden'); return; }
-            const diff = Math.floor((new Date().getTime() - parseInt(start)) / (1000 * 60 * 60 * 24));
-            if (diff < 7) document.getElementById('trial-info').innerText = `${7-diff} Days left in your trial`;
-        }
-
         async function loadFeed() {
             const { data } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
             if (data) {
                 const last = localStorage.getItem('last_id');
                 if (last && data[0].id > last) {
-                    new Notification("Aurent Studios", { body: "New high-ticket gig posted: " + data[0].title });
+                    new Notification("Aurent Studios", { body: "New Gig Hunter Alert: " + data[0].title });
                 }
                 localStorage.setItem('last_id', data[0].id);
+
                 document.getElementById('feed').innerHTML = data.map(gig => `
-                    <div class="gig-card">
-                        ${gig.image_link ? `<img src="${gig.image_link}" class="w-full h-[500px] object-cover rounded-[3rem] mb-10 shadow-2xl shadow-slate-100">` : ''}
-                        <h3 class="text-3xl font-black mb-6 tracking-tight">${gig.title}</h3>
-                        <p class="text-slate-500 leading-relaxed text-lg mb-10 font-light">${gig.description}</p>
-                        <button onclick="window.location.href='https://wa.me/2547XXXXXXXX'" class="bg-blue-600 text-white font-bold px-12 py-5 rounded-2xl text-[10px] uppercase tracking-widest hover:bg-black transition-all">Apply for Gig</button>
+                    <div class="border-b border-slate-100 pb-16">
+                        ${gig.image_link ? `<img src="${gig.image_link}" class="w-full h-[500px] object-cover rounded-[3rem] mb-10 shadow-2xl">` : ''}
+                        <h3 class="text-3xl font-black mb-6 tracking-tight uppercase italic">${gig.title}</h3>
+                        <p class="text-slate-500 text-lg mb-10 font-light leading-relaxed">${gig.description}</p>
+                        <div class="flex gap-4">
+                            <a href="${gig.apply_link}" target="_blank" class="bg-blue-600 text-white font-bold px-12 py-5 rounded-2xl text-[10px] uppercase tracking-widest text-center flex-1">Apply for Gig</a>
+                            <button onclick="shareGig('${gig.title}')" class="px-8 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all text-slate-400"><i class="fa-solid fa-share-nodes"></i></button>
+                        </div>
                     </div>
                 `).join('');
             }
         }
 
-        checkUser();
+        function shareGig(t) { window.open(`https://wa.me/?text=Check this gig on Aurent Hunter: ${t}`); }
+        if (!localStorage.getItem('aurent_init')) document.getElementById('onboard-overlay').classList.remove('hidden');
         loadFeed();
-        setInterval(loadFeed, 30000); // Check every 30s
+        setInterval(loadFeed, 30000);
     </script>
 </body>
 </html>
