@@ -3,103 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurent Studios | Creative Pipeline</title>
+    <title>Aurent Studios | The Pipeline</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
         
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #ffffff; 
-            color: #1a1a1a; 
-            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-            background-size: 40px 40px; /* This creates the professional drafting grid */
+            font-family: 'Space Grotesk', sans-serif; 
+            background-color: #050505; 
+            color: #ffffff;
+            /* THE STUDIO PATTERN: A precision drafting grid */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            scroll-behavior: smooth;
         }
 
-        .watermark-bg { 
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 400px; opacity: 0.12; z-index: -1; pointer-events: none; 
+        /* Ambient Glow behind the main content */
+        .ambient-glow {
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+            width: 80vw; height: 50vh;
+            background: radial-gradient(circle, rgba(29, 78, 216, 0.15) 0%, transparent 70%);
+            z-index: -1; pointer-events: none;
         }
 
-        /* Glass effect for cards to let the grid peak through slightly */
-        .gig-card { 
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid #f1f5f9;
-            border-radius: 3rem;
-            padding: 2.5rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .gig-card:hover {
-            border-color: #1d4ed8;
-            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05);
-        }
-
-        .nav-link { font-weight: 800; font-size: 0.7rem; letter-spacing: 0.3em; color: #94a3b8; }
-        .nav-link.active { color: #1d4ed8; border-bottom: 2px solid #1d4ed8; }
-
-        .overlay { position: fixed; inset: 0; z-index: 1000; background: #fff; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-        
-        /* Custom Apply Button Gradient */
-        .btn-aurent {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: white;
+        .glass-card { 
+            background: rgba(15, 15, 15, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1.5rem;
             transition: all 0.3s ease;
         }
-        .btn-aurent:hover {
-            background: #1d4ed8;
-            transform: scale(1.02);
+        .glass-card:hover {
+            border-color: rgba(37, 99, 235, 0.5);
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.1);
         }
+
+        .nav-link { font-weight: 700; font-size: 0.75rem; letter-spacing: 0.2em; color: #64748b; transition: 0.3s; }
+        .nav-link.active { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        
+        .overlay { position: fixed; inset: 0; z-index: 1000; background: #050505; display: flex; align-items: center; justify-content: center; padding: 2rem; }
     </style>
 </head>
 <body class="pb-20">
 
-    <img src="logo.png" class="watermark-bg" onerror="this.src='logo.jpg'">
+    <div class="ambient-glow"></div>
 
     <div id="onboard-overlay" class="overlay hidden">
-        <div class="max-w-md w-full text-center">
-            <img src="logo.png" class="h-24 mx-auto mb-8" onerror="this.src='logo.jpg'">
-            <h1 class="text-3xl font-extrabold mb-2 tracking-tighter uppercase italic">Welcome to Aurent Gigs</h1>
-            <p class="text-blue-600 font-bold italic mb-10 text-sm">"We have to discover to find" — Founder, Aurent Gigs</p>
+        <div class="max-w-md w-full text-center glass-card p-10">
+            <img src="logo.png" class="h-20 mx-auto mb-6" onerror="this.src='logo.jpg'">
+            <h1 class="text-2xl font-bold mb-2 tracking-widest uppercase">Aurent Gig Hunter</h1>
+            <p class="text-blue-500 font-bold italic mb-8 text-sm">"We have to discover to find"<br>— Founder, Aurent Gigs</p>
             
-            <div class="text-left bg-slate-50/50 backdrop-blur-md p-6 rounded-3xl mb-10 border border-slate-100 text-[11px] text-slate-500 uppercase font-bold tracking-wider">
-                <span class="text-slate-900 block mb-4 border-b pb-2">Operational Protocol</span>
-                • 10-Minute Real-Time Synchronization<br>
-                • 7-Day Complimentary Entry Protocol<br>
-                • Android & Desktop Push-Alerts Active
+            <div class="text-left bg-black/50 p-6 rounded-xl mb-8 border border-white/10 text-xs text-slate-400">
+                <b class="text-white block mb-2 uppercase tracking-widest">Protocol Activation</b>
+                <ul class="list-disc pl-4 space-y-2">
+                    <li>7-Day secure trial access.</li>
+                    <li>Desktop & Android push notifications required for live alerts.</li>
+                    <li>Premium upgrade required post-trial (Ksh 50).</li>
+                </ul>
             </div>
 
-            <button onclick="startApp()" class="w-full bg-black text-white font-bold py-5 rounded-2xl shadow-2xl uppercase text-[10px] tracking-[0.3em]">Initialize Dashboard</button>
+            <button onclick="startApp()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.4)] uppercase text-[10px] tracking-widest hover:bg-blue-500 transition">Agree & Initialize</button>
         </div>
     </div>
 
-    <nav class="fixed top-0 w-full bg-white/70 backdrop-blur-md z-[100] border-b border-slate-100 px-10 py-6 flex justify-between items-center">
-        <div class="flex items-center gap-3">
+    <nav class="fixed top-0 w-full bg-[#050505]/80 backdrop-blur-xl z-[100] border-b border-white/5 px-8 py-5 flex justify-between items-center">
+        <div class="flex items-center gap-4">
             <img src="logo.png" class="h-8" onerror="this.src='logo.jpg'">
-            <span class="font-black text-[10px] tracking-widest uppercase">Studio <span class="text-blue-600">Sync</span></span>
+            <span class="font-bold text-[11px] tracking-[0.3em] uppercase">Aurent <span class="text-blue-500">Pipeline</span></span>
         </div>
         <div class="flex gap-8">
             <button onclick="tab('gigs')" id="t-gigs" class="nav-link active">GIGS</button>
-            <button onclick="tab('test')" id="t-test" class="nav-link">TESTIMONIALS</button>
-            <button onclick="tab('cont')" id="t-cont" class="nav-link">CONTACT</button>
+            <button onclick="tab('test')" id="t-test" class="nav-link">REVIEWS</button>
         </div>
     </nav>
 
-    <main class="mt-40 max-w-5xl mx-auto px-6">
+    <main class="mt-32 max-w-5xl mx-auto px-6">
+        
         <section id="s-gigs">
-            <div id="feed" class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="flex items-center gap-3 mb-10 text-xs font-bold uppercase tracking-widest text-slate-400">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                Live Database Connected
+            </div>
+
+            <div id="feed" class="grid gap-8">
                 </div>
         </section>
 
-        </main>
+        <section id="s-test" class="hidden py-12">
+            <div class="glass-card p-10 border-l-4 border-l-blue-600">
+                <p class="text-xl font-light text-slate-300 leading-relaxed mb-6">"The architecture of this site is brilliant. Got pinged for a UI/UX job on my Android phone instantly."</p>
+                <p class="font-bold text-[10px] uppercase text-blue-500 tracking-widest">— David K. / Designer</p>
+            </div>
+        </section>
+
+    </main>
 
     <script>
         const SUPABASE_URL = "https://nujhdywfoosjwxoxiito.supabase.co";
-        const SUPABASE_KEY = "your_key";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function tab(t) {
+            ['s-gigs','s-test'].forEach(s => { if(document.getElementById(s)) document.getElementById(s).classList.add('hidden'); });
+            ['t-gigs','t-test'].forEach(n => document.getElementById(n).classList.remove('active'));
+            document.getElementById('s-'+t).classList.remove('hidden');
+            document.getElementById('t-'+t.substring(0,4)).classList.add('active');
+        }
 
         async function startApp() {
             if ("Notification" in window) await Notification.requestPermission();
@@ -111,27 +125,34 @@
         async function loadFeed() {
             const { data } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
             if (data) {
+                const last = localStorage.getItem('last_id');
+                if (last && data[0].id > last) {
+                    new Notification("Aurent Hunter Alert", { body: data[0].title, icon: 'logo.png' });
+                }
+                localStorage.setItem('last_id', data[0].id);
+
                 document.getElementById('feed').innerHTML = data.map(gig => `
-                    <div class="gig-card flex flex-col group">
+                    <div class="glass-card p-8 md:p-10 flex flex-col md:flex-row gap-8">
                         ${gig.image_link ? `
-                        <div class="overflow-hidden rounded-[2rem] mb-8 h-72">
-                            <img src="${gig.image_link}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="md:w-1/3 shrink-0">
+                            <img src="${gig.image_link}" class="w-full h-64 object-cover rounded-xl border border-white/5">
                         </div>` : ''}
-                        <div class="flex-1">
-                            <h3 class="text-xl font-black mb-4 uppercase italic tracking-tight text-blue-700">${gig.title}</h3>
-                            <p class="text-slate-500 text-sm leading-relaxed mb-8 font-medium line-clamp-3">${gig.description}</p>
-                        </div>
-                        <div class="flex gap-3 mt-auto">
-                            <a href="${gig.apply_link}" target="_blank" class="flex-1 btn-aurent py-4 rounded-xl text-[9px] uppercase tracking-[0.2em] font-black text-center">Open Brief</a>
-                            <button onclick="share('${gig.title}')" class="px-6 border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50"><i class="fa-solid fa-paper-plane"></i></button>
+                        <div class="flex-1 flex flex-col">
+                            <h3 class="text-2xl font-bold mb-4 tracking-tight">${gig.title}</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-8">${gig.description}</p>
+                            <div class="flex gap-4 mt-auto">
+                                <a href="${gig.apply_link}" target="_blank" class="bg-white text-black hover:bg-blue-600 hover:text-white transition-colors font-bold px-8 py-3 rounded-lg text-[10px] uppercase tracking-widest text-center">Open Brief</a>
+                                <button onclick="window.open('https://wa.me/?text=Check this gig on Aurent Hunter: ${gig.title}')" class="px-6 border border-white/10 rounded-lg text-slate-400 hover:bg-white/10"><i class="fa-solid fa-share-nodes"></i></button>
+                            </div>
                         </div>
                     </div>
                 `).join('');
             }
         }
-        
+
         if (!localStorage.getItem('aurent_init')) document.getElementById('onboard-overlay').classList.remove('hidden');
         loadFeed();
+        setInterval(loadFeed, 30000); // 30 second live ping
     </script>
 </body>
 </html>
