@@ -3,24 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurent Studios | Gig Hunter</title>
+    <title>Aurent Studios | Creative Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #ffffff; color: #1a1a1a; }
-        
-        .watermark-bg {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 450px; opacity: 0.08; z-index: -1; pointer-events: none;
-        }
-
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #1a1a1a; scroll-behavior: smooth; }
+        .watermark-bg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; opacity: 0.08; z-index: -1; pointer-events: none; }
         .nav-link { font-weight: 800; font-size: 0.7rem; letter-spacing: 0.2em; color: #94a3b8; transition: 0.3s; }
         .nav-link.active { color: #1d4ed8; border-bottom: 2px solid #1d4ed8; }
-        
         .overlay { position: fixed; inset: 0; z-index: 1000; background: #fff; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-        .gig-card { border-bottom: 1px solid #f8fafc; padding-bottom: 4rem; margin-bottom: 4rem; }
     </style>
 </head>
 <body>
@@ -29,56 +22,45 @@
 
     <div id="onboard-overlay" class="overlay hidden">
         <div class="max-w-md w-full text-center">
-            <img src="logo.png" class="h-20 mx-auto mb-8" onerror="this.src='logo.jpg'">
-            <h1 class="text-3xl font-extrabold mb-2 uppercase">Welcome to Aurent Gig Hunter</h1>
-            <p class="text-blue-600 font-bold italic mb-8 text-sm">"We have to discover to find"<br>— Founder, Aurent Gigs</p>
+            <img src="logo.png" class="h-24 mx-auto mb-10" onerror="this.src='logo.jpg'">
+            <h1 class="text-3xl font-extrabold mb-2 uppercase italic tracking-tighter">Welcome to Aurent Gigs</h1>
+            <p class="text-blue-600 font-bold italic mb-10 text-sm">"We have to discover to find" — Founder, Aurent Gigs</p>
             
-            <div class="text-left bg-slate-50 p-6 rounded-3xl mb-8 border border-slate-100 text-xs text-slate-500">
+            <div class="text-left bg-slate-50 p-6 rounded-3xl mb-10 border border-slate-100 text-xs text-slate-500 leading-relaxed">
                 <b class="text-slate-900 block mb-2 uppercase">Trial & Alerts</b>
-                • High-ticket creative gigs updated live.<br>
-                • 7-day trial starts now.<br>
-                • Enabling alerts works for Android & Desktop.
+                • Gigs refresh automatically every 24 hours.<br>
+                • Agreeing starts your 7-day complimentary trial.<br>
+                • Universal notifications will be enabled for real-time pings.
             </div>
 
             <button onclick="startApp()" class="w-full bg-black text-white font-bold py-5 rounded-2xl shadow-xl uppercase text-[10px] tracking-widest">Agree & Enter</button>
         </div>
     </div>
 
-    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-xl z-[100] border-b border-slate-50 px-8 py-6 flex justify-between items-center">
+    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-xl z-[100] border-b border-slate-50 px-10 py-6 flex justify-between items-center">
         <img src="logo.png" class="h-8" onerror="this.src='logo.jpg'">
-        <div class="flex gap-6">
+        <div class="flex gap-8">
             <button onclick="tab('gigs')" id="t-gigs" class="nav-link active">GIGS</button>
             <button onclick="tab('test')" id="t-test" class="nav-link">TESTIMONIALS</button>
             <button onclick="tab('cont')" id="t-cont" class="nav-link">CONTACT</button>
         </div>
     </nav>
 
-    <main class="mt-32 max-w-4xl mx-auto px-6" id="app">
+    <main class="mt-40 max-w-4xl mx-auto px-6">
         <section id="s-gigs">
-            <div id="feed" class="space-y-12">
+            <div id="feed" class="space-y-24">
                 </div>
         </section>
 
-        <section id="s-test" class="hidden py-12">
-            <div class="border-l-4 border-blue-600 pl-8 mb-12">
-                <p class="text-2xl font-light italic text-slate-600 leading-relaxed">"The real-time sync found me a project before it even hit the public groups."</p>
-                <p class="mt-4 font-black text-[10px] uppercase text-slate-400">— Member Success</p>
-            </div>
-        </section>
-
-        <section id="s-cont" class="hidden py-20 text-center">
-            <h2 class="text-5xl font-black mb-10">Contact</h2>
-            <a href="mailto:aurentstudios@gmail.com" class="text-2xl font-bold border-b-4 border-black pb-2 hover:text-blue-600 transition">aurentstudios@gmail.com</a>
-        </section>
-    </main>
+        </main>
 
     <script>
         const SUPABASE_URL = "https://nujhdywfoosjwxoxiito.supabase.co";
-        const SUPABASE_KEY = "your_key_here";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function tab(t) {
-            ['s-gigs','s-test','s-cont'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['s-gigs','s-test','s-cont'].forEach(s => { if(document.getElementById(s)) document.getElementById(s).classList.add('hidden'); });
             ['t-gigs','t-test','t-cont'].forEach(n => document.getElementById(n).classList.remove('active'));
             document.getElementById('s-'+t).classList.remove('hidden');
             document.getElementById('t-'+t.substring(0,4)).classList.add('active');
@@ -96,32 +78,27 @@
             if (data) {
                 const last = localStorage.getItem('last_id');
                 if (last && data[0].id > last) {
-                    // Mobile & Desktop Notification
-                    new Notification("Aurent Studios", { 
-                        body: data[0].title,
-                        icon: 'logo.png' 
-                    });
+                    new Notification("Aurent Hunter", { body: data[0].title, icon: 'logo.png' });
                 }
                 localStorage.setItem('last_id', data[0].id);
 
                 document.getElementById('feed').innerHTML = data.map(gig => `
-                    <div class="gig-card">
-                        ${gig.image_link ? `<img src="${gig.image_link}" class="w-full h-[500px] object-cover rounded-[3rem] mb-10 shadow-2xl">` : ''}
-                        <h3 class="text-3xl font-black mb-6 tracking-tight italic uppercase">${gig.title}</h3>
-                        <p class="text-slate-500 text-lg mb-10 font-light leading-relaxed">${gig.description}</p>
+                    <div class="border-b border-slate-50 pb-20">
+                        ${gig.image_link ? `<img src="${gig.image_link}" class="w-full h-[550px] object-cover rounded-[3rem] mb-10 shadow-2xl">` : ''}
+                        <h3 class="text-3xl font-extrabold mb-6 tracking-tight uppercase italic text-blue-600">${gig.title}</h3>
+                        <p class="text-slate-500 text-lg leading-relaxed mb-10 font-light">${gig.description}</p>
                         <div class="flex gap-4">
-                            <a href="${gig.apply_link}" target="_blank" class="bg-blue-600 text-white font-bold px-12 py-5 rounded-2xl text-[10px] uppercase tracking-widest flex-1 text-center">Apply Directly</a>
-                            <button onclick="shareGig('${gig.title}')" class="px-8 border border-slate-200 rounded-2xl text-slate-400"><i class="fa-solid fa-share-nodes"></i></button>
+                            <a href="${gig.apply_link}" target="_blank" class="flex-1 bg-black text-white font-bold py-5 rounded-2xl text-[10px] uppercase tracking-widest text-center">View Full Opportunity</a>
+                            <button onclick="window.open('https://wa.me/?text=Check this gig on Aurent Hunter: ${gig.title}')" class="px-8 border border-slate-200 rounded-2xl text-slate-400"><i class="fa-solid fa-share-nodes"></i></button>
                         </div>
                     </div>
                 `).join('');
             }
         }
 
-        function shareGig(t) { window.open(`https://wa.me/?text=Found a gig on Aurent: ${t}`); }
         if (!localStorage.getItem('aurent_init')) document.getElementById('onboard-overlay').classList.remove('hidden');
         loadFeed();
-        setInterval(loadFeed, 60000); // Live refresh
+        setInterval(loadFeed, 60000);
     </script>
 </body>
 </html>
