@@ -60,8 +60,12 @@
             transform: translateY(-4px);
         }
 
-        .nav-link { font-weight: 700; font-size: 0.75rem; letter-spacing: 0.2em; color: #64748b; transition: 0.3s; }
-        .nav-link.active { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.5); border-bottom: 2px solid #2563eb; padding-bottom: 4px; }
+        /* RESPONSIVE NAV LINKS: Shrinks on mobile, expands on desktop */
+        .nav-link { font-weight: 700; font-size: 0.65rem; letter-spacing: 0.1em; color: #64748b; transition: 0.3s; padding-bottom: 4px; }
+        @media (min-width: 768px) {
+            .nav-link { font-size: 0.75rem; letter-spacing: 0.2em; }
+        }
+        .nav-link.active { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.5); border-bottom: 2px solid #2563eb; }
         
         .overlay { position: fixed; inset: 0; z-index: 1000; background: #030303; display: flex; align-items: center; justify-content: center; padding: 2rem; }
 
@@ -95,17 +99,17 @@
         </div>
     </div>
 
-    <nav class="fixed top-0 w-full bg-[#030303]/80 backdrop-blur-xl z-[100] border-b border-white/5 px-6 md:px-10 py-5 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <span class="font-black text-[12px] md:text-[14px] tracking-[0.3em] uppercase">Aurent <span class="text-blue-500 italic">Studios</span></span>
+    <nav class="fixed top-0 w-full bg-[#030303]/80 backdrop-blur-xl z-[100] border-b border-white/5 px-4 md:px-10 py-5 flex justify-between items-center">
+        <div class="flex items-center gap-2 md:gap-3">
+            <span class="font-black text-[10px] md:text-[14px] tracking-[0.2em] md:tracking-[0.3em] uppercase">Aurent <span class="text-blue-500 italic hidden sm:inline">Studios</span></span>
         </div>
-        <div class="flex gap-4 md:gap-8 items-center">
+        <div class="flex gap-3 md:gap-8 items-center">
             <button onclick="tab('gigs')" id="t-gigs" class="nav-link active">GIGS</button>
             <button onclick="tab('test')" id="t-test" class="nav-link">REVIEWS</button>
-            <button onclick="tab('cont')" id="t-cont" class="nav-link hidden sm:block">CONTACT</button>
+            <button onclick="tab('cont')" id="t-cont" class="nav-link">CONTACT</button>
             
-            <button id="install-btn" class="hidden bg-blue-600/20 text-blue-500 border border-blue-500/50 px-3 py-2 rounded-lg text-[10px] font-bold tracking-widest uppercase hover:bg-blue-600 hover:text-white transition">
-                <i class="fa-solid fa-download"></i> App
+            <button id="install-btn" class="hidden bg-blue-600/20 text-blue-500 border border-blue-500/50 px-2 py-1.5 md:px-3 md:py-2 rounded-lg text-[9px] md:text-[10px] font-bold tracking-widest uppercase hover:bg-blue-600 hover:text-white transition">
+                <i class="fa-solid fa-download md:mr-1"></i> <span class="hidden sm:inline">App</span>
             </button>
         </div>
     </nav>
