@@ -8,6 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    <link rel="manifest" href="manifest.json">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700;900&display=swap');
         
@@ -15,7 +17,6 @@
             font-family: 'Space Grotesk', sans-serif; 
             background-color: #030303; 
             color: #ffffff;
-            /* Enhanced Drafting Grid */
             background-image: 
                 linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
@@ -23,7 +24,6 @@
             scroll-behavior: smooth;
         }
 
-        /* Custom Scrollbar for Descriptions */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(37, 99, 235, 0.3); border-radius: 10px; }
@@ -36,12 +36,11 @@
             z-index: -1; pointer-events: none;
         }
 
-        /* 100% BULLETPROOF CSS WATERMARK */
         .css-watermark {
             position: fixed;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-size: 18vw; font-weight: 900; font-style: italic;
-            color: rgba(255, 255, 255, 0.02); /* Barely visible, highly premium */
+            color: rgba(255, 255, 255, 0.02); 
             z-index: 0; pointer-events: none; user-select: none;
             letter-spacing: -0.05em;
         }
@@ -66,7 +65,6 @@
         
         .overlay { position: fixed; inset: 0; z-index: 1000; background: #030303; display: flex; align-items: center; justify-content: center; padding: 2rem; }
 
-        /* Animation for cards sliding in */
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -101,12 +99,13 @@
         <div class="flex items-center gap-3">
             <span class="font-black text-[12px] md:text-[14px] tracking-[0.3em] uppercase">Aurent <span class="text-blue-500 italic">Studios</span></span>
         </div>
-        <div class="flex gap-5 md:gap-8 items-center">
+        <div class="flex gap-4 md:gap-8 items-center">
             <button onclick="tab('gigs')" id="t-gigs" class="nav-link active">GIGS</button>
-            <button onclick="tab('test')" id="t-test" class="nav-link hidden md:block">REVIEWS</button>
-            <button onclick="tab('cont')" id="t-cont" class="nav-link">CONTACT</button>
-            <button id="install-btn" class="hidden bg-blue-600/20 text-blue-500 border border-blue-500/50 px-4 py-2 rounded-lg text-[10px] font-bold tracking-widest uppercase hover:bg-blue-600 hover:text-white transition">
-                <i class="fa-solid fa-download mr-2"></i> App
+            <button onclick="tab('test')" id="t-test" class="nav-link">REVIEWS</button>
+            <button onclick="tab('cont')" id="t-cont" class="nav-link hidden sm:block">CONTACT</button>
+            
+            <button id="install-btn" class="hidden bg-blue-600/20 text-blue-500 border border-blue-500/50 px-3 py-2 rounded-lg text-[10px] font-bold tracking-widest uppercase hover:bg-blue-600 hover:text-white transition">
+                <i class="fa-solid fa-download"></i> App
             </button>
         </div>
     </nav>
@@ -183,7 +182,6 @@
             }
         });
 
-        // TABS
         function tab(t) {
             ['s-gigs','s-test', 's-cont'].forEach(s => { if(document.getElementById(s)) document.getElementById(s).classList.add('hidden'); });
             ['t-gigs','t-test', 't-cont'].forEach(n => document.getElementById(n).classList.remove('active'));
@@ -192,7 +190,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // TRIAL HUD CALCULATION
         function updateTrialHUD() {
             const startStr = localStorage.getItem('aurent_day');
             if (startStr) {
@@ -220,7 +217,6 @@
             loadFeed();
         }
 
-        // JS TEXT CLEANER
         function cleanDescription(text) {
             return text.replace(/🚨 NEW JOB ALERT 🚨/gi, '').trim();
         }
@@ -231,7 +227,7 @@
             if (data && data.length > 0) {
                 const last = localStorage.getItem('last_id');
                 if (last && data[0].id > last && Notification.permission === "granted") {
-                    new Notification("Aurent Vault", { body: "New Opportunity: " + data[0].title });
+                    new Notification("Aurent Vault", { body: "New Opportunity: " + data[0].title, icon: "logo.png" });
                 }
                 localStorage.setItem('last_id', data[0].id);
 
@@ -268,13 +264,19 @@
             }
         }
 
-        // INIT
         if (!localStorage.getItem('aurent_init')) {
             document.getElementById('onboard-overlay').classList.remove('hidden');
         } else {
             updateTrialHUD();
             loadFeed();
             setInterval(loadFeed, 30000); 
+        }
+
+        // START SERVICE WORKER FOR APP INSTALL & NOTIFS
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+            .then(() => console.log("Vault Engine Active"))
+            .catch((err) => console.log("Engine Error: ", err));
         }
     </script>
 </body>
