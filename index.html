@@ -15,6 +15,7 @@
             font-family: 'Space Grotesk', sans-serif; 
             background-color: #030303; 
             color: #ffffff;
+            /* Enhanced Drafting Grid */
             background-image: 
                 linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
@@ -35,11 +36,12 @@
             z-index: -1; pointer-events: none;
         }
 
+        /* 100% BULLETPROOF CSS WATERMARK */
         .css-watermark {
             position: fixed;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-size: 18vw; font-weight: 900; font-style: italic;
-            color: rgba(255, 255, 255, 0.02); 
+            color: rgba(255, 255, 255, 0.02); /* Barely visible, highly premium */
             z-index: 0; pointer-events: none; user-select: none;
             letter-spacing: -0.05em;
         }
@@ -64,6 +66,7 @@
         
         .overlay { position: fixed; inset: 0; z-index: 1000; background: #030303; display: flex; align-items: center; justify-content: center; padding: 2rem; }
 
+        /* Animation for cards sliding in */
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -217,9 +220,8 @@
             loadFeed();
         }
 
-        // JS TEXT CLEANER (Removes redundant titles if needed)
+        // JS TEXT CLEANER
         function cleanDescription(text) {
-            // Removes duplicate 'NEW JOB ALERT' text if it exists so the meat of the post stands out more
             return text.replace(/🚨 NEW JOB ALERT 🚨/gi, '').trim();
         }
 
@@ -235,9 +237,10 @@
 
                 document.getElementById('feed').innerHTML = data.map((gig, index) => `
                     <div class="glass-card p-6 md:p-8 flex flex-col md:flex-row gap-8 animate-card" style="animation-delay: ${index * 0.1}s">
+                        
                         ${gig.image_link ? `
-                        <div class="md:w-1/3 shrink-0 h-48 md:h-auto relative group overflow-hidden rounded-xl border border-white/5">
-                            <img src="${gig.image_link}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="md:w-1/3 shrink-0 relative group overflow-hidden rounded-xl border border-white/5 bg-black/40 flex items-center justify-center p-2 md:p-0">
+                            <img src="${gig.image_link}" class="w-full max-h-72 md:max-h-full md:h-full object-contain md:object-cover transition-transform duration-700 group-hover:scale-110">
                         </div>` : `
                         <div class="md:w-1/3 shrink-0 h-48 md:h-auto bg-gradient-to-br from-blue-900/10 to-black rounded-xl border border-white/5 flex items-center justify-center">
                             <i class="fa-solid fa-briefcase text-4xl text-blue-500/20"></i>
