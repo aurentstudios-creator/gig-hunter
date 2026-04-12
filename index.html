@@ -12,46 +12,40 @@
         
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #050505; 
-            color: #ffffff;
+            background-color: #ffffff; 
+            color: #1a1a1a;
             overflow-x: hidden;
         }
 
-        /* Cinematic Background */
-        .vignette {
+        /* FIXED BACKGROUND WATERMARK */
+        .bg-watermark {
             position: fixed;
-            inset: 0;
-            background: radial-gradient(circle, transparent 10%, rgba(0,0,0,0.9) 100%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60vw;
+            opacity: 0.03; /* Very subtle */
             pointer-events: none;
-            z-index: 10;
-        }
-
-        /* Premium Centered Logo Glow */
-        .hero-logo {
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
-            transition: all 0.5s ease;
-        }
-        .hero-logo:hover {
-            filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.3));
-            transform: scale(1.02);
+            z-index: 0;
+            filter: grayscale(100%);
         }
 
         .glass { 
-            background: rgba(15, 15, 15, 0.6); 
-            backdrop-filter: blur(30px); 
-            border: 1px solid rgba(255,255,255,0.03); 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
         }
 
         .nav-link {
             letter-spacing: 0.3em;
             font-size: 0.75rem;
-            color: #64748b;
+            color: #94a3b8;
             transition: all 0.3s ease;
             position: relative;
         }
 
         .active-tab { 
-            color: #ffffff !important;
+            color: #1a1a1a !important;
         }
         .active-tab::after {
             content: '';
@@ -59,65 +53,73 @@
             bottom: -8px;
             left: 50%;
             transform: translateX(-50%);
-            width: 20px;
+            width: 24px;
             height: 2px;
-            background: white;
+            background: #1d4ed8;
         }
 
         .btn-premium {
-            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: #1a1a1a;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
         }
 
         .gig-entry {
-            animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            background: white;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+            animation: fadeIn 0.8s ease forwards;
             opacity: 0;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Subtle scrollbar for that pro look */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #050505; }
-        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="pb-20">
 
-    <div class="vignette"></div>
+    <img src="logo.png" class="bg-watermark" alt="Watermark" onerror="this.src='logo.jpg'">
 
-    <header class="relative z-20 pt-16 pb-12 flex flex-col items-center">
-        <img src="logo.png" alt="Aurent Studios" class="h-32 w-auto hero-logo mb-6" 
-             onerror="this.src='logo.jpg'">
-        <div class="text-xs font-bold tracking-[0.5em] text-slate-500 uppercase">Premium Creative Gigs</div>
+    <header class="relative z-20 pt-20 pb-12 flex flex-col items-center">
+        <img src="logo.png" alt="Aurent Studios" class="h-28 w-auto mb-6" onerror="this.src='logo.jpg'">
+        <div class="text-[10px] font-bold tracking-[0.6em] text-slate-400 uppercase">Premium Creative Gigs</div>
     </header>
 
-    <div class="sticky top-0 z-[60] glass border-y border-white/5 py-6 mb-12">
-        <div class="flex justify-center gap-16">
+    <div class="sticky top-0 z-[60] glass py-6 mb-12">
+        <div class="flex justify-center gap-12 md:gap-24">
             <button id="tab-dashboard" onclick="switchView('dashboard')" class="nav-link active-tab font-extrabold uppercase tracking-[0.4em]">Gigs</button>
             <button id="tab-testimonials" onclick="switchView('testimonials')" class="nav-link font-extrabold uppercase tracking-[0.4em]">Testimonials</button>
         </div>
     </div>
 
-    <main id="view-dashboard" class="container mx-auto max-w-6xl px-6 relative z-20">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10" id="gigs-container">
-            <div class="h-96 bg-white/5 rounded-3xl animate-pulse"></div>
-            <div class="h-96 bg-white/5 rounded-3xl animate-pulse"></div>
+    <main id="view-dashboard" class="container mx-auto max-w-6xl px-6 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="gigs-container">
+            <div class="h-80 bg-slate-50 rounded-3xl animate-pulse"></div>
+            <div class="h-80 bg-slate-50 rounded-3xl animate-pulse"></div>
         </div>
     </main>
 
-    <main id="view-testimonials" class="container mx-auto max-w-4xl px-6 py-12 hidden relative z-20">
-        <div class="grid gap-16">
-            <div class="border-l-2 border-white/10 pl-10">
-                <p class="text-3xl font-extralight italic leading-tight text-slate-300">"Aurent is the gold standard. I landed a lead role in a 3D short film within 48 hours of joining."</p>
-                <p class="mt-8 text-[10px] font-black tracking-[0.4em] uppercase text-blue-500">JK / Lead Visualizer</p>
+    <main id="view-testimonials" class="container mx-auto max-w-4xl px-6 py-12 hidden relative z-10">
+        <div class="grid gap-12">
+            <div class="bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100">
+                <p class="text-2xl font-light italic leading-relaxed text-slate-700">"Aurent is the gold standard. I landed a lead role in a 3D short film within 48 hours of joining."</p>
+                <p class="mt-8 text-[10px] font-black tracking-[0.4em] uppercase text-blue-600">JK / Lead Visualizer</p>
             </div>
-            <div class="border-l-2 border-white/10 pl-10">
-                <p class="text-3xl font-extralight italic leading-tight text-slate-300">"High-ticket gigs only. This is where the real pros in Kenya hang out."</p>
-                <p class="mt-8 text-[10px] font-black tracking-[0.4em] uppercase text-blue-500">MM / Creative Director</p>
+            <div class="bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100">
+                <p class="text-2xl font-light italic leading-relaxed text-slate-700">"High-ticket gigs only. This is where the real pros in Kenya hang out."</p>
+                <p class="mt-8 text-[10px] font-black tracking-[0.4em] uppercase text-blue-600">MM / Creative Director</p>
             </div>
         </div>
     </main>
@@ -141,18 +143,21 @@
             const { data } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false });
             if (data) {
                 document.getElementById('gigs-container').innerHTML = data.map((gig, i) => `
-                    <div class="gig-entry flex flex-col glass rounded-[2.5rem] overflow-hidden group shadow-2xl" style="animation-delay: ${i * 0.15}s">
+                    <div class="gig-entry flex flex-col rounded-[2.5rem] overflow-hidden group shadow-sm" style="animation-delay: ${i * 0.1}s">
                         ${gig.image_link ? `
-                        <div class="overflow-hidden h-[400px]">
-                            <img src="${gig.image_link}" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100">
+                        <div class="overflow-hidden h-[350px] bg-slate-100">
+                            <img src="${gig.image_link}" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105">
                         </div>` : ''}
-                        <div class="p-12">
-                            <div class="text-[9px] font-black text-blue-500 uppercase tracking-[0.5em] mb-6">New Lead / Internal</div>
-                            <h3 class="text-2xl font-bold mb-6 tracking-tight leading-tight">${gig.title}</h3>
-                            <p class="text-slate-400 text-sm leading-relaxed mb-10 font-light opacity-80">${gig.description.substring(0, 450)}</p>
+                        <div class="p-10">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em]">Official Lead</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold mb-4 tracking-tight leading-tight">${gig.title}</h3>
+                            <p class="text-slate-500 text-sm leading-relaxed mb-10 font-light">${gig.description.substring(0, 300)}...</p>
                             <div class="flex gap-4">
-                                <button onclick="window.location.href='https://wa.me/2547XXXXXXXX'" class="flex-1 btn-premium text-white py-5 font-bold text-[11px] uppercase tracking-[0.2em] rounded-2xl">Apply for Gig</button>
-                                <button onclick="shareGig('${gig.title}')" class="px-8 border border-white/10 rounded-2xl hover:bg-white hover:text-black transition-all"><i class="fa-solid fa-share-nodes"></i></button>
+                                <button onclick="window.location.href='https://wa.me/2547XXXXXXXX'" class="flex-1 btn-premium py-4 font-bold text-[10px] uppercase tracking-[0.2em] rounded-2xl">Apply for Gig</button>
+                                <button onclick="shareGig('${gig.title}')" class="px-6 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all text-slate-400"><i class="fa-solid fa-share-nodes"></i></button>
                             </div>
                         </div>
                     </div>
@@ -160,7 +165,7 @@
             }
         }
 
-        function shareGig(t) { window.open(`https://wa.me/?text=Aurent Internal Lead: ${t}`); }
+        function shareGig(t) { window.open(`https://wa.me/?text=Aurent Studio Gig: ${t}`); }
         fetchGigs();
     </script>
 </body>
