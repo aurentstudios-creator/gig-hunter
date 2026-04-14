@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurent Vault | Luxury CV Engine</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="style.css"> <style>
+        .cv-form-container { max-width: 800px; margin: 50px auto; padding: 30px; background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #8b1e3f; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Inter', sans-serif; }
+        .theme-preview { display: flex; gap: 10px; margin-top: 10px; }
+        .theme-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .theme-dot.active { border-color: #000; }
+        .btn-generate { background: #8b1e3f; color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 18px; width: 100%; transition: 0.3s; }
+        .btn-generate:hover { background: #212121; }
+    </style>
+</head>
+<body>
+
+<div class="cv-form-container">
+    <h1 style="color:#8b1e3f; text-align:center;">LUXURY CV ENGINE</h1>
+    <p style="text-align:center; color:#666;">Craft a high-end professional resume in seconds.</p>
+    
+    <div class="input-group">
+        <label>Passport Photo (Optional)</label>
+        <input type="file" id="passportPhoto" accept="image/*">
+    </div>
+
+    <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="fullName" placeholder="John Doe">
+    </div>
+
+    <div class="input-group">
+        <label>Select Theme</label>
+        <select id="cvTheme">
+            <option value="modern_burgundy">Aurent Luxury (Burgundy & Gold)</option>
+            <option value="tech_sleek">Tech Sleek (Midnight Blue)</option>
+            <option value="minimalist">Minimalist (Pure Black/White)</option>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label>Professional Summary</label>
+        <textarea id="summary" rows="4" placeholder="Briefly describe your expertise..."></textarea>
+    </div>
+
+    <div class="input-group">
+        <label>Education (School, Degree, Year)</label>
+        <textarea id="education" rows="3" placeholder="University of Nairobi - BSC Computer Science (2020)"></textarea>
+    </div>
+
+    <div class="input-group">
+        <label>Work Experience</label>
+        <textarea id="experience" rows="5" placeholder="Job Title - Company (Year-Year) \n • Key Achievement 1..."></textarea>
+    </div>
+
+    <div class="input-group">
+        <label>Skills (Comma separated)</label>
+        <input type="text" id="skills" placeholder="Python, Project Management, Sales...">
+    </div>
+
+    <button class="btn-generate" onclick="generateLuxuryCV()">GENERATE HIGH-END CV</button>
+</div>
+
+<script src="cv-logic.js"></script>
+</body>
+</html>
