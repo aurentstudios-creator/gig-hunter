@@ -11,9 +11,38 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700;900&display=swap');
-        body { font-family: 'Space Grotesk', sans-serif; background: #030303; color: white; overflow-x: hidden; }
         
-        .glass-card { background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; overflow: hidden; }
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            background: #030303; 
+            color: white; 
+            overflow-x: hidden; 
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* ✨ THE BLUE SHINY AMBIENT EFFECT */
+        .ambient-glow {
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+            width: 80vw; height: 50vh;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 60%);
+            z-index: -1; pointer-events: none;
+        }
+
+        /* 🏛️ THE AURENT BACKGROUND WATERMARK */
+        .css-watermark {
+            position: fixed;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 18vw; font-weight: 900; font-style: italic;
+            color: rgba(255, 255, 255, 0.02); 
+            z-index: 0; pointer-events: none; user-select: none;
+            letter-spacing: -0.05em;
+        }
+        
+        .glass-card { background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; position: relative; z-index: 10; }
+        
         .nav-link { font-size: 9px; font-weight: 900; letter-spacing: 0.1em; color: #64748b; transition: 0.3s; white-space: nowrap; }
         @media (min-width: 768px) { .nav-link { font-size: 11px; letter-spacing: 0.2em; } }
         .nav-link.active { color: white; border-bottom: 2px solid #2563eb; }
@@ -21,29 +50,30 @@
         .luxury-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 1rem; color: white; width: 100%; font-size: 13px; }
         .overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
         
-        /* 📱 Responsive Grid Fix */
-        .feed-container { display: grid; grid-template-columns: 1fr; gap: 2rem; }
-        
-        /* Notification Sound Element */
         #notification-sound { display: none; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
+    <div class="ambient-glow"></div>
+    <div class="css-watermark">AURENT</div>
     <audio id="notification-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
 
     <div id="protocol-overlay" class="overlay">
         <div class="max-w-md w-full glass-card p-10 text-center border-t-4 border-blue-600">
             <h1 class="text-4xl font-black mb-2 tracking-widest uppercase italic">Aurent</h1>
             <p class="text-blue-500 font-bold italic mb-6 text-xs uppercase tracking-widest">Protocol Activation</p>
+            
             <div class="text-left bg-white/5 p-6 rounded-xl mb-8 border border-white/10 text-[11px] leading-relaxed text-slate-300">
+                <b class="text-blue-400 block mb-2 uppercase tracking-tighter">Legal Terms & Conditions</b>
                 <ul class="list-disc pl-4 space-y-2">
-                    <li>Gigs synchronized live via Aurent Hunter.</li>
-                    <li>7-Day secure trial access is active.</li>
-                    <li><b class="text-white">Note:</b> 50 KSH verification fee applies post-trial.</li>
+                    <li>By entering the Vault, you agree to the Aurent Data Privacy Terms.</li>
+                    <li>Gigs are synchronized live via the Aurent Hunter Engine.</li>
+                    <li>Trial access is limited to 7 days for verified professionals.</li>
+                    <li><b class="text-white">Notice:</b> A one-time verification fee of <span class="text-yellow-500">50 KSH</span> applies upon trial expiration to maintain secure access.</li>
                 </ul>
             </div>
-            <button onclick="startVault()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase tracking-widest text-[11px]">Agree & Enter</button>
+            <button onclick="startVault()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase tracking-widest text-[11px] hover:bg-blue-600 transition-all">Agree & Activate Access</button>
         </div>
     </div>
 
@@ -60,21 +90,20 @@
     <main class="mt-32 max-w-5xl mx-auto px-6 flex-grow w-full">
 
         <section id="s-gigs">
-            <div id="feed" class="feed-container"></div>
+            <div id="feed" class="grid grid-cols-1 gap-8"></div>
         </section>
 
         <section id="s-cv" class="hidden py-6">
             <div class="glass-card p-8 md:p-12">
-                <h2 class="text-2xl font-black mb-8 uppercase text-blue-500">Luxury CV Engine v3.0</h2>
+                <h2 class="text-2xl font-black mb-8 uppercase text-blue-500">Luxury CV Engine</h2>
                 <div class="grid md:grid-cols-2 gap-8">
                     <div class="space-y-4">
-                        <label class="block text-[10px] font-black uppercase text-slate-500">Bespoke Design & Identity</label>
+                        <label class="block text-[10px] font-black uppercase text-slate-500">Identification Photo (Optional)</label>
                         <input type="file" id="cv-photo" class="luxury-input" accept="image/*">
                         <input type="text" id="cv-name" placeholder="FULL NAME" class="luxury-input">
-                        <input type="text" id="cv-email" placeholder="EMAIL ADDRESS" class="luxury-input">
                         
                         <div class="grid grid-cols-2 gap-4">
-                            <select id="cv-layout" class="luxury-input">
+                            <select id="cv-layout" class="luxury-input text-xs">
                                 <option value="Executive">1. The Executive</option>
                                 <option value="Modern">2. The Modernist</option>
                                 <option value="Tech">3. Tech Lead</option>
@@ -86,7 +115,7 @@
                                 <option value="Bold">9. Bold Impact</option>
                                 <option value="Academic">10. Academic</option>
                             </select>
-                            <select id="cv-theme" class="luxury-input">
+                            <select id="cv-theme" class="luxury-input text-xs">
                                 <option value="Burgundy">Burgundy</option>
                                 <option value="Midnight">Midnight</option>
                                 <option value="Emerald">Emerald</option>
@@ -94,17 +123,17 @@
                                 <option value="Royal">Royal Gold</option>
                                 <option value="Slate">Slate</option>
                                 <option value="Rose">Rose Wood</option>
-                                <option value="Ocean">Deep Ocean</option>
-                                <option value="Marble">Silver Marble</option>
-                                <option value="Carbon">Carbon Fiber</option>
+                                <option value="Ocean">Ocean Blue</option>
+                                <option value="Marble">Silver</option>
+                                <option value="Carbon">Carbon</option>
                             </select>
                         </div>
                     </div>
                     <div class="space-y-4">
                         <textarea id="cv-summary" placeholder="PROFESSIONAL BIO" rows="2" class="luxury-input"></textarea>
-                        <textarea id="cv-experience" placeholder="EXPERIENCE" rows="3" class="luxury-input"></textarea>
+                        <textarea id="cv-experience" placeholder="WORK HISTORY" rows="3" class="luxury-input"></textarea>
                         <textarea id="cv-edu" placeholder="EDUCATION" rows="2" class="luxury-input"></textarea>
-                        <input type="text" id="cv-skills" placeholder="SKILLS (COMMAS)" class="luxury-input">
+                        <input type="text" id="cv-skills" placeholder="CORE SKILLS (SEPARATED BY COMMAS)" class="luxury-input">
                     </div>
                 </div>
                 <button onclick="generateLuxuryPDF()" class="mt-8 w-full bg-blue-600 py-5 rounded-xl font-black uppercase tracking-[0.3em] text-[10px]">Generate Bespoke CV</button>
@@ -114,12 +143,12 @@
         <section id="s-rev" class="hidden py-10">
             <div class="flex justify-between items-center mb-10">
                 <h2 class="text-2xl font-black uppercase">Vault Reviews</h2>
-                <button onclick="document.getElementById('rev-box').classList.toggle('hidden')" class="bg-blue-600 px-4 py-2 rounded font-bold text-[10px]">+ Review</button>
+                <button onclick="document.getElementById('rev-box').classList.toggle('hidden')" class="bg-blue-600 px-4 py-2 rounded font-bold text-[10px] uppercase">+ Post Review</button>
             </div>
             <div id="rev-box" class="hidden glass-card p-8 mb-10">
                 <input type="text" id="r-name" placeholder="Name" class="luxury-input mb-4">
-                <textarea id="r-msg" placeholder="Your experience..." class="luxury-input mb-4"></textarea>
-                <button onclick="addReview()" class="w-full bg-white text-black py-3 rounded font-black text-[10px] uppercase">Submit</button>
+                <textarea id="r-msg" placeholder="Share your experience..." class="luxury-input mb-4"></textarea>
+                <button onclick="addReview()" class="w-full bg-white text-black py-3 rounded font-black text-[10px] uppercase">Submit Review</button>
             </div>
             <div id="rev-feed" class="grid gap-6"></div>
         </section>
@@ -128,8 +157,8 @@
             <div class="glass-card p-12">
                 <h2 class="text-4xl font-black mb-4 uppercase italic">The Circle</h2>
                 <div class="flex flex-col md:flex-row gap-6 justify-center mt-10">
-                    <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="bg-[#25D366] text-black font-black px-12 py-5 rounded-xl uppercase text-xs">WhatsApp</a>
-                    <a href="mailto:aurentstudios@gmail.com" class="bg-blue-600 text-white font-black px-12 py-5 rounded-xl uppercase text-xs">Email</a>
+                    <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="bg-[#25D366] text-black font-black px-12 py-5 rounded-xl uppercase text-xs">WhatsApp Group</a>
+                    <a href="mailto:aurentstudios@gmail.com" class="bg-blue-600 text-white font-black px-12 py-5 rounded-xl uppercase text-xs">Official Email</a>
                 </div>
             </div>
         </section>
@@ -137,7 +166,6 @@
 
     <script>
         const _supabase = supabase.createClient("https://nujhdywfoosjwxoxiito.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs");
-
         let lastGigId = null;
 
         function startVault() {
@@ -158,22 +186,20 @@
         async function loadFeed() {
             const { data } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
             if(data && data.length > 0) {
-                // Check for new post to trigger sound and notification
                 if(lastGigId && data[0].id > lastGigId) {
                     document.getElementById('notification-sound').play();
                     if(Notification.permission === "granted") {
-                        new Notification("🚨 Aurent Vault: New Gig!", { body: data[0].title, icon: 'logo.png' });
+                        new Notification("🚨 Aurent Vault", { body: "New Gig Found: " + data[0].title });
                     }
                 }
                 lastGigId = data[0].id;
-
                 document.getElementById('feed').innerHTML = data.map(g => `
                     <div class="glass-card flex flex-col md:flex-row gap-6 p-6">
-                        <img src="${g.image_link}" class="w-full md:w-1/3 rounded-xl object-contain bg-black/50">
+                        <img src="${g.image_link}" class="w-full md:w-1/3 rounded-xl object-contain bg-black">
                         <div class="flex-1">
                             <h3 class="text-xl font-bold uppercase mb-2 text-blue-500">${g.title}</h3>
                             <p class="text-slate-400 text-sm mb-6">${g.description.substring(0, 150)}...</p>
-                            <a href="${g.apply_link}" target="_blank" class="block w-full bg-white text-black text-center font-black py-4 rounded-lg text-[9px] uppercase tracking-widest">Claim Gig</a>
+                            <a href="${g.apply_link}" target="_blank" class="block w-full bg-white text-black text-center font-black py-4 rounded-lg text-[10px] uppercase tracking-widest">View Gig</a>
                         </div>
                     </div>
                 `).join('');
@@ -192,6 +218,7 @@
         async function addReview() {
             const name = document.getElementById('r-name').value;
             const text = document.getElementById('r-msg').value;
+            if(!name || !text) return;
             await _supabase.from('reviews').insert([{ name, text }]);
             document.getElementById('rev-box').classList.add('hidden');
             loadReviews();
@@ -202,25 +229,22 @@
             const doc = new jsPDF('p', 'mm', 'a4');
             const theme = document.getElementById('cv-theme').value;
             const layout = document.getElementById('cv-layout').value;
-            const name = document.getElementById('cv-name').value || "Aurent Candidate";
+            const name = document.getElementById('cv-name').value || "AURENT CANDIDATE";
 
-            const colors = {
+            const palette = {
                 Burgundy: [139, 30, 63], Midnight: [16, 42, 86], Emerald: [0, 77, 64], Onyx: [20, 20, 20], Royal: [184, 134, 11],
                 Slate: [71, 85, 105], Rose: [136, 19, 55], Ocean: [12, 74, 110], Marble: [212, 212, 216], Carbon: [38, 38, 38]
-            }[theme];
+            }[theme] || [33, 33, 33];
 
-            doc.setFillColor(...colors);
-            
-            // Layout Handling
-            if(layout === "Executive") doc.rect(0, 0, 70, 297, 'F');
-            else if(layout === "Modern") doc.rect(0, 0, 210, 40, 'F');
-            else if(layout === "Tech") doc.rect(0, 0, 15, 297, 'F');
-            else doc.rect(0, 0, 210, 10, 'F');
+            doc.setFillColor(...palette);
+            if (layout === "Executive") doc.rect(0, 0, 70, 297, 'F');
+            else if (layout === "Modern") doc.rect(0, 0, 210, 45, 'F');
+            else doc.rect(0, 0, 210, 15, 'F');
 
             doc.setTextColor(layout === "Executive" ? 40 : 255);
-            doc.setFontSize(22); doc.text(name.toUpperCase(), 80, 25);
+            doc.setFontSize(22);
+            doc.text(name, layout === "Executive" ? 80 : 105, 30, {align: layout === "Executive" ? 'left' : 'center'});
             
-            // Photo Logic
             const photoFile = document.getElementById('cv-photo').files[0];
             if(photoFile) {
                 const reader = new FileReader();
