@@ -16,14 +16,10 @@
             font-family: 'Space Grotesk', sans-serif; 
             background: #030303; 
             color: white; 
-            overflow-x: hidden; 
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
-        /* ✨ THE BLUE SHINY AMBIENT EFFECT */
         .ambient-glow {
             position: fixed; top: 0; left: 50%; transform: translateX(-50%);
             width: 80vw; height: 50vh;
@@ -31,26 +27,24 @@
             z-index: -1; pointer-events: none;
         }
 
-        /* 🏛️ THE AURENT BACKGROUND WATERMARK */
         .css-watermark {
-            position: fixed;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-size: 18vw; font-weight: 900; font-style: italic;
-            color: rgba(255, 255, 255, 0.02); 
-            z-index: 0; pointer-events: none; user-select: none;
-            letter-spacing: -0.05em;
+            color: rgba(255, 255, 255, 0.02); z-index: 0; pointer-events: none;
         }
         
-        .glass-card { background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; position: relative; z-index: 10; }
-        
-        .nav-link { font-size: 9px; font-weight: 900; letter-spacing: 0.1em; color: #64748b; transition: 0.3s; white-space: nowrap; }
-        @media (min-width: 768px) { .nav-link { font-size: 11px; letter-spacing: 0.2em; } }
+        .glass-card { background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; }
         .nav-link.active { color: white; border-bottom: 2px solid #2563eb; }
 
-        .luxury-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 1rem; color: white; width: 100%; font-size: 13px; }
-        .overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+        .luxury-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 1rem; color: white; width: 100%; }
         
-        #notification-sound { display: none; }
+        /* 🎨 FIX: DROPDOWN VISIBILITY */
+        select option {
+            background-color: #1a1a1a !important;
+            color: white !important;
+        }
+
+        .overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -62,28 +56,25 @@
     <div id="protocol-overlay" class="overlay">
         <div class="max-w-md w-full glass-card p-10 text-center border-t-4 border-blue-600">
             <h1 class="text-4xl font-black mb-2 tracking-widest uppercase italic">Aurent</h1>
-            <p class="text-blue-500 font-bold italic mb-6 text-xs uppercase tracking-widest">Protocol Activation</p>
-            
             <div class="text-left bg-white/5 p-6 rounded-xl mb-8 border border-white/10 text-[11px] leading-relaxed text-slate-300">
-                <b class="text-blue-400 block mb-2 uppercase tracking-tighter">Legal Terms & Conditions</b>
+                <b class="text-blue-400 block mb-2 uppercase tracking-tighter">Terms of Service</b>
                 <ul class="list-disc pl-4 space-y-2">
-                    <li>By entering the Vault, you agree to the Aurent Data Privacy Terms.</li>
-                    <li>Gigs are synchronized live via the Aurent Hunter Engine.</li>
-                    <li>Trial access is limited to 7 days for verified professionals.</li>
-                    <li><b class="text-white">Notice:</b> A one-time verification fee of <span class="text-yellow-500">50 KSH</span> applies upon trial expiration to maintain secure access.</li>
+                    <li>Gigs are synchronized live via Aurent Hunter.</li>
+                    <li>7-Day secure trial access is currently active.</li>
+                    <li>50 KSH verification fee applies after trial to maintain access.</li>
                 </ul>
             </div>
-            <button onclick="startVault()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase tracking-widest text-[11px] hover:bg-blue-600 transition-all">Agree & Activate Access</button>
+            <button onclick="startVault()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase tracking-widest text-[11px]">Accept & Enter</button>
         </div>
     </div>
 
-    <nav class="fixed top-0 w-full bg-[#030303]/90 backdrop-blur-xl z-[100] border-b border-white/5 px-4 py-5 flex justify-between items-center">
+    <nav class="fixed top-0 w-full bg-[#030303]/90 backdrop-blur-xl z-[100] border-b border-white/5 px-6 py-5 flex justify-between items-center">
         <span class="font-black text-[12px] tracking-[0.2em] uppercase">Aurent <span class="text-blue-500 italic">Vault</span></span>
-        <div class="flex gap-4 md:gap-8 overflow-x-auto">
-            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active">GIGS</button>
-            <button onclick="tab('cv')" id="t-cv" class="nav-link">CV_STUDIO</button>
-            <button onclick="tab('rev')" id="t-rev" class="nav-link">REVIEWS</button>
-            <button onclick="tab('com')" id="t-com" class="nav-link">COMMUNITY</button>
+        <div class="flex gap-4 overflow-x-auto">
+            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active font-black text-[10px] uppercase">GIGS</button>
+            <button onclick="tab('cv')" id="t-cv" class="nav-link font-black text-[10px] uppercase">CV_STUDIO</button>
+            <button onclick="tab('rev')" id="t-rev" class="nav-link font-black text-[10px] uppercase">REVIEWS</button>
+            <button onclick="tab('com')" id="t-com" class="nav-link font-black text-[10px] uppercase">COMMUNITY</button>
         </div>
     </nav>
 
@@ -98,24 +89,23 @@
                 <h2 class="text-2xl font-black mb-8 uppercase text-blue-500">Luxury CV Engine</h2>
                 <div class="grid md:grid-cols-2 gap-8">
                     <div class="space-y-4">
-                        <label class="block text-[10px] font-black uppercase text-slate-500">Identification Photo (Optional)</label>
+                        <label class="text-[10px] font-black uppercase text-slate-500">ID Photo (Optional)</label>
                         <input type="file" id="cv-photo" class="luxury-input" accept="image/*">
                         <input type="text" id="cv-name" placeholder="FULL NAME" class="luxury-input">
-                        
                         <div class="grid grid-cols-2 gap-4">
-                            <select id="cv-layout" class="luxury-input text-xs">
-                                <option value="Executive">1. The Executive</option>
-                                <option value="Modern">2. The Modernist</option>
+                            <select id="cv-layout" class="luxury-input">
+                                <option value="Executive">1. Executive</option>
+                                <option value="Modern">2. Modernist</option>
                                 <option value="Tech">3. Tech Lead</option>
-                                <option value="Minimal">4. Ultra Minimal</option>
+                                <option value="Minimal">4. Minimal</option>
                                 <option value="Creative">5. Creative</option>
                                 <option value="Legacy">6. Legacy</option>
-                                <option value="Grid">7. Swiss Grid</option>
-                                <option value="Split">8. Split Page</option>
-                                <option value="Bold">9. Bold Impact</option>
+                                <option value="Grid">7. Grid</option>
+                                <option value="Split">8. Split</option>
+                                <option value="Bold">9. Bold</option>
                                 <option value="Academic">10. Academic</option>
                             </select>
-                            <select id="cv-theme" class="luxury-input text-xs">
+                            <select id="cv-theme" class="luxury-input">
                                 <option value="Burgundy">Burgundy</option>
                                 <option value="Midnight">Midnight</option>
                                 <option value="Emerald">Emerald</option>
@@ -130,43 +120,57 @@
                         </div>
                     </div>
                     <div class="space-y-4">
-                        <textarea id="cv-summary" placeholder="PROFESSIONAL BIO" rows="2" class="luxury-input"></textarea>
-                        <textarea id="cv-experience" placeholder="WORK HISTORY" rows="3" class="luxury-input"></textarea>
-                        <textarea id="cv-edu" placeholder="EDUCATION" rows="2" class="luxury-input"></textarea>
-                        <input type="text" id="cv-skills" placeholder="CORE SKILLS (SEPARATED BY COMMAS)" class="luxury-input">
+                        <textarea id="cv-summary" placeholder="BIO" rows="2" class="luxury-input"></textarea>
+                        <textarea id="cv-experience" placeholder="HISTORY" rows="3" class="luxury-input"></textarea>
+                        <input type="text" id="cv-skills" placeholder="SKILLS (COMMAS)" class="luxury-input">
                     </div>
                 </div>
-                <button onclick="generateLuxuryPDF()" class="mt-8 w-full bg-blue-600 py-5 rounded-xl font-black uppercase tracking-[0.3em] text-[10px]">Generate Bespoke CV</button>
+                <button onclick="generateLuxuryPDF()" class="mt-8 w-full bg-blue-600 py-5 rounded-xl font-black uppercase text-[10px] tracking-widest">Build CV</button>
             </div>
         </section>
 
         <section id="s-rev" class="hidden py-10">
             <div class="flex justify-between items-center mb-10">
-                <h2 class="text-2xl font-black uppercase">Vault Reviews</h2>
-                <button onclick="document.getElementById('rev-box').classList.toggle('hidden')" class="bg-blue-600 px-4 py-2 rounded font-bold text-[10px] uppercase">+ Post Review</button>
+                <h2 class="text-2xl font-black uppercase">Experience Vault</h2>
+                <button onclick="document.getElementById('rev-box').classList.toggle('hidden')" class="bg-blue-600 px-4 py-2 rounded font-bold text-[10px]">+ Share Experience</button>
             </div>
+            
             <div id="rev-box" class="hidden glass-card p-8 mb-10">
-                <input type="text" id="r-name" placeholder="Name" class="luxury-input mb-4">
-                <textarea id="r-msg" placeholder="Share your experience..." class="luxury-input mb-4"></textarea>
-                <button onclick="addReview()" class="w-full bg-white text-black py-3 rounded font-black text-[10px] uppercase">Submit Review</button>
+                <input type="text" id="r-name" placeholder="Professional Name" class="luxury-input mb-4">
+                <label class="text-[10px] text-blue-500 font-bold mb-2 block uppercase">Select Experience Message</label>
+                <select id="r-msg-vault" class="luxury-input mb-4">
+                    <option value="Just secured a high-ticket gig via the Vault. Efficiency is 10/10!">"Just secured a high-ticket gig via the Vault. Efficiency is 10/10!"</option>
+                    <option value="The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt.">"The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt."</option>
+                    <option value="Luxury branding and professional job leads. Best career investment in 2026.">"Luxury branding and professional job leads. Best career investment in 2026."</option>
+                    <option value="Highly recommend the CV Studio. My resume looks bespoke and high-end.">"Highly recommend the CV Studio. My resume looks bespoke and high-end."</option>
+                    <option value="Verified leads only. No more wasting time on expired openings.">"Verified leads only. No more wasting time on expired openings."</option>
+                    <option value="Aurent Studios has built the most elite career portal in the region.">"Aurent Studios has built the most elite career portal in the region."</option>
+                    <option value="The interface is clean and the notifications are lightning fast.">"The interface is clean and the notifications are lightning fast."</option>
+                    <option value="Finally, a vault that understands professional recruitment.">"Finally, a vault that understands professional recruitment."</option>
+                    <option value="The 7-day trial was enough to prove this system works flawlessly.">"The 7-day trial was enough to prove this system works flawlessly."</option>
+                    <option value="Protocol activated. Secured a role within 48 hours of joining.">"Protocol activated. Secured a role within 48 hours of joining."</option>
+                </select>
+                <button onclick="addReview()" class="w-full bg-white text-black py-3 rounded font-black text-[10px] uppercase">Post Experience</button>
             </div>
             <div id="rev-feed" class="grid gap-6"></div>
         </section>
 
         <section id="s-com" class="hidden py-12 text-center">
             <div class="glass-card p-12">
-                <h2 class="text-4xl font-black mb-4 uppercase italic">The Circle</h2>
+                <h2 class="text-4xl font-black mb-4 uppercase italic italic">The Circle</h2>
                 <div class="flex flex-col md:flex-row gap-6 justify-center mt-10">
-                    <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="bg-[#25D366] text-black font-black px-12 py-5 rounded-xl uppercase text-xs">WhatsApp Group</a>
-                    <a href="mailto:aurentstudios@gmail.com" class="bg-blue-600 text-white font-black px-12 py-5 rounded-xl uppercase text-xs">Official Email</a>
+                    <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="bg-[#25D366] text-black font-black px-12 py-5 rounded-xl uppercase text-xs">WhatsApp</a>
+                    <a href="mailto:aurentstudios@gmail.com" class="bg-blue-600 text-white font-black px-12 py-5 rounded-xl uppercase text-xs">Email</a>
                 </div>
             </div>
         </section>
     </main>
 
+    <footer class="text-center py-10 text-slate-600 text-[10px] font-black uppercase">Powered by Aurent Studios 2026</footer>
+
     <script>
         const _supabase = supabase.createClient("https://nujhdywfoosjwxoxiito.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs");
-        let lastGigId = null;
+        let lastId = null;
 
         function startVault() {
             localStorage.setItem('aurent_auth', 'true');
@@ -177,51 +181,56 @@
 
         function tab(t) {
             ['s-gigs', 's-cv', 's-rev', 's-com'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            ['t-gigs', 't-cv', 't-rev', 't-com'].forEach(n => document.getElementById(n).classList.remove('active'));
             document.getElementById('s-'+t).classList.remove('hidden');
-            document.getElementById('t-'+t).classList.add('active');
             if(t === 'rev') loadReviews();
         }
 
         async function loadFeed() {
             const { data } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
-            if(data && data.length > 0) {
-                if(lastGigId && data[0].id > lastGigId) {
+            if(data) {
+                if(lastId && data[0].id > lastId) {
                     document.getElementById('notification-sound').play();
-                    if(Notification.permission === "granted") {
-                        new Notification("🚨 Aurent Vault", { body: "New Gig Found: " + data[0].title });
-                    }
+                    new Notification("🚨 Aurent Vault", { body: "New High-Ticket Gig Synced!" });
                 }
-                lastGigId = data[0].id;
+                lastId = data[0].id;
                 document.getElementById('feed').innerHTML = data.map(g => `
                     <div class="glass-card flex flex-col md:flex-row gap-6 p-6">
                         <img src="${g.image_link}" class="w-full md:w-1/3 rounded-xl object-contain bg-black">
                         <div class="flex-1">
                             <h3 class="text-xl font-bold uppercase mb-2 text-blue-500">${g.title}</h3>
                             <p class="text-slate-400 text-sm mb-6">${g.description.substring(0, 150)}...</p>
-                            <a href="${g.apply_link}" target="_blank" class="block w-full bg-white text-black text-center font-black py-4 rounded-lg text-[10px] uppercase tracking-widest">View Gig</a>
+                            <a href="${g.apply_link}" target="_blank" class="block bg-white text-black text-center font-black py-4 rounded-lg text-[10px] uppercase tracking-widest">Apply Now</a>
                         </div>
                     </div>
                 `).join('');
             }
         }
 
+        async function addReview() {
+            const name = document.getElementById('r-name').value || "Anonymous Professional";
+            const text = document.getElementById('r-msg-vault').value;
+            // Post with current timestamp
+            await _supabase.from('reviews').insert([{ name, text, created_at: new Date() }]);
+            document.getElementById('rev-box').classList.add('hidden');
+            loadReviews();
+        }
+
         async function loadReviews() {
             const { data } = await _supabase.from('reviews').select('*').order('id', { ascending: false });
             if(data) {
-                document.getElementById('rev-feed').innerHTML = data.map(r => `
-                    <div class="glass-card p-6 border-l-2 border-blue-600"><p class="text-slate-400 italic text-sm">"${r.text}"</p><p class="text-blue-500 font-bold text-[10px] mt-2">— ${r.name}</p></div>
+                const fiveDaysAgo = new Date();
+                fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+
+                // 🗑️ Filter: Only show messages from the last 5 days
+                const validReviews = data.filter(r => new Date(r.created_at || new Date()) > fiveDaysAgo);
+
+                document.getElementById('rev-feed').innerHTML = validReviews.map(r => `
+                    <div class="glass-card p-6 border-l-2 border-blue-600">
+                        <p class="text-slate-400 italic text-sm">"${r.text}"</p>
+                        <p class="text-blue-500 font-bold text-[10px] mt-2 tracking-widest uppercase">— ${r.name}</p>
+                    </div>
                 `).join('');
             }
-        }
-
-        async function addReview() {
-            const name = document.getElementById('r-name').value;
-            const text = document.getElementById('r-msg').value;
-            if(!name || !text) return;
-            await _supabase.from('reviews').insert([{ name, text }]);
-            document.getElementById('rev-box').classList.add('hidden');
-            loadReviews();
         }
 
         async function generateLuxuryPDF() {
@@ -230,22 +239,21 @@
             const theme = document.getElementById('cv-theme').value;
             const layout = document.getElementById('cv-layout').value;
             const name = document.getElementById('cv-name').value || "AURENT CANDIDATE";
+            const photoFile = document.getElementById('cv-photo').files[0];
 
             const palette = {
                 Burgundy: [139, 30, 63], Midnight: [16, 42, 86], Emerald: [0, 77, 64], Onyx: [20, 20, 20], Royal: [184, 134, 11],
                 Slate: [71, 85, 105], Rose: [136, 19, 55], Ocean: [12, 74, 110], Marble: [212, 212, 216], Carbon: [38, 38, 38]
-            }[theme] || [33, 33, 33];
+            }[theme];
 
             doc.setFillColor(...palette);
-            if (layout === "Executive") doc.rect(0, 0, 70, 297, 'F');
-            else if (layout === "Modern") doc.rect(0, 0, 210, 45, 'F');
-            else doc.rect(0, 0, 210, 15, 'F');
+            if(layout === "Executive") doc.rect(0, 0, 70, 297, 'F');
+            else if(layout === "Modern") doc.rect(0, 0, 210, 40, 'F');
+            else doc.rect(0, 0, 210, 10, 'F');
 
             doc.setTextColor(layout === "Executive" ? 40 : 255);
-            doc.setFontSize(22);
-            doc.text(name, layout === "Executive" ? 80 : 105, 30, {align: layout === "Executive" ? 'left' : 'center'});
+            doc.setFontSize(22); doc.text(name, 80, 25);
             
-            const photoFile = document.getElementById('cv-photo').files[0];
             if(photoFile) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -257,7 +265,7 @@
         }
 
         if(!localStorage.getItem('aurent_auth')) document.getElementById('protocol-overlay').classList.remove('hidden');
-        else { loadFeed(); setInterval(loadFeed, 30000); }
+        else loadFeed();
     </script>
 </body>
 </html>
