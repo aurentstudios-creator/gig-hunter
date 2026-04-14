@@ -9,8 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <link rel="manifest" href="manifest.json">
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700;900&display=swap');
         
@@ -18,11 +16,18 @@
             font-family: 'Space Grotesk', sans-serif; 
             background-color: #030303; 
             color: #ffffff;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
             background-size: 40px 40px;
-            scroll-behavior: smooth;
+        }
+
+        /* 📱 MOBILE FIX: Prevents image squeezing */
+        .feed-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        @media (min-width: 1024px) {
+            .feed-container { grid-template-columns: 1fr; }
         }
 
         .glass-card { 
@@ -30,18 +35,8 @@
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 1.5rem;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative; z-index: 10; 
+            overflow: hidden;
         }
-        
-        .glass-card:hover {
-            border-color: rgba(37, 99, 235, 0.6);
-            box-shadow: 0 10px 40px -10px rgba(37, 99, 235, 0.3);
-        }
-
-        .nav-link { font-weight: 700; font-size: 0.65rem; letter-spacing: 0.1em; color: #64748b; transition: 0.3s; padding-bottom: 4px; }
-        @media (min-width: 768px) { .nav-link { font-size: 0.75rem; letter-spacing: 0.2em; } }
-        .nav-link.active { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.5); border-bottom: 2px solid #2563eb; }
 
         .luxury-input {
             background: rgba(255,255,255,0.03);
@@ -50,103 +45,62 @@
             padding: 1rem;
             color: white;
             width: 100%;
-            transition: 0.3s;
         }
-        .luxury-input:focus {
-            outline: none;
-            border-color: #2563eb;
-            background: rgba(37, 99, 235, 0.05);
-        }
-        
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-card { opacity: 0; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .nav-link.active { color: #ffffff; border-bottom: 2px solid #2563eb; }
     </style>
 </head>
-<body class="flex flex-col min-h-screen relative">
+<body class="flex flex-col min-h-screen">
 
-    <div class="ambient-glow fixed top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[50vh] bg-blue-600/10 blur-[120px] -z-10"></div>
-
-    <div id="onboard-overlay" class="fixed inset-0 z-[1000] background-[#030303] flex items-center justify-center p-8 hidden bg-black">
-        <div class="max-w-md w-full glass-card p-10 text-center">
-            <h1 class="text-4xl font-black mb-2 tracking-widest uppercase italic">Aurent</h1>
-            <p class="text-blue-500 font-bold italic mb-8 text-sm">"Discover to Find"</p>
-            <button onclick="startApp()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase text-[11px] tracking-widest">Enter Vault</button>
-        </div>
-    </div>
-
-    <nav class="fixed top-0 w-full bg-[#030303]/80 backdrop-blur-xl z-[100] border-b border-white/5 px-4 md:px-10 py-5 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <span class="font-black text-[12px] md:text-[14px] tracking-[0.3em] uppercase">Aurent <span class="text-blue-500 italic">Studios</span></span>
-        </div>
-        <div class="flex gap-4 md:gap-8 items-center">
-            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active uppercase">Gigs</button>
-            <button onclick="tab('cv')" id="t-cv" class="nav-link uppercase text-blue-400">CV Engine</button>
-            <button onclick="tab('cont')" id="t-cont" class="nav-link uppercase">Contact</button>
+    <nav class="fixed top-0 w-full bg-[#030303]/90 backdrop-blur-xl z-[100] border-b border-white/5 px-6 py-5 flex justify-between items-center">
+        <span class="font-black text-[14px] tracking-[0.3em] uppercase">Aurent <span class="text-blue-500 italic">Vault</span></span>
+        <div class="flex gap-6 items-center">
+            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active text-[10px] font-bold uppercase tracking-widest">Gigs</button>
+            <button onclick="tab('cv')" id="t-cv" class="nav-link text-[10px] font-bold uppercase tracking-widest text-blue-400">CV Studio</button>
         </div>
     </nav>
 
-    <main class="mt-32 max-w-5xl mx-auto px-6 relative z-10 flex-grow w-full">
+    <main class="mt-32 max-w-5xl mx-auto px-6 flex-grow w-full">
         
         <section id="s-gigs">
-            <div class="flex justify-between items-center mb-10 bg-blue-900/10 border border-blue-500/20 p-4 rounded-xl">
-                <div class="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-blue-400">
-                    <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> Live Vault Connected
+            <div id="feed" class="feed-container">
                 </div>
-                <div id="trial-counter" class="text-[10px] font-black uppercase tracking-widest text-slate-300"></div>
-            </div>
-            <div id="feed" class="grid gap-8"></div>
         </section>
 
         <section id="s-cv" class="hidden py-10">
-            <div class="glass-card p-8 md:p-12 mb-10">
-                <h2 class="text-3xl font-black mb-2 tracking-widest uppercase">Luxury CV Engine</h2>
-                <p class="text-slate-400 mb-10 text-xs italic tracking-widest">Craft a high-end professional presence in seconds.</p>
+            <div class="glass-card p-8 md:p-12">
+                <h2 class="text-3xl font-black mb-6 uppercase tracking-widest">Luxury CV Studio</h2>
                 
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-8">
                     <div class="space-y-4">
-                        <label class="block text-[10px] font-black text-blue-500 uppercase">Passport / Professional ID</label>
+                        <label class="block text-[10px] font-black text-blue-500 uppercase">Passport Photo</label>
                         <input type="file" id="cv-photo" class="luxury-input text-xs" accept="image/*">
                         
                         <input type="text" id="cv-name" placeholder="FULL NAME" class="luxury-input">
-                        <input type="text" id="cv-phone" placeholder="PHONE NUMBER" class="luxury-input">
-                        <input type="email" id="cv-email" placeholder="EMAIL ADDRESS" class="luxury-input">
+                        <input type="text" id="cv-email" placeholder="EMAIL" class="luxury-input">
                         
-                        <label class="block text-[10px] font-black text-blue-500 uppercase mt-4">Luxury Theme</label>
-                        <select id="cv-theme" class="luxury-input">
-                            <option value="Aurent">Aurent Luxury (Burgundy/Gold)</option>
-                            <option value="Midnight">Midnight Pro (Blue/Silver)</option>
-                            <option value="Onyx">Onyx Minimalist (Black/White)</option>
+                        <label class="block text-[10px] font-black text-blue-500 uppercase">Select Layout Style</label>
+                        <select id="cv-layout" class="luxury-input">
+                            <option value="Executive">The Executive (Classic Sidebar)</option>
+                            <option value="Modern">The Modernist (Clean Center)</option>
+                            <option value="Tech">The Tech Lead (Bold Header)</option>
                         </select>
                     </div>
-                    
                     <div class="space-y-4">
-                        <textarea id="cv-summary" placeholder="PROFESSIONAL SUMMARY..." rows="3" class="luxury-input"></textarea>
-                        <textarea id="cv-experience" placeholder="WORK EXPERIENCE..." rows="4" class="luxury-input"></textarea>
-                        <textarea id="cv-edu" placeholder="EDUCATION BACKGROUND..." rows="3" class="luxury-input"></textarea>
-                        <input type="text" id="cv-skills" placeholder="SKILLS (COMMAS SEPARATED)" class="luxury-input">
+                        <textarea id="cv-summary" placeholder="PROFESSIONAL SUMMARY" rows="3" class="luxury-input"></textarea>
+                        <textarea id="cv-experience" placeholder="WORK EXPERIENCE" rows="4" class="luxury-input"></textarea>
+                        <textarea id="cv-edu" placeholder="EDUCATION" rows="3" class="luxury-input"></textarea>
+                        <input type="text" id="cv-skills" placeholder="SKILLS" class="luxury-input">
                     </div>
                 </div>
 
-                <button onclick="generateCV()" class="mt-10 w-full bg-white text-black font-black py-5 rounded-xl hover:bg-blue-600 hover:text-white transition-all uppercase tracking-[0.3em] text-xs">
-                    Generate High-End CV
+                <button onclick="generateLuxuryPDF()" class="mt-10 w-full bg-blue-600 text-white font-black py-5 rounded-xl uppercase tracking-[0.3em] text-xs hover:bg-white hover:text-black transition-all">
+                    Generate Bespoke CV
                 </button>
             </div>
         </section>
 
-        <section id="s-cont" class="hidden py-12 text-center">
-            <div class="glass-card p-12">
-                <h2 class="text-4xl font-black mb-8 tracking-widest uppercase">Community</h2>
-                <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="inline-flex items-center gap-3 bg-[#25D366] text-black font-black px-10 py-5 rounded-xl uppercase tracking-widest text-xs">
-                    <i class="fa-brands fa-whatsapp"></i> Join Official WhatsApp
-                </a>
-            </div>
-        </section>
-
     </main>
-
-    <footer class="text-center py-10 text-slate-600 text-[10px] font-black tracking-[0.3em] uppercase mt-auto">
-        Powered by Aurent Studios 2026
-    </footer>
 
     <script>
         const SUPABASE_URL = "https://nujhdywfoosjwxoxiito.supabase.co";
@@ -154,104 +108,78 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function tab(t) {
-            ['s-gigs', 's-cv', 's-cont'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            ['t-gigs', 't-cv', 't-cont'].forEach(n => { if(document.getElementById(n)) document.getElementById(n).classList.remove('active') });
+            document.getElementById('s-gigs').classList.add('hidden');
+            document.getElementById('s-cv').classList.add('hidden');
             document.getElementById('s-'+t).classList.remove('hidden');
-            document.getElementById('t-'+t.substring(0,4) || t).classList.add('active');
-        }
-
-        async function startApp() {
-            localStorage.setItem('aurent_init', 'true');
-            if (!localStorage.getItem('aurent_day')) localStorage.setItem('aurent_day', Date.now().toString());
-            document.getElementById('onboard-overlay').classList.add('hidden');
-            loadFeed();
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById('t-'+t).classList.add('active');
         }
 
         async function loadFeed() {
             const { data } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
             if (data) {
-                document.getElementById('feed').innerHTML = data.map((gig, i) => `
-                    <div class="glass-card p-8 flex flex-col md:flex-row gap-8 animate-card" style="animation-delay: ${i*0.1}s">
-                        <img src="${gig.image_link || 'https://via.placeholder.com/400x600?text=Aurent+Vault'}" class="md:w-1/3 rounded-xl object-cover max-h-80">
+                document.getElementById('feed').innerHTML = data.map(gig => `
+                    <div class="glass-card flex flex-col md:flex-row gap-6 p-6">
+                        <div class="w-full md:w-1/3">
+                            <img src="${gig.image_link}" class="w-full h-auto rounded-xl object-contain bg-black/50">
+                        </div>
                         <div class="flex-1">
-                            <h3 class="text-2xl font-black mb-4 uppercase tracking-tighter">${gig.title}</h3>
-                            <div class="text-slate-400 text-sm mb-8 leading-relaxed">${gig.description.substring(0, 300)}...</div>
-                            <a href="${gig.apply_link}" target="_blank" class="block bg-white text-black text-center font-black py-4 rounded-lg uppercase text-[10px] tracking-widest">Apply Now</a>
+                            <h3 class="text-xl font-bold uppercase mb-4">${gig.title}</h3>
+                            <p class="text-slate-400 text-sm mb-6">${gig.description.substring(0, 200)}...</p>
+                            <a href="${gig.apply_link}" target="_blank" class="inline-block w-full bg-white text-black text-center font-black py-3 rounded-lg text-[10px] tracking-widest uppercase">View Opening</a>
                         </div>
                     </div>
                 `).join('');
             }
         }
 
-        // --- 🖋️ LUXURY CV GENERATOR LOGIC ---
-        async function generateCV() {
+        async function generateLuxuryPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
-            const theme = document.getElementById('cv-theme').value;
-            const name = document.getElementById('cv-name').value || "Aurent Candidate";
+            const layout = document.getElementById('cv-layout').value;
+            const name = document.getElementById('cv-name').value.toUpperCase();
+            const summary = document.getElementById('cv-summary').value;
+            const exp = document.getElementById('cv-experience').value;
+            const edu = document.getElementById('cv-edu').value;
+            const skills = document.getElementById('cv-skills').value;
 
-            // Theme Config
-            const colors = {
-                Aurent: { main: [139, 30, 63], accent: [204, 172, 67] },
-                Midnight: { main: [16, 42, 86], accent: [100, 116, 139] },
-                Onyx: { main: [20, 20, 20], accent: [150, 150, 150] }
-            }[theme];
+            // --- 🎨 LAYOUT 1: THE EXECUTIVE ---
+            if (layout === "Executive") {
+                doc.setFillColor(139, 30, 63); doc.rect(0, 0, 70, 297, 'F'); // Sidebar
+                doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text(doc.splitTextToSize(name, 50), 10, 80);
+                doc.setTextColor(40, 40, 40); doc.setFontSize(22); doc.text("PROFESSIONAL PROFILE", 80, 25);
+                doc.setFontSize(10); doc.text(doc.splitTextToSize(summary, 110), 80, 35);
+                doc.setFontSize(16); doc.text("EXPERIENCE", 80, 80);
+                doc.setFontSize(10); doc.text(doc.splitTextToSize(exp, 110), 80, 90);
+            } 
+            
+            // --- 🎨 LAYOUT 2: THE MODERNIST ---
+            else if (layout === "Modern") {
+                doc.setFillColor(30, 30, 30); doc.rect(0, 0, 210, 50, 'F'); // Header
+                doc.setTextColor(255, 255, 255); doc.setFontSize(26); doc.text(name, 105, 30, {align: 'center'});
+                doc.setTextColor(60, 60, 60); doc.setFontSize(12); doc.text("SUMMARY", 20, 70);
+                doc.setFontSize(10); doc.text(doc.splitTextToSize(summary, 170), 20, 80);
+                doc.setFontSize(12); doc.text("WORK HISTORY", 20, 120);
+                doc.setFontSize(10); doc.text(doc.splitTextToSize(exp, 170), 20, 130);
+            }
 
-            // Header Background
-            doc.setFillColor(...colors.main);
-            doc.rect(0, 0, 70, 297, 'F');
+            // --- 🎨 LAYOUT 3: THE TECH LEAD ---
+            else {
+                doc.setDrawColor(37, 99, 235); doc.setLineWidth(2); doc.line(10, 10, 200, 10); // Tech Blue Line
+                doc.setTextColor(37, 99, 235); doc.setFontSize(28); doc.text(name, 10, 30);
+                doc.setTextColor(100, 100, 100); doc.setFontSize(10); doc.text(doc.splitTextToSize(summary, 180), 10, 45);
+                doc.setFillColor(240, 240, 240); doc.rect(10, 80, 190, 10, 'F');
+                doc.setTextColor(0, 0, 0); doc.text("TECHNICAL EXPERIENCE", 15, 87);
+                doc.text(doc.splitTextToSize(exp, 180), 10, 100);
+            }
 
-            // Title Header
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
-            doc.text(name.toUpperCase(), 80, 25);
-            doc.setDrawColor(...colors.accent);
-            doc.setLineWidth(1);
-            doc.line(80, 30, 200, 30);
-
-            // Left Sidebar Text
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(10);
-            doc.text("CONTACT", 10, 80);
-            doc.text(document.getElementById('cv-phone').value, 10, 88);
-            doc.text(document.getElementById('cv-email').value, 10, 94);
-
-            doc.setFontSize(12);
-            doc.text("CORE SKILLS", 10, 120);
-            doc.setFontSize(9);
-            const skills = document.getElementById('cv-skills').value.split(',').join('\n• ');
-            doc.text("• " + skills, 10, 128);
-
-            // Right Content
-            doc.setTextColor(40, 40, 40);
-            doc.setFontSize(14);
-            doc.text("PROFESSIONAL SUMMARY", 80, 45);
-            doc.setFontSize(10);
-            doc.text(doc.splitTextToSize(document.getElementById('cv-summary').value, 110), 80, 52);
-
-            doc.setFontSize(14);
-            doc.text("WORK EXPERIENCE", 80, 90);
-            doc.setFontSize(10);
-            doc.text(doc.splitTextToSize(document.getElementById('cv-experience').value, 110), 80, 97);
-
-            doc.setFontSize(14);
-            doc.text("EDUCATION", 80, 180);
-            doc.setFontSize(10);
-            doc.text(doc.splitTextToSize(document.getElementById('cv-edu').value, 110), 80, 187);
-
-            // Branding Footer
-            doc.setFillColor(33, 33, 33);
-            doc.rect(0, 287, 210, 10, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(7);
-            doc.text("CERTIFIED BY AURENT STUDIOS VAULT 2026", 75, 293);
-
-            // Handle Photo
+            // Handle Photo Placement
             const photo = document.getElementById('cv-photo').files[0];
             if (photo) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    doc.addImage(e.target.result, 'JPEG', 10, 15, 50, 50);
+                    const x = layout === "Executive" ? 10 : 160;
+                    doc.addImage(e.target.result, 'JPEG', x, 15, 45, 45);
                     doc.save(`${name}_CV.pdf`);
                 };
                 reader.readAsDataURL(photo);
@@ -260,11 +188,7 @@
             }
         }
 
-        if (!localStorage.getItem('aurent_init')) {
-            document.getElementById('onboard-overlay').classList.remove('hidden');
-        } else {
-            loadFeed();
-        }
+        loadFeed();
     </script>
 </body>
 </html>
