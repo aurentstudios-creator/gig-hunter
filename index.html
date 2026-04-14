@@ -6,6 +6,7 @@
     <title>Aurent Studios | The Vault</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <link rel="manifest" href="manifest.json">
@@ -24,27 +25,6 @@
             scroll-behavior: smooth;
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(37, 99, 235, 0.3); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(37, 99, 235, 0.8); }
-
-        .ambient-glow {
-            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-            width: 80vw; height: 50vh;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 60%);
-            z-index: -1; pointer-events: none;
-        }
-
-        .css-watermark {
-            position: fixed;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 18vw; font-weight: 900; font-style: italic;
-            color: rgba(255, 255, 255, 0.02); 
-            z-index: 0; pointer-events: none; user-select: none;
-            letter-spacing: -0.05em;
-        }
-
         .glass-card { 
             background: rgba(10, 10, 10, 0.7);
             backdrop-filter: blur(20px);
@@ -57,106 +37,114 @@
         .glass-card:hover {
             border-color: rgba(37, 99, 235, 0.6);
             box-shadow: 0 10px 40px -10px rgba(37, 99, 235, 0.3);
-            transform: translateY(-4px);
         }
 
-        /* RESPONSIVE NAV LINKS: Shrinks on mobile, expands on desktop */
         .nav-link { font-weight: 700; font-size: 0.65rem; letter-spacing: 0.1em; color: #64748b; transition: 0.3s; padding-bottom: 4px; }
-        @media (min-width: 768px) {
-            .nav-link { font-size: 0.75rem; letter-spacing: 0.2em; }
-        }
+        @media (min-width: 768px) { .nav-link { font-size: 0.75rem; letter-spacing: 0.2em; } }
         .nav-link.active { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.5); border-bottom: 2px solid #2563eb; }
-        
-        .overlay { position: fixed; inset: 0; z-index: 1000; background: #030303; display: flex; align-items: center; justify-content: center; padding: 2rem; }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .luxury-input {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            color: white;
+            width: 100%;
+            transition: 0.3s;
         }
+        .luxury-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: rgba(37, 99, 235, 0.05);
+        }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .animate-card { opacity: 0; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen relative">
 
-    <div class="ambient-glow"></div>
-    <div class="css-watermark">AURENT</div>
+    <div class="ambient-glow fixed top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[50vh] bg-blue-600/10 blur-[120px] -z-10"></div>
 
-    <div id="onboard-overlay" class="overlay hidden">
-        <div class="max-w-md w-full text-center glass-card p-10 shadow-[0_0_50px_rgba(37,99,235,0.1)]">
+    <div id="onboard-overlay" class="fixed inset-0 z-[1000] background-[#030303] flex items-center justify-center p-8 hidden bg-black">
+        <div class="max-w-md w-full glass-card p-10 text-center">
             <h1 class="text-4xl font-black mb-2 tracking-widest uppercase italic">Aurent</h1>
-            <p class="text-blue-500 font-bold italic mb-8 text-sm">"We have to discover to find"<br>— Founder</p>
-            
-            <div class="text-left bg-black/50 p-6 rounded-xl mb-8 border border-white/10 text-xs text-slate-400">
-                <b class="text-white block mb-3 uppercase tracking-widest text-[10px]">Protocol Activation</b>
-                <ul class="list-disc pl-4 space-y-3">
-                    <li>High-ticket gigs are synchronized live.</li>
-                    <li>7-Day secure trial access begins upon entry.</li>
-                    <li>Enable notifications for real-time alerts.</li>
-                </ul>
-            </div>
-
-            <button onclick="startApp()" class="w-full bg-white text-black hover:bg-blue-600 hover:text-white font-black py-4 rounded-xl transition-all duration-300 uppercase text-[11px] tracking-widest">Agree & Enter Vault</button>
+            <p class="text-blue-500 font-bold italic mb-8 text-sm">"Discover to Find"</p>
+            <button onclick="startApp()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase text-[11px] tracking-widest">Enter Vault</button>
         </div>
     </div>
 
     <nav class="fixed top-0 w-full bg-[#030303]/80 backdrop-blur-xl z-[100] border-b border-white/5 px-4 md:px-10 py-5 flex justify-between items-center">
-        <div class="flex items-center gap-2 md:gap-3">
-            <span class="font-black text-[10px] md:text-[14px] tracking-[0.2em] md:tracking-[0.3em] uppercase">Aurent <span class="text-blue-500 italic hidden sm:inline">Studios</span></span>
+        <div class="flex items-center gap-3">
+            <span class="font-black text-[12px] md:text-[14px] tracking-[0.3em] uppercase">Aurent <span class="text-blue-500 italic">Studios</span></span>
         </div>
-        <div class="flex gap-3 md:gap-8 items-center">
-            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active">GIGS</button>
-            <button onclick="tab('test')" id="t-test" class="nav-link">REVIEWS</button>
-            <button onclick="tab('cont')" id="t-cont" class="nav-link">CONTACT</button>
-            
-            <button id="install-btn" class="hidden bg-blue-600/20 text-blue-500 border border-blue-500/50 px-2 py-1.5 md:px-3 md:py-2 rounded-lg text-[9px] md:text-[10px] font-bold tracking-widest uppercase hover:bg-blue-600 hover:text-white transition">
-                <i class="fa-solid fa-download md:mr-1"></i> <span class="hidden sm:inline">App</span>
-            </button>
+        <div class="flex gap-4 md:gap-8 items-center">
+            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active uppercase">Gigs</button>
+            <button onclick="tab('cv')" id="t-cv" class="nav-link uppercase text-blue-400">CV Engine</button>
+            <button onclick="tab('cont')" id="t-cont" class="nav-link uppercase">Contact</button>
         </div>
     </nav>
 
     <main class="mt-32 max-w-5xl mx-auto px-6 relative z-10 flex-grow w-full">
         
         <section id="s-gigs">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 bg-blue-900/10 border border-blue-500/20 p-4 rounded-xl">
+            <div class="flex justify-between items-center mb-10 bg-blue-900/10 border border-blue-500/20 p-4 rounded-xl">
                 <div class="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-blue-400">
-                    <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_#3b82f6]"></div>
-                    Live Vault Connected
+                    <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> Live Vault Connected
                 </div>
-                <div id="trial-counter" class="mt-2 md:mt-0 text-[10px] font-black uppercase tracking-widest text-slate-300 bg-black/50 px-3 py-1 rounded">
-                    </div>
+                <div id="trial-counter" class="text-[10px] font-black uppercase tracking-widest text-slate-300"></div>
             </div>
-
-            <div id="feed" class="grid gap-8">
-                <div class="glass-card p-10 text-center text-slate-500 animate-pulse font-bold tracking-widest text-sm uppercase">Decrypting Pipeline...</div>
-            </div>
+            <div id="feed" class="grid gap-8"></div>
         </section>
 
-        <section id="s-test" class="hidden py-12">
-            <div class="glass-card p-10 border-l-4 border-l-blue-600 mb-8">
-                <p class="text-xl font-light text-slate-300 leading-relaxed mb-6">"The architecture of this site is brilliant. Got pinged for a UI/UX job on my Android phone instantly."</p>
-                <p class="font-bold text-[10px] uppercase text-blue-500 tracking-widest">— David K. / Designer</p>
+        <section id="s-cv" class="hidden py-10">
+            <div class="glass-card p-8 md:p-12 mb-10">
+                <h2 class="text-3xl font-black mb-2 tracking-widest uppercase">Luxury CV Engine</h2>
+                <p class="text-slate-400 mb-10 text-xs italic tracking-widest">Craft a high-end professional presence in seconds.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <label class="block text-[10px] font-black text-blue-500 uppercase">Passport / Professional ID</label>
+                        <input type="file" id="cv-photo" class="luxury-input text-xs" accept="image/*">
+                        
+                        <input type="text" id="cv-name" placeholder="FULL NAME" class="luxury-input">
+                        <input type="text" id="cv-phone" placeholder="PHONE NUMBER" class="luxury-input">
+                        <input type="email" id="cv-email" placeholder="EMAIL ADDRESS" class="luxury-input">
+                        
+                        <label class="block text-[10px] font-black text-blue-500 uppercase mt-4">Luxury Theme</label>
+                        <select id="cv-theme" class="luxury-input">
+                            <option value="Aurent">Aurent Luxury (Burgundy/Gold)</option>
+                            <option value="Midnight">Midnight Pro (Blue/Silver)</option>
+                            <option value="Onyx">Onyx Minimalist (Black/White)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <textarea id="cv-summary" placeholder="PROFESSIONAL SUMMARY..." rows="3" class="luxury-input"></textarea>
+                        <textarea id="cv-experience" placeholder="WORK EXPERIENCE..." rows="4" class="luxury-input"></textarea>
+                        <textarea id="cv-edu" placeholder="EDUCATION BACKGROUND..." rows="3" class="luxury-input"></textarea>
+                        <input type="text" id="cv-skills" placeholder="SKILLS (COMMAS SEPARATED)" class="luxury-input">
+                    </div>
+                </div>
+
+                <button onclick="generateCV()" class="mt-10 w-full bg-white text-black font-black py-5 rounded-xl hover:bg-blue-600 hover:text-white transition-all uppercase tracking-[0.3em] text-xs">
+                    Generate High-End CV
+                </button>
             </div>
         </section>
 
         <section id="s-cont" class="hidden py-12 text-center">
             <div class="glass-card p-12">
-                <h2 class="text-4xl font-black mb-2 tracking-widest uppercase">Community</h2>
-                <p class="text-slate-400 mb-12 text-sm italic">Join the inner circle or reach out for support.</p>
-                
-                <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="inline-flex items-center justify-center gap-3 bg-[#25D366] text-black font-black px-10 py-5 rounded-xl hover:bg-[#1fae54] hover:scale-105 transition-all w-full md:w-auto mb-8 uppercase tracking-widest text-xs">
-                    <i class="fa-brands fa-whatsapp text-xl"></i> Join Official WhatsApp
+                <h2 class="text-4xl font-black mb-8 tracking-widest uppercase">Community</h2>
+                <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="inline-flex items-center gap-3 bg-[#25D366] text-black font-black px-10 py-5 rounded-xl uppercase tracking-widest text-xs">
+                    <i class="fa-brands fa-whatsapp"></i> Join Official WhatsApp
                 </a>
-                
-                <div class="mt-8 pt-8 border-t border-white/10">
-                    <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Direct Inquiries</p>
-                    <a href="mailto:aurentstudios@gmail.com" class="text-lg font-bold text-blue-400 hover:text-white transition-colors">aurentstudios@gmail.com</a>
-                </div>
             </div>
         </section>
 
     </main>
 
-    <footer class="text-center py-10 text-slate-600 text-[10px] font-black tracking-[0.3em] uppercase relative z-10 mt-auto">
+    <footer class="text-center py-10 text-slate-600 text-[10px] font-black tracking-[0.3em] uppercase mt-auto">
         Powered by Aurent Studios 2026
     </footer>
 
@@ -165,122 +153,117 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // PWA INSTALL LOGIC
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-btn').classList.remove('hidden');
-        });
-
-        document.getElementById('install-btn').addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    document.getElementById('install-btn').classList.add('hidden');
-                }
-                deferredPrompt = null;
-            } else {
-                alert("To install: Tap your browser menu (⋮) and select 'Add to Home screen'.");
-            }
-        });
-
         function tab(t) {
-            ['s-gigs','s-test', 's-cont'].forEach(s => { if(document.getElementById(s)) document.getElementById(s).classList.add('hidden'); });
-            ['t-gigs','t-test', 't-cont'].forEach(n => document.getElementById(n).classList.remove('active'));
+            ['s-gigs', 's-cv', 's-cont'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['t-gigs', 't-cv', 't-cont'].forEach(n => { if(document.getElementById(n)) document.getElementById(n).classList.remove('active') });
             document.getElementById('s-'+t).classList.remove('hidden');
-            document.getElementById('t-'+t.substring(0,4)).classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function updateTrialHUD() {
-            const startStr = localStorage.getItem('aurent_day');
-            if (startStr) {
-                const daysPassed = Math.floor((Date.now() - parseInt(startStr)) / (1000 * 60 * 60 * 24));
-                const daysLeft = Math.max(0, 7 - daysPassed);
-                const hud = document.getElementById('trial-counter');
-                
-                if (daysLeft > 0) {
-                    hud.innerHTML = `<span class="text-white">${daysLeft}</span> Days of Trial Left`;
-                } else {
-                    hud.innerHTML = `<span class="text-red-500">Trial Expired</span> - Contact Support`;
-                    hud.classList.add('border', 'border-red-500/50');
-                }
-            }
+            document.getElementById('t-'+t.substring(0,4) || t).classList.add('active');
         }
 
         async function startApp() {
-            if ("Notification" in window) { try { await Notification.requestPermission(); } catch (e) {} }
             localStorage.setItem('aurent_init', 'true');
-            if (!localStorage.getItem('aurent_day')) {
-                localStorage.setItem('aurent_day', Date.now().toString());
-            }
+            if (!localStorage.getItem('aurent_day')) localStorage.setItem('aurent_day', Date.now().toString());
             document.getElementById('onboard-overlay').classList.add('hidden');
-            updateTrialHUD();
             loadFeed();
         }
 
-        function cleanDescription(text) {
-            return text.replace(/🚨 NEW JOB ALERT 🚨/gi, '').trim();
-        }
-
         async function loadFeed() {
-            const { data, error } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
-            
-            if (data && data.length > 0) {
-                const last = localStorage.getItem('last_id');
-                if (last && data[0].id > last && Notification.permission === "granted") {
-                    new Notification("Aurent Vault", { body: "New Opportunity: " + data[0].title, icon: "logo.png" });
-                }
-                localStorage.setItem('last_id', data[0].id);
-
-                document.getElementById('feed').innerHTML = data.map((gig, index) => `
-                    <div class="glass-card p-6 md:p-8 flex flex-col md:flex-row gap-8 animate-card" style="animation-delay: ${index * 0.1}s">
-                        
-                        ${gig.image_link ? `
-                        <div class="md:w-1/3 shrink-0 relative group overflow-hidden rounded-xl border border-white/5 bg-black/40 flex items-center justify-center p-2 md:p-0">
-                            <img src="${gig.image_link}" class="w-full max-h-72 md:max-h-full md:h-full object-contain md:object-cover transition-transform duration-700 group-hover:scale-110">
-                        </div>` : `
-                        <div class="md:w-1/3 shrink-0 h-48 md:h-auto bg-gradient-to-br from-blue-900/10 to-black rounded-xl border border-white/5 flex items-center justify-center">
-                            <i class="fa-solid fa-briefcase text-4xl text-blue-500/20"></i>
-                        </div>`}
-                        
-                        <div class="flex-1 flex flex-col">
-                            <div class="text-[9px] font-black uppercase tracking-widest text-blue-500 mb-2">Verified Lead</div>
-                            <h3 class="text-xl md:text-2xl font-black mb-4 tracking-tight leading-tight">${gig.title}</h3>
-                            
-                            <div class="text-slate-300 text-sm leading-relaxed mb-8 whitespace-pre-wrap max-h-48 overflow-y-auto pr-3">${cleanDescription(gig.description)}</div>
-                            
-                            <div class="flex gap-4 mt-auto pt-6 border-t border-white/5">
-                                <a href="${gig.apply_link && gig.apply_link !== '#' ? gig.apply_link : 'https://wa.me/2547XXXXXXXX'}" target="_blank" 
-                                   class="bg-white text-black hover:bg-blue-600 hover:text-white transition-all duration-300 font-black px-8 py-4 rounded-lg text-[10px] uppercase tracking-[0.2em] text-center flex-1 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(37,99,235,0.4)]">
-                                   Apply for Job
-                                </a>
-                                <button onclick="window.open('https://wa.me/?text=Check this gig on Aurent Vault: ${encodeURIComponent(gig.title)}')" 
-                                        class="px-6 border border-white/10 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
-                                    <i class="fa-solid fa-share-nodes"></i>
-                                </button>
-                            </div>
+            const { data } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
+            if (data) {
+                document.getElementById('feed').innerHTML = data.map((gig, i) => `
+                    <div class="glass-card p-8 flex flex-col md:flex-row gap-8 animate-card" style="animation-delay: ${i*0.1}s">
+                        <img src="${gig.image_link || 'https://via.placeholder.com/400x600?text=Aurent+Vault'}" class="md:w-1/3 rounded-xl object-cover max-h-80">
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-black mb-4 uppercase tracking-tighter">${gig.title}</h3>
+                            <div class="text-slate-400 text-sm mb-8 leading-relaxed">${gig.description.substring(0, 300)}...</div>
+                            <a href="${gig.apply_link}" target="_blank" class="block bg-white text-black text-center font-black py-4 rounded-lg uppercase text-[10px] tracking-widest">Apply Now</a>
                         </div>
                     </div>
                 `).join('');
             }
         }
 
+        // --- 🖋️ LUXURY CV GENERATOR LOGIC ---
+        async function generateCV() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const theme = document.getElementById('cv-theme').value;
+            const name = document.getElementById('cv-name').value || "Aurent Candidate";
+
+            // Theme Config
+            const colors = {
+                Aurent: { main: [139, 30, 63], accent: [204, 172, 67] },
+                Midnight: { main: [16, 42, 86], accent: [100, 116, 139] },
+                Onyx: { main: [20, 20, 20], accent: [150, 150, 150] }
+            }[theme];
+
+            // Header Background
+            doc.setFillColor(...colors.main);
+            doc.rect(0, 0, 70, 297, 'F');
+
+            // Title Header
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.text(name.toUpperCase(), 80, 25);
+            doc.setDrawColor(...colors.accent);
+            doc.setLineWidth(1);
+            doc.line(80, 30, 200, 30);
+
+            // Left Sidebar Text
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.text("CONTACT", 10, 80);
+            doc.text(document.getElementById('cv-phone').value, 10, 88);
+            doc.text(document.getElementById('cv-email').value, 10, 94);
+
+            doc.setFontSize(12);
+            doc.text("CORE SKILLS", 10, 120);
+            doc.setFontSize(9);
+            const skills = document.getElementById('cv-skills').value.split(',').join('\n• ');
+            doc.text("• " + skills, 10, 128);
+
+            // Right Content
+            doc.setTextColor(40, 40, 40);
+            doc.setFontSize(14);
+            doc.text("PROFESSIONAL SUMMARY", 80, 45);
+            doc.setFontSize(10);
+            doc.text(doc.splitTextToSize(document.getElementById('cv-summary').value, 110), 80, 52);
+
+            doc.setFontSize(14);
+            doc.text("WORK EXPERIENCE", 80, 90);
+            doc.setFontSize(10);
+            doc.text(doc.splitTextToSize(document.getElementById('cv-experience').value, 110), 80, 97);
+
+            doc.setFontSize(14);
+            doc.text("EDUCATION", 80, 180);
+            doc.setFontSize(10);
+            doc.text(doc.splitTextToSize(document.getElementById('cv-edu').value, 110), 80, 187);
+
+            // Branding Footer
+            doc.setFillColor(33, 33, 33);
+            doc.rect(0, 287, 210, 10, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(7);
+            doc.text("CERTIFIED BY AURENT STUDIOS VAULT 2026", 75, 293);
+
+            // Handle Photo
+            const photo = document.getElementById('cv-photo').files[0];
+            if (photo) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    doc.addImage(e.target.result, 'JPEG', 10, 15, 50, 50);
+                    doc.save(`${name}_CV.pdf`);
+                };
+                reader.readAsDataURL(photo);
+            } else {
+                doc.save(`${name}_CV.pdf`);
+            }
+        }
+
         if (!localStorage.getItem('aurent_init')) {
             document.getElementById('onboard-overlay').classList.remove('hidden');
         } else {
-            updateTrialHUD();
             loadFeed();
-            setInterval(loadFeed, 30000); 
-        }
-
-        // START SERVICE WORKER FOR APP INSTALL & NOTIFS
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-            .then(() => console.log("Vault Engine Active"))
-            .catch((err) => console.log("Engine Error: ", err));
         }
     </script>
 </body>
