@@ -38,13 +38,12 @@
 
         .luxury-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 1rem; color: white; width: 100%; }
         
-        /* 🎨 FIX: DROPDOWN VISIBILITY */
         select option {
             background-color: #1a1a1a !important;
             color: white !important;
         }
 
-        .overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+        .overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(10px); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -53,18 +52,21 @@
     <div class="css-watermark">AURENT</div>
     <audio id="notification-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
 
-    <div id="protocol-overlay" class="overlay">
-        <div class="max-w-md w-full glass-card p-10 text-center border-t-4 border-blue-600">
+    <div id="protocol-overlay" class="overlay hidden">
+        <div class="max-w-md w-full glass-card p-10 text-center border-t-4 border-blue-600 shadow-2xl shadow-blue-900/20">
             <h1 class="text-4xl font-black mb-2 tracking-widest uppercase italic">Aurent</h1>
+            <p class="text-[10px] uppercase text-blue-400 font-bold mb-6 tracking-widest">Access Protocol</p>
+            
             <div class="text-left bg-white/5 p-6 rounded-xl mb-8 border border-white/10 text-[11px] leading-relaxed text-slate-300">
-                <b class="text-blue-400 block mb-2 uppercase tracking-tighter">Terms of Service</b>
-                <ul class="list-disc pl-4 space-y-2">
-                    <li>Gigs are synchronized live via Aurent Hunter.</li>
-                    <li>7-Day secure trial access is currently active.</li>
-                    <li>50 KSH verification fee applies after trial to maintain access.</li>
+                <b class="text-white block mb-3 uppercase tracking-tighter border-b border-white/10 pb-2">Terms of Service & Device Registration</b>
+                <ul class="list-disc pl-4 space-y-3">
+                    <li><span class="text-blue-400 font-bold">DEVICE ID:</span> <span id="display-device-id" class="font-mono text-white bg-black px-2 py-1 rounded"></span></li>
+                    <li><span class="text-blue-400 font-bold">FREE TRIAL:</span> <span id="display-trial-days" class="text-white font-bold text-lg">7</span> Days Remaining.</li>
+                    <li>By clicking Accept, you allow Aurent Vault to send you live browser notifications for high-ticket gigs.</li>
+                    <li>After the 7-day trial, a 50 KSH verification fee applies to maintain this device's access to the Vault.</li>
                 </ul>
             </div>
-            <button onclick="startVault()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase tracking-widest text-[11px]">Accept & Enter</button>
+            <button onclick="startVault()" class="w-full bg-blue-600 hover:bg-blue-500 transition text-white font-black py-4 rounded-xl uppercase tracking-widest text-[11px] shadow-lg shadow-blue-600/30">Accept & Enter Vault</button>
         </div>
     </div>
 
@@ -81,7 +83,11 @@
     <main class="mt-32 max-w-5xl mx-auto px-6 flex-grow w-full">
 
         <section id="s-gigs">
-            <div id="feed" class="grid grid-cols-1 gap-8"></div>
+            <div id="trial-banner" class="bg-blue-900/30 border border-blue-500/30 text-blue-300 text-[10px] font-bold uppercase tracking-widest p-3 rounded-lg text-center mb-8 hidden">
+                Trial Active: <span id="banner-days-left" class="text-white"></span> Days Left
+            </div>
+            <div id="feed" class="grid grid-cols-1 gap-8">
+                </div>
         </section>
 
         <section id="s-cv" class="hidden py-6">
@@ -99,11 +105,6 @@
                                 <option value="Tech">3. Tech Lead</option>
                                 <option value="Minimal">4. Minimal</option>
                                 <option value="Creative">5. Creative</option>
-                                <option value="Legacy">6. Legacy</option>
-                                <option value="Grid">7. Grid</option>
-                                <option value="Split">8. Split</option>
-                                <option value="Bold">9. Bold</option>
-                                <option value="Academic">10. Academic</option>
                             </select>
                             <select id="cv-theme" class="luxury-input">
                                 <option value="Burgundy">Burgundy</option>
@@ -111,11 +112,6 @@
                                 <option value="Emerald">Emerald</option>
                                 <option value="Onyx">Onyx</option>
                                 <option value="Royal">Royal Gold</option>
-                                <option value="Slate">Slate</option>
-                                <option value="Rose">Rose Wood</option>
-                                <option value="Ocean">Ocean Blue</option>
-                                <option value="Marble">Silver</option>
-                                <option value="Carbon">Carbon</option>
                             </select>
                         </div>
                     </div>
@@ -144,11 +140,6 @@
                     <option value="Luxury branding and professional job leads. Best career investment in 2026.">"Luxury branding and professional job leads. Best career investment in 2026."</option>
                     <option value="Highly recommend the CV Studio. My resume looks bespoke and high-end.">"Highly recommend the CV Studio. My resume looks bespoke and high-end."</option>
                     <option value="Verified leads only. No more wasting time on expired openings.">"Verified leads only. No more wasting time on expired openings."</option>
-                    <option value="Aurent Studios has built the most elite career portal in the region.">"Aurent Studios has built the most elite career portal in the region."</option>
-                    <option value="The interface is clean and the notifications are lightning fast.">"The interface is clean and the notifications are lightning fast."</option>
-                    <option value="Finally, a vault that understands professional recruitment.">"Finally, a vault that understands professional recruitment."</option>
-                    <option value="The 7-day trial was enough to prove this system works flawlessly.">"The 7-day trial was enough to prove this system works flawlessly."</option>
-                    <option value="Protocol activated. Secured a role within 48 hours of joining.">"Protocol activated. Secured a role within 48 hours of joining."</option>
                 </select>
                 <button onclick="addReview()" class="w-full bg-white text-black py-3 rounded font-black text-[10px] uppercase">Post Experience</button>
             </div>
@@ -157,25 +148,60 @@
 
         <section id="s-com" class="hidden py-12 text-center">
             <div class="glass-card p-12">
-                <h2 class="text-4xl font-black mb-4 uppercase italic italic">The Circle</h2>
-                <div class="flex flex-col md:flex-row gap-6 justify-center mt-10">
-                    <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="bg-[#25D366] text-black font-black px-12 py-5 rounded-xl uppercase text-xs">WhatsApp</a>
-                    <a href="mailto:aurentstudios@gmail.com" class="bg-blue-600 text-white font-black px-12 py-5 rounded-xl uppercase text-xs">Email</a>
+                <h2 class="text-4xl font-black mb-4 uppercase italic">The Circle</h2>
+                <p class="text-sm text-slate-400 mb-8">Join the exclusive network of Aurent professionals.</p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                    <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="w-full md:w-auto bg-[#25D366] text-black font-black px-10 py-4 rounded-xl uppercase text-xs tracking-wider hover:scale-105 transition">WhatsApp</a>
+                    <a href="https://t.me/aurentgighunter" target="_blank" class="w-full md:w-auto bg-[#0088cc] text-white font-black px-10 py-4 rounded-xl uppercase text-xs tracking-wider hover:scale-105 transition">Telegram</a>
+                    <a href="mailto:aurentstudios@gmail.com" class="w-full md:w-auto bg-slate-800 border border-slate-600 text-white font-black px-10 py-4 rounded-xl uppercase text-xs tracking-wider hover:scale-105 transition">Email</a>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="text-center py-10 text-slate-600 text-[10px] font-black uppercase">Powered by Aurent Studios 2026</footer>
+    <footer class="text-center py-10 text-slate-600 text-[10px] font-black uppercase">
+        Powered by Aurent Studios 2026 <br>
+        <span id="footer-device-id" class="text-slate-800 font-mono mt-2 block"></span>
+    </footer>
 
     <script>
         const _supabase = supabase.createClient("https://nujhdywfoosjwxoxiito.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs");
         let lastId = null;
 
+        // --- DEVICE ID & TRIAL LOGIC ---
+        function initDeviceAndTrial() {
+            let deviceId = localStorage.getItem('aurent_device_id');
+            if (!deviceId) {
+                // Generate a unique ID like "AUR-8A3F9"
+                deviceId = 'AUR-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+                localStorage.setItem('aurent_device_id', deviceId);
+                localStorage.setItem('aurent_trial_start', Date.now());
+            }
+
+            let trialStart = parseInt(localStorage.getItem('aurent_trial_start'));
+            let daysPassed = Math.floor((Date.now() - trialStart) / (1000 * 60 * 60 * 24));
+            let daysLeft = Math.max(0, 7 - daysPassed);
+
+            document.getElementById('display-device-id').innerText = deviceId;
+            document.getElementById('footer-device-id').innerText = "DEVICE: " + deviceId;
+            document.getElementById('display-trial-days').innerText = daysLeft;
+            
+            if (localStorage.getItem('aurent_auth')) {
+                document.getElementById('trial-banner').classList.remove('hidden');
+                document.getElementById('banner-days-left').innerText = daysLeft;
+            }
+        }
+
         function startVault() {
             localStorage.setItem('aurent_auth', 'true');
             document.getElementById('protocol-overlay').classList.add('hidden');
-            if ("Notification" in window) Notification.requestPermission();
+            
+            // Request Notification Permission only when they click accept
+            if ("Notification" in window) {
+                Notification.requestPermission();
+            }
+            
+            document.getElementById('trial-banner').classList.remove('hidden');
             loadFeed();
         }
 
@@ -187,7 +213,9 @@
 
         async function loadFeed() {
             const { data } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
-            if(data) {
+            
+            // 🛠️ THE FIX: Check if data actually has items (handles the DELETE FROM clean slate)
+            if(data && data.length > 0) {
                 if(lastId && data[0].id > lastId) {
                     document.getElementById('notification-sound').play();
                     new Notification("🚨 Aurent Vault", { body: "New High-Ticket Gig Synced!" });
@@ -199,17 +227,26 @@
                         <div class="flex-1">
                             <h3 class="text-xl font-bold uppercase mb-2 text-blue-500">${g.title}</h3>
                             <p class="text-slate-400 text-sm mb-6">${g.description.substring(0, 150)}...</p>
-                            <a href="${g.apply_link}" target="_blank" class="block bg-white text-black text-center font-black py-4 rounded-lg text-[10px] uppercase tracking-widest">Apply Now</a>
+                            <a href="${g.apply_link}" target="_blank" class="block bg-white hover:bg-slate-200 transition text-black text-center font-black py-4 rounded-lg text-[10px] uppercase tracking-widest">Apply Now</a>
                         </div>
                     </div>
                 `).join('');
+            } else {
+                // If database is empty, show a cool holding message
+                document.getElementById('feed').innerHTML = `
+                    <div class="glass-card p-10 text-center border border-dashed border-slate-700">
+                        <i class="fas fa-radar text-4xl text-blue-600 mb-4 animate-pulse"></i>
+                        <h3 class="text-lg font-black uppercase text-slate-400 tracking-widest">Vault is Empty</h3>
+                        <p class="text-slate-600 text-[10px] uppercase mt-2">Awaiting new signals from the Hunter Engine...</p>
+                    </div>
+                `;
             }
         }
 
+        // --- REVIEW SYSTEM ---
         async function addReview() {
             const name = document.getElementById('r-name').value || "Anonymous Professional";
             const text = document.getElementById('r-msg-vault').value;
-            // Post with current timestamp
             await _supabase.from('reviews').insert([{ name, text, created_at: new Date() }]);
             document.getElementById('rev-box').classList.add('hidden');
             loadReviews();
@@ -220,8 +257,6 @@
             if(data) {
                 const fiveDaysAgo = new Date();
                 fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-
-                // 🗑️ Filter: Only show messages from the last 5 days
                 const validReviews = data.filter(r => new Date(r.created_at || new Date()) > fiveDaysAgo);
 
                 document.getElementById('rev-feed').innerHTML = validReviews.map(r => `
@@ -233,6 +268,7 @@
             }
         }
 
+        // --- CV ENGINE ---
         async function generateLuxuryPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -242,8 +278,7 @@
             const photoFile = document.getElementById('cv-photo').files[0];
 
             const palette = {
-                Burgundy: [139, 30, 63], Midnight: [16, 42, 86], Emerald: [0, 77, 64], Onyx: [20, 20, 20], Royal: [184, 134, 11],
-                Slate: [71, 85, 105], Rose: [136, 19, 55], Ocean: [12, 74, 110], Marble: [212, 212, 216], Carbon: [38, 38, 38]
+                Burgundy: [139, 30, 63], Midnight: [16, 42, 86], Emerald: [0, 77, 64], Onyx: [20, 20, 20], Royal: [184, 134, 11]
             }[theme];
 
             doc.setFillColor(...palette);
@@ -264,8 +299,13 @@
             } else { doc.save(`${name}_CV.pdf`); }
         }
 
-        if(!localStorage.getItem('aurent_auth')) document.getElementById('protocol-overlay').classList.remove('hidden');
-        else loadFeed();
+        // --- INITIALIZATION ---
+        initDeviceAndTrial();
+        if(!localStorage.getItem('aurent_auth')) {
+            document.getElementById('protocol-overlay').classList.remove('hidden');
+        } else {
+            loadFeed();
+        }
     </script>
 </body>
 </html>
