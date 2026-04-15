@@ -86,6 +86,11 @@
             <div id="trial-banner" class="bg-blue-900/30 border border-blue-500/30 text-blue-300 text-[10px] font-bold uppercase tracking-widest p-3 rounded-lg text-center mb-8 hidden">
                 Trial Active: <span id="banner-days-left" class="text-white"></span> Days Left
             </div>
+            
+            <div id="error-banner" class="hidden bg-red-900/30 border border-red-500/30 text-red-300 text-xs font-bold p-4 rounded-lg text-center mb-8">
+                ⚠️ DATABASE CONNECTION ERROR: <span id="error-msg"></span>
+            </div>
+
             <div id="feed" class="grid grid-cols-1 gap-8">
                 </div>
         </section>
@@ -105,23 +110,33 @@
                                 <option value="Tech">3. Tech Lead</option>
                                 <option value="Minimal">4. Minimal</option>
                                 <option value="Creative">5. Creative</option>
+                                <option value="Corporate">6. Corporate</option>
+                                <option value="Startup">7. Startup</option>
+                                <option value="Academic">8. Academic</option>
+                                <option value="Medical">9. Medical</option>
+                                <option value="Elegance">10. Elegance</option>
                             </select>
                             <select id="cv-theme" class="luxury-input">
-                                <option value="Burgundy">Burgundy</option>
-                                <option value="Midnight">Midnight</option>
-                                <option value="Emerald">Emerald</option>
-                                <option value="Onyx">Onyx</option>
-                                <option value="Royal">Royal Gold</option>
+                                <option value="Burgundy">1. Burgundy</option>
+                                <option value="Midnight">2. Midnight Blue</option>
+                                <option value="Emerald">3. Emerald Green</option>
+                                <option value="Onyx">4. Onyx Black</option>
+                                <option value="Royal">5. Royal Gold</option>
+                                <option value="Slate">6. Slate Grey</option>
+                                <option value="Crimson">7. Deep Crimson</option>
+                                <option value="Teal">8. Ocean Teal</option>
+                                <option value="Navy">9. Classic Navy</option>
+                                <option value="Plum">10. Imperial Plum</option>
                             </select>
                         </div>
                     </div>
                     <div class="space-y-4">
-                        <textarea id="cv-summary" placeholder="BIO" rows="2" class="luxury-input"></textarea>
-                        <textarea id="cv-experience" placeholder="HISTORY" rows="3" class="luxury-input"></textarea>
-                        <input type="text" id="cv-skills" placeholder="SKILLS (COMMAS)" class="luxury-input">
+                        <textarea id="cv-summary" placeholder="PROFESSIONAL BIO" rows="2" class="luxury-input"></textarea>
+                        <textarea id="cv-experience" placeholder="WORK HISTORY (Include roles and dates)" rows="3" class="luxury-input"></textarea>
+                        <input type="text" id="cv-skills" placeholder="SKILLS (Separated by commas)" class="luxury-input">
                     </div>
                 </div>
-                <button onclick="generateLuxuryPDF()" class="mt-8 w-full bg-blue-600 py-5 rounded-xl font-black uppercase text-[10px] tracking-widest">Build CV</button>
+                <button onclick="generateLuxuryPDF()" class="mt-8 w-full bg-blue-600 py-5 rounded-xl font-black uppercase text-[10px] tracking-widest">Build & Download CV</button>
             </div>
         </section>
 
@@ -135,11 +150,16 @@
                 <input type="text" id="r-name" placeholder="Professional Name" class="luxury-input mb-4">
                 <label class="text-[10px] text-blue-500 font-bold mb-2 block uppercase">Select Experience Message</label>
                 <select id="r-msg-vault" class="luxury-input mb-4">
-                    <option value="Just secured a high-ticket gig via the Vault. Efficiency is 10/10!">"Just secured a high-ticket gig via the Vault. Efficiency is 10/10!"</option>
-                    <option value="The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt.">"The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt."</option>
-                    <option value="Luxury branding and professional job leads. Best career investment in 2026.">"Luxury branding and professional job leads. Best career investment in 2026."</option>
-                    <option value="Highly recommend the CV Studio. My resume looks bespoke and high-end.">"Highly recommend the CV Studio. My resume looks bespoke and high-end."</option>
-                    <option value="Verified leads only. No more wasting time on expired openings.">"Verified leads only. No more wasting time on expired openings."</option>
+                    <option value="Just secured a high-ticket gig via the Vault. Efficiency is 10/10!">1. "Just secured a high-ticket gig via the Vault. Efficiency is 10/10!"</option>
+                    <option value="The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt.">2. "The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt."</option>
+                    <option value="Luxury branding and professional job leads. Best career investment.">3. "Luxury branding and professional job leads. Best career investment."</option>
+                    <option value="Highly recommend the CV Studio. My resume looks bespoke and high-end.">4. "Highly recommend the CV Studio. My resume looks bespoke and high-end."</option>
+                    <option value="Verified leads only. No more wasting time on expired openings or scams.">5. "Verified leads only. No more wasting time on expired openings or scams."</option>
+                    <option value="The scholarship alerts are a game-changer. Just applied for a fully funded program!">6. "The scholarship alerts are a game-changer. Just applied for a fully funded program!"</option>
+                    <option value="Finally, an exclusive network with verified opportunities. Worth every penny.">7. "Finally, an exclusive network with verified opportunities. Worth every penny."</option>
+                    <option value="The CV Engine gave me a professional edge I was lacking. Highly recommended.">8. "The CV Engine gave me a professional edge I was lacking. Highly recommended."</option>
+                    <option value="Direct access to recruiters without the middleman spam. Exceptional service.">9. "Direct access to recruiters without the middleman spam. Exceptional service."</option>
+                    <option value="Aurent Vault is the ultimate career cheat code. Don't miss out.">10. "Aurent Vault is the ultimate career cheat code. Don't miss out."</option>
                 </select>
                 <button onclick="addReview()" class="w-full bg-white text-black py-3 rounded font-black text-[10px] uppercase">Post Experience</button>
             </div>
@@ -168,11 +188,9 @@
         const _supabase = supabase.createClient("https://nujhdywfoosjwxoxiito.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs");
         let lastId = null;
 
-        // --- DEVICE ID & TRIAL LOGIC ---
         function initDeviceAndTrial() {
             let deviceId = localStorage.getItem('aurent_device_id');
             if (!deviceId) {
-                // Generate a unique ID like "AUR-8A3F9"
                 deviceId = 'AUR-' + Math.random().toString(36).substr(2, 5).toUpperCase();
                 localStorage.setItem('aurent_device_id', deviceId);
                 localStorage.setItem('aurent_trial_start', Date.now());
@@ -195,12 +213,7 @@
         function startVault() {
             localStorage.setItem('aurent_auth', 'true');
             document.getElementById('protocol-overlay').classList.add('hidden');
-            
-            // Request Notification Permission only when they click accept
-            if ("Notification" in window) {
-                Notification.requestPermission();
-            }
-            
+            if ("Notification" in window) Notification.requestPermission();
             document.getElementById('trial-banner').classList.remove('hidden');
             loadFeed();
         }
@@ -212,27 +225,31 @@
         }
 
         async function loadFeed() {
-            const { data } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
+            const { data, error } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
             
-            // 🛠️ THE FIX: Check if data actually has items (handles the DELETE FROM clean slate)
+            if (error) {
+                document.getElementById('error-banner').classList.remove('hidden');
+                document.getElementById('error-msg').innerText = error.message;
+                return;
+            }
+            
             if(data && data.length > 0) {
                 if(lastId && data[0].id > lastId) {
                     document.getElementById('notification-sound').play();
-                    new Notification("🚨 Aurent Vault", { body: "New High-Ticket Gig Synced!" });
+                    new Notification("🚨 Aurent Vault", { body: "New Opportunity Synced!" });
                 }
                 lastId = data[0].id;
                 document.getElementById('feed').innerHTML = data.map(g => `
                     <div class="glass-card flex flex-col md:flex-row gap-6 p-6">
-                        <img src="${g.image_link}" class="w-full md:w-1/3 rounded-xl object-contain bg-black">
+                        <img src="${g.image_link || 'https://via.placeholder.com/150/000000/FFFFFF/?text=AURENT'}" class="w-full md:w-1/3 rounded-xl object-cover bg-black max-h-64">
                         <div class="flex-1">
                             <h3 class="text-xl font-bold uppercase mb-2 text-blue-500">${g.title}</h3>
                             <p class="text-slate-400 text-sm mb-6">${g.description.substring(0, 150)}...</p>
-                            <a href="${g.apply_link}" target="_blank" class="block bg-white hover:bg-slate-200 transition text-black text-center font-black py-4 rounded-lg text-[10px] uppercase tracking-widest">Apply Now</a>
+                            <a href="${g.apply_link}" target="_blank" class="block bg-white hover:bg-slate-200 transition text-black text-center font-black py-4 rounded-lg text-[10px] uppercase tracking-widest">Access Link</a>
                         </div>
                     </div>
                 `).join('');
             } else {
-                // If database is empty, show a cool holding message
                 document.getElementById('feed').innerHTML = `
                     <div class="glass-card p-10 text-center border border-dashed border-slate-700">
                         <i class="fas fa-radar text-4xl text-blue-600 mb-4 animate-pulse"></i>
@@ -243,7 +260,6 @@
             }
         }
 
-        // --- REVIEW SYSTEM ---
         async function addReview() {
             const name = document.getElementById('r-name').value || "Anonymous Professional";
             const text = document.getElementById('r-msg-vault').value;
@@ -268,38 +284,122 @@
             }
         }
 
-        // --- CV ENGINE ---
+        // --- THE FULLY UPGRADED 10x10 CV ENGINE ---
         async function generateLuxuryPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
+            
+            // Get User Inputs
             const theme = document.getElementById('cv-theme').value;
             const layout = document.getElementById('cv-layout').value;
             const name = document.getElementById('cv-name').value || "AURENT CANDIDATE";
+            const summary = document.getElementById('cv-summary').value || "Dedicated professional seeking high-ticket opportunities.";
+            const history = document.getElementById('cv-experience').value || "No professional history provided.";
+            const skills = document.getElementById('cv-skills').value || "Skill 1, Skill 2, Skill 3";
             const photoFile = document.getElementById('cv-photo').files[0];
 
-            const palette = {
-                Burgundy: [139, 30, 63], Midnight: [16, 42, 86], Emerald: [0, 77, 64], Onyx: [20, 20, 20], Royal: [184, 134, 11]
-            }[theme];
+            // 1. ALL 10 THEME COLOR PALETTES MAP
+            const palettes = {
+                Burgundy: [139, 30, 63], Midnight: [16, 42, 86], Emerald: [0, 77, 64], Onyx: [20, 20, 20], Royal: [184, 134, 11],
+                Slate: [112, 128, 144], Crimson: [220, 20, 60], Teal: [0, 128, 128], Navy: [0, 0, 128], Plum: [142, 69, 133]
+            };
+            const activeColor = palettes[theme] || palettes["Onyx"];
+            doc.setFillColor(...activeColor);
 
-            doc.setFillColor(...palette);
-            if(layout === "Executive") doc.rect(0, 0, 70, 297, 'F');
-            else if(layout === "Modern") doc.rect(0, 0, 210, 40, 'F');
-            else doc.rect(0, 0, 210, 10, 'F');
+            // 2. ALL 10 LAYOUT RENDERING LOGIC
+            let textStartX = 20;
+            let textStartY = 50;
 
-            doc.setTextColor(layout === "Executive" ? 40 : 255);
-            doc.setFontSize(22); doc.text(name, 80, 25);
+            if (layout === "Executive") {
+                doc.rect(0, 0, 70, 297, 'F');
+                textStartX = 80; textStartY = 40;
+            } else if (layout === "Modern") {
+                doc.rect(0, 0, 210, 40, 'F');
+                textStartX = 20; textStartY = 55;
+            } else if (layout === "Tech") {
+                doc.rect(0, 0, 15, 297, 'F');
+                textStartX = 25; textStartY = 40;
+            } else if (layout === "Minimal") {
+                doc.rect(0, 0, 210, 8, 'F');
+                textStartX = 20; textStartY = 30;
+            } else if (layout === "Creative") {
+                doc.rect(140, 0, 70, 297, 'F');
+                textStartX = 20; textStartY = 40;
+            } else if (layout === "Corporate") {
+                doc.rect(0, 0, 210, 20, 'F');
+                textStartX = 20; textStartY = 40;
+            } else if (layout === "Startup") {
+                doc.rect(0, 0, 210, 10, 'F'); 
+                doc.rect(0, 287, 210, 10, 'F');
+                textStartX = 20; textStartY = 35;
+            } else if (layout === "Academic") {
+                doc.rect(10, 10, 190, 5, 'F');
+                textStartX = 20; textStartY = 40;
+            } else if (layout === "Medical") {
+                doc.rect(0, 0, 50, 297, 'F');
+                textStartX = 60; textStartY = 40;
+            } else if (layout === "Elegance") {
+                doc.rect(0, 35, 210, 2, 'F');
+                textStartX = 20; textStartY = 50;
+            }
+
+            // 3. PRINT NAME
+            // Adjust name color if it overlaps with a colored shape (Executive, Modern, Corporate, Medical)
+            if (["Modern", "Corporate"].includes(layout)) { doc.setTextColor(255, 255, 255); doc.setFontSize(26); doc.text(name, 20, 15); doc.setTextColor(20, 20, 20); }
+            else { doc.setTextColor(20, 20, 20); doc.setFontSize(26); doc.text(name, textStartX, textStartY - 10); }
+
+            // 4. PRINT BODY CONTENT (BIO, HISTORY, SKILLS)
+            doc.setFontSize(12);
+            doc.setTextColor(...activeColor); // Color the section headers
             
+            // Bio
+            let currentY = textStartY + 10;
+            doc.text("PROFESSIONAL BIO", textStartX, currentY);
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(10);
+            const bioLines = doc.splitTextToSize(summary, layout === "Creative" ? 110 : 120);
+            doc.text(bioLines, textStartX, currentY + 6);
+            currentY += (bioLines.length * 5) + 15;
+
+            // History
+            doc.setFontSize(12);
+            doc.setTextColor(...activeColor);
+            doc.text("WORK HISTORY", textStartX, currentY);
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(10);
+            const historyLines = doc.splitTextToSize(history, layout === "Creative" ? 110 : 120);
+            doc.text(historyLines, textStartX, currentY + 6);
+            currentY += (historyLines.length * 5) + 15;
+
+            // Skills
+            doc.setFontSize(12);
+            doc.setTextColor(...activeColor);
+            doc.text("CORE SKILLS", textStartX, currentY);
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(10);
+            const skillsArray = skills.split(',').map(s => `• ${s.trim()}`);
+            doc.text(skillsArray, textStartX, currentY + 6);
+
+            // 5. PRINT PHOTO (IF UPLOADED)
             if(photoFile) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    doc.addImage(e.target.result, 'JPEG', 10, 15, 45, 45);
-                    doc.save(`${name}_CV.pdf`);
+                    // Position photo based on layout
+                    let px = 150, py = 15;
+                    if (layout === "Executive") { px = 15; py = 15; }
+                    else if (layout === "Medical") { px = 10; py = 15; }
+                    else if (layout === "Creative") { px = 155; py = 20; }
+                    
+                    doc.addImage(e.target.result, 'JPEG', px, py, 40, 40);
+                    doc.save(`Aurent_CV_${name.replace(/\s+/g, '_')}.pdf`);
                 };
                 reader.readAsDataURL(photoFile);
-            } else { doc.save(`${name}_CV.pdf`); }
+            } else { 
+                doc.save(`Aurent_CV_${name.replace(/\s+/g, '_')}.pdf`); 
+            }
         }
 
-        // --- INITIALIZATION ---
+        // Initialize App
         initDeviceAndTrial();
         if(!localStorage.getItem('aurent_auth')) {
             document.getElementById('protocol-overlay').classList.remove('hidden');
