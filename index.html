@@ -240,7 +240,6 @@
                 }
                 lastId = data[0].id;
                 
-                // 🎨 FIXED IMAGE RENDERING: No more max-height crunching. Clickable HD links.
                 document.getElementById('feed').innerHTML = data.map(g => `
                     <div class="glass-card flex flex-col md:flex-row gap-8 p-6 md:p-8 items-center md:items-start">
                         <a href="${g.image_link}" target="_blank" class="w-full md:w-5/12 shrink-0 block cursor-pointer group">
@@ -289,7 +288,6 @@
             }
         }
 
-        // --- THE FULLY UPGRADED 10x10 CV ENGINE ---
         async function generateLuxuryPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -393,12 +391,28 @@
             }
         }
 
+        // --- INIT ---
         initDeviceAndTrial();
         if(!localStorage.getItem('aurent_auth')) {
             document.getElementById('protocol-overlay').classList.remove('hidden');
         } else {
             loadFeed();
         }
+
+        // --- 📡 LIVE RADAR: AUTO-REFRESH ON NEW JOBS ---
+        _supabase
+          .channel('aurent-radar')
+          .on(
+            'postgres_changes',
+            { event: 'INSERT', schema: 'public', table: 'gigs' },
+            (payload) => {
+              console.log('Radar Ping: New Job Detected!', payload);
+              document.getElementById('notification-sound').play();
+              loadFeed(); // Instantly update the screen without refreshing the browser
+            }
+          )
+          .subscribe();
+
     </script>
 </body>
 </html>
