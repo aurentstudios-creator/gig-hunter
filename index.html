@@ -281,6 +281,13 @@
                     <option value="Just secured a high-ticket gig via the Vault. Efficiency is 10/10!">"Secured a high-ticket gig via the Vault. Efficiency is 10/10!"</option>
                     <option value="The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt.">"Hunter engine is accurate. Real-time pings changed my hunt."</option>
                     <option value="Luxury branding and professional job leads. Best career investment.">"Luxury branding & professional leads. Best investment."</option>
+                    <option value="Finally, a platform that filters out the noise. Only premium opportunities here.">"Filters out the noise. Only premium opportunities."</option>
+                    <option value="The WhatsApp alerts are a game-changer. I apply before anyone else even sees the job.">"WhatsApp alerts are a game-changer. Apply first."</option>
+                    <option value="Worth every penny. The 50 KES verification fee pays for itself immediately.">"Worth every penny. Verification pays for itself."</option>
+                    <option value="CV Studio paired with the Vault's job feeds landed me an interview in 48 hours.">"CV Studio + Vault = Interview in 48 hours."</option>
+                    <option value="Sleek, fast, and highly curated. This is how job hunting should feel in 2026.">"Sleek, fast, highly curated. Job hunting in 2026."</option>
+                    <option value="No more scrolling through scammy sites. Aurent delivers pure intelligence.">"No scammy sites. Aurent delivers pure intelligence."</option>
+                    <option value="The Radar settings are incredibly precise. I only get exactly what I'm looking for.">"Radar is incredibly precise. Exactly what I want."</option>
                 </select>
                 <button onclick="addReview()" class="btn-shine w-full bg-yellow-600 text-black py-3 md:py-4 rounded-xl font-black text-[9px] md:text-[10px] tracking-widest uppercase hover:bg-yellow-500 transition shadow-lg shadow-yellow-600/20"><span>Submit Entry</span></button>
             </div>
@@ -328,12 +335,24 @@
                 setupRoleUI();
                 loadFeed();
                 
-                // SILENT RADAR CHECK: If it's a normal user, check if they need to configure radar
+                // SILENT RADAR CHECK & PAYMENT CHECK
                 const email = localStorage.getItem('aurent_email');
                 if (email && localStorage.getItem('aurent_role') !== 'admin') {
-                    const { data } = await _supabase.from('user_profiles').select('niche').eq('email', email).single();
-                    if (data && (data.niche === 'Pending Configuration' || !data.niche)) {
-                        setTimeout(() => { openPrefs(); }, 800); // Slight delay for cinematic effect
+                    const { data } = await _supabase.from('user_profiles').select('niche, payment_status').eq('email', email).single();
+                    if (data) {
+                        if (data.niche === 'Pending Configuration' || !data.niche) {
+                            setTimeout(() => { openPrefs(); }, 800);
+                        }
+                        
+                        // If they have paid, completely hide the Verify buttons and Trial Banner
+                        if (data.payment_status === 'Paid') {
+                            const vBtnDesk = document.getElementById('verify-btn');
+                            const vBtnMob = document.getElementById('verify-btn-mobile');
+                            const banner = document.getElementById('trial-banner');
+                            if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
+                            if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
+                            if(banner) banner.style.setProperty('display', 'none', 'important');
+                        }
                     }
                 }
             } else {
@@ -343,27 +362,32 @@
 
         function setupRoleUI() {
             const role = localStorage.getItem('aurent_role');
+            const vBtnDesk = document.getElementById('verify-btn');
+            const vBtnMob = document.getElementById('verify-btn-mobile');
+            const trialBanner = document.getElementById('trial-banner');
+
             if (role === 'admin') {
                 document.getElementById('t-admin').classList.remove('hidden');
                 document.getElementById('t-prefs').classList.add('hidden');
                 
-                // Hide verify button on desktop and mobile
-                document.getElementById('verify-btn').classList.add('hidden');
-                let mobileVerify = document.getElementById('verify-btn-mobile');
-                if(mobileVerify) mobileVerify.classList.add('hidden');
+                // FORCE hide verify buttons for Admins using strict inline styles to override Tailwind
+                if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
+                if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
+                if(trialBanner) trialBanner.style.setProperty('display', 'none', 'important');
                 
-                document.getElementById('trial-banner').classList.add('hidden');
                 loadAdminUsers();
             } else {
                 document.getElementById('t-admin').classList.add('hidden');
                 document.getElementById('t-prefs').classList.remove('hidden');
                 
-                // Show verify button appropriately
-                document.getElementById('verify-btn').classList.remove('hidden');
-                let mobileVerify = document.getElementById('verify-btn-mobile');
-                if(mobileVerify) mobileVerify.classList.remove('hidden');
+                // Restore defaults for normal users (Payment check happens in initDeviceAndTrial)
+                if(vBtnDesk) vBtnDesk.style.removeProperty('display');
+                if(vBtnMob) vBtnMob.style.removeProperty('display');
+                if(trialBanner) trialBanner.style.removeProperty('display');
                 
-                document.getElementById('trial-banner').classList.remove('hidden');
+                if(vBtnDesk) vBtnDesk.classList.remove('hidden');
+                if(vBtnMob) vBtnMob.classList.remove('hidden');
+                if(trialBanner) trialBanner.classList.remove('hidden');
             }
         }
 
@@ -437,7 +461,7 @@
                 errorDiv.innerHTML = "<i class='fa-solid fa-circle-xmark mr-2'></i> Invalid PIN or Number already registered."; errorDiv.classList.remove('hidden');
                 submitBtn.innerHTML = currentAuthMode === 'register' ? "<span>Start 3-Day Trial</span>" : "<span>Login to Vault</span>";
             } else {
-                const { data: profile } = await _supabase.from('user_profiles').select('is_blocked, niche').eq('email', email).single();
+                const { data: profile } = await _supabase.from('user_profiles').select('is_blocked, niche, payment_status').eq('email', email).single();
                 if(profile && profile.is_blocked === true) {
                     await _supabase.auth.signOut();
                     errorDiv.innerHTML = "<i class='fa-solid fa-ban mr-2'></i> ACCOUNT SUSPENDED BY ADMIN."; errorDiv.classList.remove('hidden');
@@ -454,9 +478,20 @@
                 document.getElementById('protocol-overlay').classList.add('hidden');
                 setupRoleUI(); loadFeed();
 
-                // Check if they need to setup radar (new user or skipped previously)
-                if(profile && (profile.niche === 'Pending Configuration' || !profile.niche)) {
-                    setTimeout(() => { openPrefs(); }, 800);
+                // Setup checks based on profile
+                if(profile) {
+                    if (profile.niche === 'Pending Configuration' || !profile.niche) {
+                        setTimeout(() => { openPrefs(); }, 800);
+                    }
+                    // Hide verification elements if already paid
+                    if (profile.payment_status === 'Paid') {
+                        const vBtnDesk = document.getElementById('verify-btn');
+                        const vBtnMob = document.getElementById('verify-btn-mobile');
+                        const banner = document.getElementById('trial-banner');
+                        if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
+                        if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
+                        if(banner) banner.style.setProperty('display', 'none', 'important');
+                    }
                 }
             }
         }
@@ -525,10 +560,14 @@
 
                 setTimeout(() => {
                     document.getElementById('payment-overlay').classList.add('hidden');
-                    document.getElementById('trial-banner').classList.add('hidden');
-                    document.getElementById('verify-btn').classList.add('hidden');
-                    let mobileVerify = document.getElementById('verify-btn-mobile');
-                    if(mobileVerify) mobileVerify.classList.add('hidden');
+                    
+                    // Force hide everything
+                    const vBtnDesk = document.getElementById('verify-btn');
+                    const vBtnMob = document.getElementById('verify-btn-mobile');
+                    const banner = document.getElementById('trial-banner');
+                    if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
+                    if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
+                    if(banner) banner.style.setProperty('display', 'none', 'important');
                     
                     alert("Account verified successfully. Unlimited Vault and WhatsApp Alerts granted.");
                 }, 1500);
@@ -663,6 +702,7 @@
             document.getElementById('rev-box').classList.add('hidden');
             loadReviews();
         }
+        
         async function loadReviews() {
             const { data } = await _supabase.from('reviews').select('*').order('created_at', { ascending: false });
             if(data) {
