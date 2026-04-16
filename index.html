@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurent Studios | The Vault</title>
+    <title>Aurent Vault | Elite Professional Network</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
@@ -14,36 +13,35 @@
         
         body { 
             font-family: 'Space Grotesk', sans-serif; 
-            background: #030303; 
+            background: #050505; 
             color: white; 
-            background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
         }
 
+        /* Ambient Luxury Lighting */
         .ambient-glow {
             position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-            width: 80vw; height: 50vh;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 60%);
+            width: 100vw; height: 60vh;
+            background: radial-gradient(ellipse at top, rgba(212, 175, 55, 0.08) 0%, rgba(37, 99, 235, 0.05) 40%, transparent 70%);
             z-index: -1; pointer-events: none;
         }
 
         .css-watermark {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 18vw; font-weight: 900; font-style: italic;
-            color: rgba(255, 255, 255, 0.02); z-index: 0; pointer-events: none;
+            font-size: 22vw; font-weight: 900; font-style: italic; letter-spacing: -0.05em;
+            color: rgba(255, 255, 255, 0.015); z-index: 0; pointer-events: none;
         }
         
-        .glass-card { background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; }
-        .nav-link.active { color: white; border-bottom: 2px solid #2563eb; }
+        .glass-card { background: rgba(15, 15, 17, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 1rem; }
+        .nav-link.active { color: white; border-bottom: 2px solid #d4af37; }
 
-        .luxury-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 1rem; color: white; width: 100%; }
+        .luxury-input { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; padding: 1rem; color: white; width: 100%; transition: 0.3s;}
+        .luxury-input:focus { border-color: #d4af37; outline: none; }
         
-        select option {
-            background-color: #1a1a1a !important;
-            color: white !important;
-        }
+        select option { background-color: #111 !important; color: white !important; }
 
-        .overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(10px); }
+        .overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(15px); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -53,37 +51,37 @@
     <audio id="notification-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
 
     <div id="protocol-overlay" class="overlay hidden">
-        <div class="max-w-md w-full glass-card p-10 text-center border-t-4 border-blue-600 shadow-2xl shadow-blue-900/20">
+        <div class="max-w-md w-full glass-card p-10 text-center border-t-4 border-yellow-600 shadow-2xl shadow-yellow-900/10">
             <h1 class="text-4xl font-black mb-2 tracking-widest uppercase italic">Aurent</h1>
-            <p class="text-[10px] uppercase text-blue-400 font-bold mb-6 tracking-widest">Access Protocol</p>
+            <p class="text-[10px] uppercase text-yellow-500 font-bold mb-6 tracking-widest">Access Protocol</p>
             
-            <div class="text-left bg-white/5 p-6 rounded-xl mb-8 border border-white/10 text-[11px] leading-relaxed text-slate-300">
-                <b class="text-white block mb-3 uppercase tracking-tighter border-b border-white/10 pb-2">Terms of Service & Device Registration</b>
+            <div class="text-left bg-black/40 p-6 rounded-xl mb-8 border border-white/5 text-[11px] leading-relaxed text-slate-400">
+                <b class="text-white block mb-3 uppercase tracking-tighter border-b border-white/10 pb-2">Terms of Service & Device Reg</b>
                 <ul class="list-disc pl-4 space-y-3">
-                    <li><span class="text-blue-400 font-bold">DEVICE ID:</span> <span id="display-device-id" class="font-mono text-white bg-black px-2 py-1 rounded"></span></li>
-                    <li><span class="text-blue-400 font-bold">FREE TRIAL:</span> <span id="display-trial-days" class="text-white font-bold text-lg">7</span> Days Remaining.</li>
+                    <li><span class="text-yellow-500 font-bold">DEVICE ID:</span> <span id="display-device-id" class="font-mono text-white bg-white/10 px-2 py-1 rounded"></span></li>
+                    <li><span class="text-yellow-500 font-bold">FREE TRIAL:</span> <span id="display-trial-days" class="text-white font-bold text-lg">7</span> Days Remaining.</li>
                     <li>By clicking Accept, you allow Aurent Vault to send you live browser notifications for high-ticket gigs.</li>
-                    <li>After the 7-day trial, a 50 KSH verification fee applies to maintain this device's access to the Vault.</li>
+                    <li>After the 7-day trial, a 50 KSH verification fee applies to maintain this device's access.</li>
                 </ul>
             </div>
             <button onclick="startVault()" class="w-full bg-blue-600 hover:bg-blue-500 transition text-white font-black py-4 rounded-xl uppercase tracking-widest text-[11px] shadow-lg shadow-blue-600/30">Accept & Enter Vault</button>
         </div>
     </div>
 
-    <nav class="fixed top-0 w-full bg-[#030303]/90 backdrop-blur-xl z-[100] border-b border-white/5 px-6 py-5 flex justify-between items-center">
-        <span class="font-black text-[12px] tracking-[0.2em] uppercase">Aurent <span class="text-blue-500 italic">Vault</span></span>
-        <div class="flex gap-4 overflow-x-auto">
-            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active font-black text-[10px] uppercase">GIGS</button>
-            <button onclick="tab('cv')" id="t-cv" class="nav-link font-black text-[10px] uppercase">CV_STUDIO</button>
-            <button onclick="tab('rev')" id="t-rev" class="nav-link font-black text-[10px] uppercase">REVIEWS</button>
-            <button onclick="tab('com')" id="t-com" class="nav-link font-black text-[10px] uppercase">COMMUNITY</button>
+    <nav class="fixed top-0 w-full bg-[#050505]/80 backdrop-blur-2xl z-[100] border-b border-white/5 px-6 py-5 flex justify-between items-center">
+        <span class="font-black text-[14px] tracking-[0.2em] uppercase text-white">Aurent <span class="text-yellow-600 italic">Vault</span></span>
+        <div class="flex gap-6 overflow-x-auto items-center">
+            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active font-black text-[10px] uppercase tracking-widest text-slate-400 hover:text-white transition">THE VAULT</button>
+            <button onclick="tab('rev')" id="t-rev" class="nav-link font-black text-[10px] uppercase tracking-widest text-slate-400 hover:text-white transition">REVIEWS</button>
+            <button onclick="tab('com')" id="t-com" class="nav-link font-black text-[10px] uppercase tracking-widest text-slate-400 hover:text-white transition">NETWORK</button>
+            <a href="cv-studio.html" class="font-black text-[10px] uppercase tracking-widest text-yellow-500 border border-yellow-500/40 px-4 py-2 rounded hover:bg-yellow-500 hover:text-black transition duration-300 ml-2 shadow-[0_0_15px_rgba(212,175,55,0.2)]">CV STUDIO</a>
         </div>
     </nav>
 
-    <main class="mt-32 max-w-5xl mx-auto px-6 flex-grow w-full">
+    <main class="mt-32 max-w-6xl mx-auto px-6 flex-grow w-full pb-20 relative z-10">
 
         <section id="s-gigs">
-            <div id="trial-banner" class="bg-blue-900/30 border border-blue-500/30 text-blue-300 text-[10px] font-bold uppercase tracking-widest p-3 rounded-lg text-center mb-8 hidden">
+            <div id="trial-banner" class="bg-yellow-900/20 border border-yellow-500/20 text-yellow-500 text-[10px] font-bold uppercase tracking-widest p-3 rounded-lg text-center mb-10 hidden">
                 Trial Active: <span id="banner-days-left" class="text-white"></span> Days Left
             </div>
             
@@ -91,97 +89,51 @@
                 ⚠️ DATABASE CONNECTION ERROR: <span id="error-msg"></span>
             </div>
 
-            <div id="feed" class="grid grid-cols-1 gap-12">
-                </div>
-        </section>
-
-        <section id="s-cv" class="hidden py-6">
-            <div class="glass-card p-8 md:p-12">
-                <h2 class="text-2xl font-black mb-8 uppercase text-blue-500">Luxury CV Engine</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="space-y-4">
-                        <label class="text-[10px] font-black uppercase text-slate-500">ID Photo (Optional)</label>
-                        <input type="file" id="cv-photo" class="luxury-input" accept="image/*">
-                        <input type="text" id="cv-name" placeholder="FULL NAME" class="luxury-input">
-                        <div class="grid grid-cols-2 gap-4">
-                            <select id="cv-layout" class="luxury-input">
-                                <option value="Executive">1. Executive</option>
-                                <option value="Modern">2. Modernist</option>
-                                <option value="Tech">3. Tech Lead</option>
-                                <option value="Minimal">4. Minimal</option>
-                                <option value="Creative">5. Creative</option>
-                                <option value="Corporate">6. Corporate</option>
-                                <option value="Startup">7. Startup</option>
-                                <option value="Academic">8. Academic</option>
-                                <option value="Medical">9. Medical</option>
-                                <option value="Elegance">10. Elegance</option>
-                            </select>
-                            <select id="cv-theme" class="luxury-input">
-                                <option value="Burgundy">1. Burgundy</option>
-                                <option value="Midnight">2. Midnight Blue</option>
-                                <option value="Emerald">3. Emerald Green</option>
-                                <option value="Onyx">4. Onyx Black</option>
-                                <option value="Royal">5. Royal Gold</option>
-                                <option value="Slate">6. Slate Grey</option>
-                                <option value="Crimson">7. Deep Crimson</option>
-                                <option value="Teal">8. Ocean Teal</option>
-                                <option value="Navy">9. Classic Navy</option>
-                                <option value="Plum">10. Imperial Plum</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <textarea id="cv-summary" placeholder="PROFESSIONAL BIO" rows="2" class="luxury-input"></textarea>
-                        <textarea id="cv-experience" placeholder="WORK HISTORY (Include roles and dates)" rows="3" class="luxury-input"></textarea>
-                        <input type="text" id="cv-skills" placeholder="SKILLS (Separated by commas)" class="luxury-input">
-                    </div>
-                </div>
-                <button onclick="generateLuxuryPDF()" class="mt-8 w-full bg-blue-600 py-5 rounded-xl font-black uppercase text-[10px] tracking-widest">Build & Download CV</button>
+            <div id="loading" class="text-center py-20 text-blue-500 font-black tracking-widest uppercase animate-pulse">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4 block"></i> Syncing Engine...
             </div>
+
+            <div id="feed" class="grid grid-cols-1 gap-10">
+                </div>
         </section>
 
         <section id="s-rev" class="hidden py-10">
-            <div class="flex justify-between items-center mb-10">
-                <h2 class="text-2xl font-black uppercase">Experience Vault</h2>
-                <button onclick="document.getElementById('rev-box').classList.toggle('hidden')" class="bg-blue-600 px-4 py-2 rounded font-bold text-[10px]">+ Share Experience</button>
+            <div class="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+                <h2 class="text-2xl font-black uppercase tracking-widest text-white">Experience Vault</h2>
+                <button onclick="document.getElementById('rev-box').classList.toggle('hidden')" class="bg-yellow-600 text-black px-5 py-3 rounded font-black tracking-widest text-[10px] hover:bg-yellow-500 transition">+ Share Experience</button>
             </div>
             
-            <div id="rev-box" class="hidden glass-card p-8 mb-10">
+            <div id="rev-box" class="hidden glass-card p-8 mb-12 border-yellow-500/30">
                 <input type="text" id="r-name" placeholder="Professional Name" class="luxury-input mb-4">
-                <label class="text-[10px] text-blue-500 font-bold mb-2 block uppercase">Select Experience Message</label>
-                <select id="r-msg-vault" class="luxury-input mb-4">
-                    <option value="Just secured a high-ticket gig via the Vault. Efficiency is 10/10!">1. "Just secured a high-ticket gig via the Vault. Efficiency is 10/10!"</option>
-                    <option value="The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt.">2. "The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt."</option>
-                    <option value="Luxury branding and professional job leads. Best career investment.">3. "Luxury branding and professional job leads. Best career investment."</option>
-                    <option value="Highly recommend the CV Studio. My resume looks bespoke and high-end.">4. "Highly recommend the CV Studio. My resume looks bespoke and high-end."</option>
-                    <option value="Verified leads only. No more wasting time on expired openings or scams.">5. "Verified leads only. No more wasting time on expired openings or scams."</option>
-                    <option value="The scholarship alerts are a game-changer. Just applied for a fully funded program!">6. "The scholarship alerts are a game-changer. Just applied for a fully funded program!"</option>
-                    <option value="Finally, an exclusive network with verified opportunities. Worth every penny.">7. "Finally, an exclusive network with verified opportunities. Worth every penny."</option>
-                    <option value="The CV Engine gave me a professional edge I was lacking. Highly recommended.">8. "The CV Engine gave me a professional edge I was lacking. Highly recommended."</option>
-                    <option value="Direct access to recruiters without the middleman spam. Exceptional service.">9. "Direct access to recruiters without the middleman spam. Exceptional service."</option>
-                    <option value="Aurent Vault is the ultimate career cheat code. Don't miss out.">10. "Aurent Vault is the ultimate career cheat code. Don't miss out."</option>
+                <label class="text-[10px] text-yellow-500 font-bold mb-3 block uppercase tracking-widest">Select Experience Message</label>
+                <select id="r-msg-vault" class="luxury-input mb-6">
+                    <option value="Just secured a high-ticket gig via the Vault. Efficiency is 10/10!">"Just secured a high-ticket gig via the Vault. Efficiency is 10/10!"</option>
+                    <option value="The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt.">"The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt."</option>
+                    <option value="Luxury branding and professional job leads. Best career investment.">"Luxury branding and professional job leads. Best career investment."</option>
+                    <option value="Highly recommend the CV Studio. My resume looks bespoke and high-end.">"Highly recommend the CV Studio. My resume looks bespoke and high-end."</option>
+                    <option value="Verified leads only. No more wasting time on expired openings or scams.">"Verified leads only. No more wasting time on expired openings or scams."</option>
                 </select>
-                <button onclick="addReview()" class="w-full bg-white text-black py-3 rounded font-black text-[10px] uppercase">Post Experience</button>
+                <button onclick="addReview()" class="w-full bg-white text-black py-4 rounded font-black text-[11px] tracking-widest uppercase hover:bg-gray-200 transition">Post Experience</button>
             </div>
-            <div id="rev-feed" class="grid gap-6"></div>
+            <div id="rev-feed" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </section>
 
         <section id="s-com" class="hidden py-12 text-center">
-            <div class="glass-card p-12">
-                <h2 class="text-4xl font-black mb-4 uppercase italic">The Circle</h2>
-                <p class="text-sm text-slate-400 mb-8">Join the exclusive network of Aurent professionals.</p>
-                <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
-                    <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="w-full md:w-auto bg-[#25D366] text-black font-black px-10 py-4 rounded-xl uppercase text-xs tracking-wider hover:scale-105 transition">WhatsApp</a>
-                    <a href="https://t.me/aurentgighunter" target="_blank" class="w-full md:w-auto bg-[#0088cc] text-white font-black px-10 py-4 rounded-xl uppercase text-xs tracking-wider hover:scale-105 transition">Telegram</a>
-                    <a href="mailto:aurentstudios@gmail.com" class="w-full md:w-auto bg-slate-800 border border-slate-600 text-white font-black px-10 py-4 rounded-xl uppercase text-xs tracking-wider hover:scale-105 transition">Email</a>
+            <div class="glass-card p-16 border border-white/5 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-blue-900/10 to-transparent"></div>
+                <h2 class="text-5xl font-black mb-4 uppercase italic tracking-tighter relative z-10 text-white">The Inner Circle</h2>
+                <p class="text-sm text-slate-400 mb-12 relative z-10">Join the exclusive network of Aurent professionals.</p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center items-center relative z-10">
+                    <a href="https://chat.whatsapp.com/KwzvuxIiHgi7MD88SjVEPD" target="_blank" class="w-full md:w-auto bg-[#25D366] text-black font-black px-10 py-4 rounded-lg uppercase text-xs tracking-widest hover:scale-105 transition shadow-[0_0_20px_rgba(37,211,102,0.3)]">WhatsApp</a>
+                    <a href="https://t.me/aurentgighunter" target="_blank" class="w-full md:w-auto bg-[#0088cc] text-white font-black px-10 py-4 rounded-lg uppercase text-xs tracking-widest hover:scale-105 transition shadow-[0_0_20px_rgba(0,136,204,0.3)]">Telegram</a>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="text-center py-10 text-slate-600 text-[10px] font-black uppercase">
+    <footer class="text-center py-10 text-slate-600 text-[10px] font-black uppercase border-t border-white/5 bg-black/50">
         Powered by Aurent Studios 2026 <br>
-        <span id="footer-device-id" class="text-slate-800 font-mono mt-2 block"></span>
+        <span id="footer-device-id" class="text-slate-700 font-mono mt-2 block"></span>
     </footer>
 
     <script>
@@ -201,7 +153,7 @@
             let daysLeft = Math.max(0, 7 - daysPassed);
 
             document.getElementById('display-device-id').innerText = deviceId;
-            document.getElementById('footer-device-id').innerText = "DEVICE: " + deviceId;
+            document.getElementById('footer-device-id').innerText = "DEVICE_ID: " + deviceId;
             document.getElementById('display-trial-days').innerText = daysLeft;
             
             if (localStorage.getItem('aurent_auth')) {
@@ -219,14 +171,23 @@
         }
 
         function tab(t) {
-            ['s-gigs', 's-cv', 's-rev', 's-com'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['s-gigs', 's-rev', 's-com'].forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById('s-'+t).classList.remove('hidden');
+            
+            // Handle active state
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active', 'text-white'));
+            document.getElementById('t-'+t).classList.add('active', 'text-white');
+            
             if(t === 'rev') loadReviews();
         }
 
+        // === THE VAULT FEED GENERATOR ===
         async function loadFeed() {
-            const { data, error } = await _supabase.from('gigs').select('*').order('id', { ascending: false });
+            // FIX: Ensure strict sorting by created_at
+            const { data, error } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false }).limit(50);
             
+            document.getElementById('loading').style.display = 'none';
+
             if (error) {
                 document.getElementById('error-banner').classList.remove('hidden');
                 document.getElementById('error-msg').innerText = error.message;
@@ -234,38 +195,51 @@
             }
             
             if(data && data.length > 0) {
-                if(lastId && data[0].id > lastId) {
+                if(lastId && data[0].id !== lastId) {
                     document.getElementById('notification-sound').play();
-                    new Notification("🚨 Aurent Vault", { body: "New Opportunity Synced!" });
+                    new Notification("🚨 Aurent Vault", { body: "New High-Ticket Opportunity Synced!" });
                 }
                 lastId = data[0].id;
                 
-                document.getElementById('feed').innerHTML = data.map(g => `
-                    <div class="glass-card flex flex-col md:flex-row gap-8 p-6 md:p-8 items-center md:items-start">
-                        <a href="${g.image_link}" target="_blank" class="w-full md:w-5/12 shrink-0 block cursor-pointer group">
-                            <img src="${g.image_link || 'https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT'}" 
-                                 class="w-full h-auto rounded-xl object-contain shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-white/10 group-hover:scale-[1.02] transition-transform duration-300">
+                document.getElementById('feed').innerHTML = data.map(g => {
+                    const dateObj = new Date(g.created_at);
+                    const fDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    
+                    return `
+                    <div class="glass-card flex flex-col md:flex-row overflow-hidden group border border-white/5 hover:border-yellow-600/40 transition-all duration-500 hover:shadow-[0_10px_40px_rgba(212,175,55,0.08)]">
+                        <a href="${g.apply_link}" target="_blank" class="w-full md:w-5/12 h-64 md:h-auto relative overflow-hidden bg-black block cursor-pointer">
+                            <img src="${g.image_link || 'https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT+VAULT'}" 
+                                 class="absolute inset-0 w-full h-full object-contain md:object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-[#0f0f11]"></div>
                         </a>
-                        <div class="flex-1 w-full flex flex-col justify-center h-full">
-                            <h3 class="text-xl md:text-3xl font-black uppercase mb-4 text-blue-500 leading-snug">${g.title}</h3>
-                            <p class="text-slate-300 text-sm mb-6 leading-relaxed bg-white/5 p-5 rounded-lg border border-white/5 shadow-inner">${g.description.substring(0, 300)}...</p>
-                            <a href="${g.apply_link}" target="_blank" class="block w-full bg-blue-600 hover:bg-blue-500 transition shadow-lg shadow-blue-900/50 text-white text-center font-black py-4 rounded-xl text-xs uppercase tracking-widest mt-auto">Access Portal</a>
+                        <div class="p-8 md:p-10 flex-1 flex flex-col justify-center relative bg-[#0f0f11]/80">
+                            <div class="text-yellow-600 text-[10px] font-black tracking-[0.2em] uppercase mb-4"><i class="fa-regular fa-clock mr-2"></i>Indexed: ${fDate}</div>
+                            <h3 class="text-2xl md:text-3xl font-black uppercase mb-4 text-white leading-snug group-hover:text-blue-400 transition-colors">${g.title}</h3>
+                            <p class="text-slate-400 text-sm mb-8 leading-relaxed border-l-2 border-white/10 pl-4 h-24 overflow-hidden relative">
+                                ${g.description.substring(0, 250)}...
+                                <span class="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-[#0f0f11] to-transparent"></span>
+                            </p>
+                            <a href="${g.apply_link}" target="_blank" class="inline-flex items-center justify-center w-full md:w-auto bg-blue-600 hover:bg-blue-500 transition text-white font-black py-4 px-8 rounded-lg text-xs uppercase tracking-widest mt-auto shadow-lg shadow-blue-900/30">
+                                Access Portal <i class="fa-solid fa-arrow-right ml-3"></i>
+                            </a>
                         </div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
             } else {
                 document.getElementById('feed').innerHTML = `
-                    <div class="glass-card p-10 text-center border border-dashed border-slate-700">
-                        <i class="fas fa-radar text-4xl text-blue-600 mb-4 animate-pulse"></i>
-                        <h3 class="text-lg font-black uppercase text-slate-400 tracking-widest">Vault is Empty</h3>
-                        <p class="text-slate-600 text-[10px] uppercase mt-2">Awaiting new signals from the Hunter Engine...</p>
+                    <div class="glass-card p-16 text-center border border-dashed border-slate-700">
+                        <i class="fas fa-radar text-4xl text-blue-600 mb-6 animate-pulse"></i>
+                        <h3 class="text-xl font-black uppercase text-slate-300 tracking-widest">Vault is Empty</h3>
+                        <p class="text-slate-500 text-xs uppercase mt-3 tracking-widest">Awaiting new signals from the Hunter Engine...</p>
                     </div>
                 `;
             }
         }
 
+        // === REVIEWS ENGINE ===
         async function addReview() {
-            const name = document.getElementById('r-name').value || "Anonymous Professional";
+            const name = document.getElementById('r-name').value || "Verified Professional";
             const text = document.getElementById('r-msg-vault').value;
             await _supabase.from('reviews').insert([{ name, text, created_at: new Date() }]);
             document.getElementById('rev-box').classList.add('hidden');
@@ -273,121 +247,20 @@
         }
 
         async function loadReviews() {
-            const { data } = await _supabase.from('reviews').select('*').order('id', { ascending: false });
+            // FIX: Ensure strict sorting by created_at
+            const { data } = await _supabase.from('reviews').select('*').order('created_at', { ascending: false });
             if(data) {
                 const fiveDaysAgo = new Date();
                 fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
                 const validReviews = data.filter(r => new Date(r.created_at || new Date()) > fiveDaysAgo);
 
                 document.getElementById('rev-feed').innerHTML = validReviews.map(r => `
-                    <div class="glass-card p-6 border-l-2 border-blue-600">
-                        <p class="text-slate-400 italic text-sm">"${r.text}"</p>
-                        <p class="text-blue-500 font-bold text-[10px] mt-2 tracking-widest uppercase">— ${r.name}</p>
+                    <div class="glass-card p-8 border-l-4 border-yellow-600 bg-gradient-to-r from-yellow-900/10 to-transparent">
+                        <i class="fa-solid fa-quote-left text-yellow-600/50 text-2xl mb-4 block"></i>
+                        <p class="text-slate-300 text-sm leading-relaxed">"${r.text}"</p>
+                        <p class="text-white font-black text-[10px] mt-6 tracking-[0.2em] uppercase">${r.name}</p>
                     </div>
                 `).join('');
-            }
-        }
-
-        async function generateLuxuryPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            
-            const theme = document.getElementById('cv-theme').value;
-            const layout = document.getElementById('cv-layout').value;
-            const name = document.getElementById('cv-name').value || "AURENT CANDIDATE";
-            const summary = document.getElementById('cv-summary').value || "Dedicated professional seeking high-ticket opportunities.";
-            const history = document.getElementById('cv-experience').value || "No professional history provided.";
-            const skills = document.getElementById('cv-skills').value || "Skill 1, Skill 2, Skill 3";
-            const photoFile = document.getElementById('cv-photo').files[0];
-
-            const palettes = {
-                Burgundy: [139, 30, 63], Midnight: [16, 42, 86], Emerald: [0, 77, 64], Onyx: [20, 20, 20], Royal: [184, 134, 11],
-                Slate: [112, 128, 144], Crimson: [220, 20, 60], Teal: [0, 128, 128], Navy: [0, 0, 128], Plum: [142, 69, 133]
-            };
-            const activeColor = palettes[theme] || palettes["Onyx"];
-            doc.setFillColor(...activeColor);
-
-            let textStartX = 20;
-            let textStartY = 50;
-
-            if (layout === "Executive") {
-                doc.rect(0, 0, 70, 297, 'F');
-                textStartX = 80; textStartY = 40;
-            } else if (layout === "Modern") {
-                doc.rect(0, 0, 210, 40, 'F');
-                textStartX = 20; textStartY = 55;
-            } else if (layout === "Tech") {
-                doc.rect(0, 0, 15, 297, 'F');
-                textStartX = 25; textStartY = 40;
-            } else if (layout === "Minimal") {
-                doc.rect(0, 0, 210, 8, 'F');
-                textStartX = 20; textStartY = 30;
-            } else if (layout === "Creative") {
-                doc.rect(140, 0, 70, 297, 'F');
-                textStartX = 20; textStartY = 40;
-            } else if (layout === "Corporate") {
-                doc.rect(0, 0, 210, 20, 'F');
-                textStartX = 20; textStartY = 40;
-            } else if (layout === "Startup") {
-                doc.rect(0, 0, 210, 10, 'F'); 
-                doc.rect(0, 287, 210, 10, 'F');
-                textStartX = 20; textStartY = 35;
-            } else if (layout === "Academic") {
-                doc.rect(10, 10, 190, 5, 'F');
-                textStartX = 20; textStartY = 40;
-            } else if (layout === "Medical") {
-                doc.rect(0, 0, 50, 297, 'F');
-                textStartX = 60; textStartY = 40;
-            } else if (layout === "Elegance") {
-                doc.rect(0, 35, 210, 2, 'F');
-                textStartX = 20; textStartY = 50;
-            }
-
-            if (["Modern", "Corporate"].includes(layout)) { doc.setTextColor(255, 255, 255); doc.setFontSize(26); doc.text(name, 20, 15); doc.setTextColor(20, 20, 20); }
-            else { doc.setTextColor(20, 20, 20); doc.setFontSize(26); doc.text(name, textStartX, textStartY - 10); }
-
-            doc.setFontSize(12);
-            doc.setTextColor(...activeColor); 
-            
-            let currentY = textStartY + 10;
-            doc.text("PROFESSIONAL BIO", textStartX, currentY);
-            doc.setTextColor(60, 60, 60);
-            doc.setFontSize(10);
-            const bioLines = doc.splitTextToSize(summary, layout === "Creative" ? 110 : 120);
-            doc.text(bioLines, textStartX, currentY + 6);
-            currentY += (bioLines.length * 5) + 15;
-
-            doc.setFontSize(12);
-            doc.setTextColor(...activeColor);
-            doc.text("WORK HISTORY", textStartX, currentY);
-            doc.setTextColor(60, 60, 60);
-            doc.setFontSize(10);
-            const historyLines = doc.splitTextToSize(history, layout === "Creative" ? 110 : 120);
-            doc.text(historyLines, textStartX, currentY + 6);
-            currentY += (historyLines.length * 5) + 15;
-
-            doc.setFontSize(12);
-            doc.setTextColor(...activeColor);
-            doc.text("CORE SKILLS", textStartX, currentY);
-            doc.setTextColor(60, 60, 60);
-            doc.setFontSize(10);
-            const skillsArray = skills.split(',').map(s => `• ${s.trim()}`);
-            doc.text(skillsArray, textStartX, currentY + 6);
-
-            if(photoFile) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    let px = 150, py = 15;
-                    if (layout === "Executive") { px = 15; py = 15; }
-                    else if (layout === "Medical") { px = 10; py = 15; }
-                    else if (layout === "Creative") { px = 155; py = 20; }
-                    
-                    doc.addImage(e.target.result, 'JPEG', px, py, 40, 40);
-                    doc.save(`Aurent_CV_${name.replace(/\s+/g, '_')}.pdf`);
-                };
-                reader.readAsDataURL(photoFile);
-            } else { 
-                doc.save(`Aurent_CV_${name.replace(/\s+/g, '_')}.pdf`); 
             }
         }
 
@@ -400,18 +273,11 @@
         }
 
         // --- 📡 LIVE RADAR: AUTO-REFRESH ON NEW JOBS ---
-        _supabase
-          .channel('aurent-radar')
-          .on(
-            'postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'gigs' },
-            (payload) => {
+        _supabase.channel('aurent-radar').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gigs' }, (payload) => {
               console.log('Radar Ping: New Job Detected!', payload);
               document.getElementById('notification-sound').play();
-              loadFeed(); // Instantly update the screen without refreshing the browser
-            }
-          )
-          .subscribe();
+              loadFeed(); 
+        }).subscribe();
 
     </script>
 </body>
