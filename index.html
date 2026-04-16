@@ -102,10 +102,10 @@
         </div>
     </div>
 
-    <div id="prefs-overlay" class="overlay hidden">
+    <div id="prefs-overlay" class="overlay hidden slide-in">
         <div class="max-w-md w-full glass-card p-10 border-t-2 border-yellow-600 shadow-[0_0_50px_rgba(212,175,55,0.15)] relative overflow-hidden">
             <h1 class="text-2xl font-black mb-2 tracking-widest uppercase text-white font-['Montserrat'] text-center">Configure Radar</h1>
-            <p class="text-[9px] uppercase text-slate-400 font-bold mb-8 tracking-widest text-center">Select the sectors you want sent to your WhatsApp</p>
+            <p class="text-[9px] uppercase text-slate-400 font-bold mb-8 tracking-widest text-center leading-relaxed">Select your industries below to receive VIP WhatsApp Alerts. You can browse all jobs globally in the background.</p>
             
             <div class="grid grid-cols-2 gap-3 mb-8">
                 <div class="niche-chip" data-niche="Tech & Software" onclick="toggleNiche(this)">Tech & Software</div>
@@ -116,8 +116,8 @@
                 <div class="niche-chip" data-niche="Engineering" onclick="toggleNiche(this)">Engineering</div>
             </div>
 
-            <button id="save-prefs-btn" onclick="savePrefs()" class="btn-shine w-full bg-yellow-600 text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-lg shadow-yellow-600/20"><span>Save & Update Radar</span></button>
-            <button onclick="document.getElementById('prefs-overlay').classList.add('hidden')" class="w-full text-center text-[9px] text-slate-500 mt-6 uppercase tracking-widest hover:text-white transition">Cancel</button>
+            <button id="save-prefs-btn" onclick="savePrefs()" class="btn-shine w-full bg-yellow-600 text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-lg shadow-yellow-600/20"><span>Save & Enable Alerts</span></button>
+            <button onclick="document.getElementById('prefs-overlay').classList.add('hidden')" class="w-full text-center text-[9px] text-slate-500 mt-6 uppercase tracking-widest hover:text-white transition">Skip for now</button>
         </div>
     </div>
 
@@ -268,10 +268,10 @@
         let lastId = null;
         let globalVaultData = [];
         let currentAuthMode = 'login'; 
-        let userNiches = []; // Array to hold multiple radar selections
+        let userNiches = [];
 
         // === 1. INITIALIZATION & UI SETUP ===
-        function initDeviceAndTrial() {
+        async function initDeviceAndTrial() {
             let deviceId = localStorage.getItem('aurent_device_id');
             if (!deviceId) {
                 deviceId = 'AUR-' + Math.random().toString(36).substr(2, 5).toUpperCase();
@@ -296,6 +296,15 @@
                 document.getElementById('protocol-overlay').classList.add('hidden');
                 setupRoleUI();
                 loadFeed();
+                
+                // SILENT RADAR CHECK: If it's a normal user, check if they need to configure radar
+                const email = localStorage.getItem('aurent_email');
+                if (email && localStorage.getItem('aurent_role') !== 'admin') {
+                    const { data } = await _supabase.from('user_profiles').select('niche').eq('email', email).single();
+                    if (data && (data.niche === 'Pending Configuration' || !data.niche)) {
+                        setTimeout(() => { openPrefs(); }, 800); // Slight delay for cinematic effect
+                    }
+                }
             } else {
                 document.getElementById('protocol-overlay').classList.remove('hidden');
             }
@@ -305,13 +314,13 @@
             const role = localStorage.getItem('aurent_role');
             if (role === 'admin') {
                 document.getElementById('t-admin').classList.remove('hidden');
-                document.getElementById('t-prefs').classList.remove('hidden');
+                document.getElementById('t-prefs').classList.add('hidden');
                 document.getElementById('verify-btn').classList.add('hidden');
                 document.getElementById('trial-banner').classList.add('hidden');
                 loadAdminUsers();
             } else {
                 document.getElementById('t-admin').classList.add('hidden');
-                document.getElementById('t-prefs').classList.remove('hidden'); // Show radar settings to users
+                document.getElementById('t-prefs').classList.remove('hidden');
                 document.getElementById('verify-btn').classList.remove('hidden');
                 document.getElementById('trial-banner').classList.remove('hidden');
             }
@@ -371,10 +380,12 @@
             const password = `AUR${pin}ent!`;
 
             let authResponse;
+            let isNewRegistration = false;
+
             if(currentAuthMode === 'register') {
                 authResponse = await _supabase.auth.signUp({ email, password });
                 if(!authResponse.error) { 
-                    // Set niche to Pending initially
+                    isNewRegistration = true;
                     await _supabase.from('user_profiles').insert([{ email: email, phone: phone, niche: 'Pending Configuration', payment_status: 'Trial', is_blocked: false }]); 
                 }
             } else {
@@ -385,7 +396,7 @@
                 errorDiv.innerHTML = "<i class='fa-solid fa-circle-xmark mr-2'></i> Invalid PIN or Number already registered."; errorDiv.classList.remove('hidden');
                 submitBtn.innerHTML = currentAuthMode === 'register' ? "<span>Start 3-Day Trial</span>" : "<span>Login to Vault</span>";
             } else {
-                const { data: profile } = await _supabase.from('user_profiles').select('is_blocked').eq('email', email).single();
+                const { data: profile } = await _supabase.from('user_profiles').select('is_blocked, niche').eq('email', email).single();
                 if(profile && profile.is_blocked === true) {
                     await _supabase.auth.signOut();
                     errorDiv.innerHTML = "<i class='fa-solid fa-ban mr-2'></i> ACCOUNT SUSPENDED BY ADMIN."; errorDiv.classList.remove('hidden');
@@ -401,6 +412,11 @@
                 if ("Notification" in window) Notification.requestPermission();
                 document.getElementById('protocol-overlay').classList.add('hidden');
                 setupRoleUI(); loadFeed();
+
+                // Check if they need to setup radar (new user or skipped previously)
+                if(profile && (profile.niche === 'Pending Configuration' || !profile.niche)) {
+                    setTimeout(() => { openPrefs(); }, 800);
+                }
             }
         }
 
@@ -420,18 +436,14 @@
             document.getElementById('prefs-overlay').classList.remove('hidden');
             const email = localStorage.getItem('aurent_email');
             
-            // Load current preferences from DB
             const { data } = await _supabase.from('user_profiles').select('niche').eq('email', email).single();
+            userNiches = []; 
+            document.querySelectorAll('.niche-chip').forEach(chip => chip.classList.remove('active'));
+
             if(data && data.niche && data.niche !== 'Pending Configuration') {
                 userNiches = data.niche.split(', ');
-                
-                // Light up the correct chips
                 document.querySelectorAll('.niche-chip').forEach(chip => {
-                    if(userNiches.includes(chip.getAttribute('data-niche'))) {
-                        chip.classList.add('active');
-                    } else {
-                        chip.classList.remove('active');
-                    }
+                    if(userNiches.includes(chip.getAttribute('data-niche'))) { chip.classList.add('active'); }
                 });
             }
         }
@@ -449,7 +461,7 @@
                 btn.innerHTML = '<span><i class="fa-solid fa-check mr-2"></i> Radar Updated</span>';
                 setTimeout(() => {
                     document.getElementById('prefs-overlay').classList.add('hidden');
-                    btn.innerHTML = '<span>Save & Update Radar</span>';
+                    btn.innerHTML = '<span>Save & Enable Alerts</span>';
                 }, 1000);
             }, 800);
         }
