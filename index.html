@@ -11,32 +11,60 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700;900&family=Montserrat:wght@400;600;800;900&display=swap');
         
-        body { font-family: 'Space Grotesk', sans-serif; background: #030303; color: white; background-image: radial-gradient(circle at 50% 0%, #1a1a24 0%, #030303 70%); background-attachment: fixed; }
-        .css-watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22vw; font-weight: 900; font-style: italic; letter-spacing: -0.05em; color: rgba(255, 255, 255, 0.01); z-index: 0; pointer-events: none; }
-        
-        .glass-card { background: rgba(12, 12, 14, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 0.75rem; }
-        .nav-link.active { color: #fff; border-bottom: 2px solid #d4af37; }
-        .luxury-input { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; padding: 1rem; color: white; width: 100%; transition: 0.3s;}
-        .luxury-input:focus { border-color: #d4af37; outline: none; }
-        select option { background-color: #111 !important; color: white !important; }
-        
-        .overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(15px); }
+        /* 1. CINEMATIC NOISE & TEXTURE */
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            background-color: #050505; 
+            color: white; 
+            background-image: radial-gradient(circle at 50% 0%, #15151c 0%, #050505 70%);
+            background-attachment: fixed;
+            position: relative;
+        }
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.04; pointer-events: none; z-index: 9999;
+        }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #030303; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .css-watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22vw; font-weight: 900; font-style: italic; letter-spacing: -0.05em; color: rgba(255, 255, 255, 0.015); z-index: 0; pointer-events: none; }
+        
+        /* 2. REFINED GLASSMORPHISM */
+        .glass-card { background: rgba(10, 10, 12, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0.75rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .nav-link.active { color: #fff; border-bottom: 2px solid #d4af37; text-shadow: 0 0 10px rgba(212,175,55,0.5); }
+        
+        /* 3. PREMIUM INPUTS */
+        .luxury-input { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.5rem; padding: 1rem; color: white; width: 100%; transition: all 0.3s ease;}
+        .luxury-input:focus { border-color: #d4af37; outline: none; box-shadow: 0 0 15px rgba(212,175,55,0.1); background: rgba(0,0,0,0.8); }
+        select option { background-color: #0a0a0c !important; color: white !important; }
+        
+        .overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(25px); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
 
-        .slide-in { animation: slideIn 0.4s ease forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        /* 4. ELITE ANIMATIONS */
+        .slide-in { animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 
+        .fade-up { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* THE LUXURY BUTTON SHINE EFFECT */
+        .btn-shine { position: relative; overflow: hidden; }
+        .btn-shine::after { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); transition: 0.5s; z-index: 1; }
+        .btn-shine:hover::after { left: 150%; }
+        .btn-shine span { position: relative; z-index: 2; }
+
+        /* Admin Table */
         .admin-table { width: 100%; text-align: left; border-collapse: collapse; }
-        .admin-table th { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #d4af37; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-        .admin-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #cbd5e1; }
+        .admin-table th { padding: 18px 15px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #d4af37; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .admin-table td { padding: 18px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 12px; color: #cbd5e1; }
         .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
-        .status-pending { color: #f39c12; font-weight: bold; background: rgba(243, 156, 18, 0.1); padding: 4px 8px; border-radius: 4px; font-size: 10px; text-transform: uppercase;}
-        .status-paid { color: #25D366; font-weight: bold; background: rgba(37, 211, 102, 0.1); padding: 4px 8px; border-radius: 4px; font-size: 10px; text-transform: uppercase;}
-        .status-blocked { color: #e74c3c; font-weight: bold; background: rgba(231, 76, 60, 0.1); padding: 4px 8px; border-radius: 4px; font-size: 10px; text-transform: uppercase;}
+        .status-pending { color: #f39c12; font-weight: bold; background: rgba(243, 156, 18, 0.1); padding: 4px 8px; border-radius: 4px; font-size: 9px; text-transform: uppercase; letter-spacing: 1px;}
+        .status-paid { color: #25D366; font-weight: bold; background: rgba(37, 211, 102, 0.1); padding: 4px 8px; border-radius: 4px; font-size: 9px; text-transform: uppercase; letter-spacing: 1px;}
+        .status-blocked { color: #e74c3c; font-weight: bold; background: rgba(231, 76, 60, 0.1); padding: 4px 8px; border-radius: 4px; font-size: 9px; text-transform: uppercase; letter-spacing: 1px;}
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -45,40 +73,41 @@
     <audio id="notification-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
 
     <div id="protocol-overlay" class="overlay hidden">
-        <div class="max-w-md w-full glass-card p-10 text-center border-t-2 border-yellow-600 shadow-2xl relative overflow-hidden">
+        <div class="max-w-md w-full glass-card p-10 text-center border-t-2 border-yellow-600 shadow-[0_0_50px_rgba(212,175,55,0.15)] relative overflow-hidden">
             
             <div id="auth-step-1">
-                <h1 class="text-4xl font-black mb-2 tracking-widest uppercase italic">Aurent</h1>
-                <p class="text-[10px] uppercase text-yellow-500 font-bold mb-6 tracking-widest">The VIP Network</p>
+                <h1 class="text-4xl font-black mb-2 tracking-widest uppercase italic font-['Montserrat'] text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Aurent</h1>
+                <p class="text-[9px] uppercase text-yellow-500 font-bold mb-8 tracking-[0.3em]">The VIP Network</p>
                 
-                <div class="text-left bg-black/60 p-5 rounded-xl mb-6 border border-white/5 text-[10px] leading-relaxed text-slate-400 h-48 overflow-y-auto">
-                    <b class="text-white block mb-3 uppercase tracking-tighter border-b border-white/10 pb-2">Terms of Service</b>
-                    <ul class="list-disc pl-4 space-y-3">
-                        <li><span class="text-yellow-500 font-bold">3-DAY FREE TRIAL:</span> You get 3 days of full access to the Vault and CV Studio.</li>
-                        <li><span class="text-yellow-500 font-bold">VIP WHATSAPP ALERTS:</span> Select your job niche to receive curated, high-ticket jobs directly to your WhatsApp.</li>
+                <div class="text-left bg-black/40 p-6 rounded-xl mb-8 border border-white/5 text-[10px] leading-relaxed text-slate-400 h-52 overflow-y-auto">
+                    <b class="text-white block mb-4 uppercase tracking-widest border-b border-white/10 pb-3 text-xs">Terms of Registration</b>
+                    <ul class="list-disc pl-4 space-y-4">
+                        <li><span class="text-yellow-500 font-bold">DEVICE ID:</span> <span id="display-device-id" class="font-mono text-white bg-white/10 px-2 py-1 rounded tracking-widest"></span></li>
+                        <li><span class="text-yellow-500 font-bold">FREE TRIAL:</span> <span id="display-trial-days" class="text-white font-bold text-lg">3</span> Days Remaining.</li>
+                        <li><span class="text-yellow-500 font-bold">VIP ALERTS:</span> Select your job niche to receive curated, high-ticket jobs directly to your WhatsApp.</li>
                         <li>After 3 days, a 50 KSH monthly verification fee applies to maintain Vault access and WhatsApp DMs.</li>
-                        <li class="text-red-400 font-bold border border-red-900/50 bg-red-900/10 p-2 rounded">
+                        <li class="text-red-400 font-bold border border-red-900/30 bg-red-900/10 p-3 rounded mt-4 leading-relaxed">
                             DISCLAIMER: Aurent Vault is an intelligence aggregator, NOT an employer. We hold zero liability for third-party hiring processes, scams, or external disputes.
                         </li>
                     </ul>
                 </div>
-                <button onclick="showAuthForm()" class="w-full bg-yellow-600 hover:bg-yellow-500 transition text-black font-black py-4 rounded-xl uppercase tracking-widest text-[11px]">Accept Terms & Continue</button>
+                <button onclick="showAuthForm()" class="btn-shine w-full bg-yellow-600 text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px]"><span>Accept Terms & Continue</span></button>
             </div>
 
             <div id="auth-step-2" class="hidden slide-in">
-                <h1 class="text-2xl font-black mb-4 tracking-widest uppercase text-white">Identify</h1>
+                <h1 class="text-2xl font-black mb-4 tracking-widest uppercase text-white font-['Montserrat']">Identify</h1>
                 
-                <div class="flex mb-6 bg-black/50 p-1 rounded-lg border border-white/10">
-                    <button id="tab-login" onclick="setAuthMode('login')" class="w-1/2 py-2 text-[10px] font-bold uppercase rounded bg-yellow-600 text-black transition">Login</button>
-                    <button id="tab-register" onclick="setAuthMode('register')" class="w-1/2 py-2 text-[10px] font-bold uppercase rounded text-slate-400 transition hover:text-white">Register</button>
+                <div class="flex mb-8 bg-black/60 p-1 rounded-lg border border-white/5">
+                    <button id="tab-login" onclick="setAuthMode('login')" class="w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded bg-yellow-600 text-black transition shadow-lg shadow-yellow-600/20">Login</button>
+                    <button id="tab-register" onclick="setAuthMode('register')" class="w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded text-slate-500 transition hover:text-white">Register</button>
                 </div>
                 
-                <div id="auth-error" class="hidden bg-red-900/50 text-red-300 text-[10px] p-3 rounded mb-4 font-bold uppercase border border-red-900"></div>
+                <div id="auth-error" class="hidden bg-red-900/20 text-red-400 text-[10px] p-4 rounded-lg mb-6 font-bold uppercase border border-red-900/50 tracking-wider"></div>
 
-                <div class="space-y-4 mb-6">
-                    <input type="tel" id="auth-phone" placeholder="WhatsApp Number (e.g. 0712345678)" class="luxury-input text-sm text-center tracking-widest font-mono" maxlength="10">
+                <div class="space-y-5 mb-8">
+                    <input type="tel" id="auth-phone" placeholder="WhatsApp No. (e.g. 0712345678)" class="luxury-input text-xs text-center tracking-[0.2em] font-mono" maxlength="10">
                     
-                    <select id="auth-niche" class="luxury-input text-sm hidden">
+                    <select id="auth-niche" class="luxury-input text-xs hidden uppercase tracking-widest text-center text-slate-300 font-bold">
                         <option value="" disabled selected>-- Select Your Job Niche --</option>
                         <option value="Tech & Software">Tech & Software</option>
                         <option value="Design & Creative">Design & Creative</option>
@@ -87,110 +116,114 @@
                         <option value="Remote Work">Remote / WFH</option>
                     </select>
 
-                    <input type="password" id="auth-pin" placeholder="Create 4-Digit PIN" class="luxury-input text-sm text-center tracking-[1em] font-mono" maxlength="4">
+                    <input type="password" id="auth-pin" placeholder="Enter 4-Digit PIN" class="luxury-input text-sm text-center tracking-[1em] font-mono" maxlength="4">
                 </div>
 
-                <button id="auth-submit-btn" onclick="executeAuth()" class="w-full bg-yellow-600 hover:bg-yellow-500 transition text-black font-black py-4 rounded-xl uppercase tracking-widest text-[11px] shadow-lg shadow-yellow-600/20">Access Vault</button>
+                <button id="auth-submit-btn" onclick="executeAuth()" class="btn-shine w-full bg-yellow-600 hover:bg-yellow-500 transition text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(212,175,55,0.2)]"><span>Access Vault</span></button>
                 
-                <button onclick="hideAuthForm()" class="text-[10px] text-slate-500 mt-6 uppercase tracking-widest hover:text-white transition">← Back to Terms</button>
+                <button onclick="hideAuthForm()" class="text-[9px] text-slate-500 mt-6 uppercase tracking-widest hover:text-white transition"><i class="fa-solid fa-arrow-left mr-2"></i> Return to Terms</button>
             </div>
         </div>
     </div>
 
     <div id="payment-overlay" class="overlay hidden">
-        <div class="max-w-sm w-full glass-card p-8 text-center border-t-4 border-[#25D366] shadow-2xl">
-            <div class="w-16 h-16 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-[#25D366]/30">
+        <div class="max-w-sm w-full glass-card p-10 text-center border-t-2 border-[#25D366] shadow-[0_0_50px_rgba(37,211,102,0.1)]">
+            <div class="w-16 h-16 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-[#25D366]/30">
                 <i class="fa-solid fa-mobile-screen-button text-2xl text-[#25D366]"></i>
             </div>
-            <h1 class="text-2xl font-black mb-1 uppercase tracking-widest text-white font-['Montserrat']">Verification Fee</h1>
-            <p class="text-[10px] uppercase text-slate-400 font-bold mb-6 tracking-widest">Amount: <span class="text-white font-black text-lg">50 KES</span></p>
-            <p class="text-[11px] text-slate-300 mb-6 leading-relaxed">Enter your M-Pesa number below. An STK Push will be sent to your phone to securely complete the transaction.</p>
-            <input type="text" id="mpesa-phone" placeholder="e.g. 0712345678" class="luxury-input text-center text-lg tracking-widest mb-6 font-mono" maxlength="10">
-            <button id="mpesa-btn" onclick="processPayment()" class="w-full bg-[#25D366] hover:bg-[#20bd5a] transition text-black font-black py-4 rounded-xl uppercase tracking-widest text-[11px] shadow-[0_0_15px_rgba(37,211,102,0.3)]">
-                Send M-Pesa Request
+            <h1 class="text-2xl font-black mb-2 uppercase tracking-widest text-white font-['Montserrat']">Verification Fee</h1>
+            <p class="text-[10px] uppercase text-slate-400 font-bold mb-8 tracking-widest">Amount: <span class="text-[#25D366] font-black text-lg">50 KES</span></p>
+            <p class="text-xs text-slate-400 mb-8 leading-relaxed">Enter your M-Pesa number. An STK Push will be sent to your phone to securely complete verification.</p>
+            
+            <input type="text" id="mpesa-phone" placeholder="e.g. 0712345678" class="luxury-input text-center text-lg tracking-[0.2em] mb-8 font-mono" maxlength="10">
+            
+            <button id="mpesa-btn" onclick="processPayment()" class="btn-shine w-full bg-[#25D366] text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(37,211,102,0.2)]">
+                <span>Send M-Pesa Request</span>
             </button>
-            <button onclick="document.getElementById('payment-overlay').classList.add('hidden')" class="text-[10px] text-slate-500 mt-6 uppercase tracking-widest hover:text-white transition">Cancel</button>
+            <button onclick="document.getElementById('payment-overlay').classList.add('hidden')" class="text-[9px] text-slate-500 mt-6 uppercase tracking-widest hover:text-white transition">Cancel Request</button>
         </div>
     </div>
 
-    <nav class="fixed top-0 w-full bg-[#030303]/90 backdrop-blur-md z-[100] border-b border-white/5 px-6 py-4 flex justify-between items-center">
-        <span class="font-black text-[14px] tracking-[0.2em] uppercase text-white font-['Montserrat']">Aurent <span class="text-yellow-600 italic">Vault</span></span>
-        <div class="flex gap-4 overflow-x-auto items-center">
-            
-            <button onclick="tab('admin')" id="t-admin" class="hidden nav-link font-bold text-[10px] uppercase tracking-widest text-yellow-500 hover:text-white transition whitespace-nowrap">
-                <i class="fa-solid fa-shield-halved mr-1"></i> Command Center
+    <nav class="fixed top-0 w-full bg-[#050505]/70 backdrop-blur-xl z-[100] border-b border-white/5 px-6 py-4 flex justify-between items-center transition-all duration-300">
+        <span class="font-black text-[12px] md:text-[14px] tracking-[0.2em] uppercase text-white font-['Montserrat'] flex items-center">
+            Aurent <span class="text-yellow-600 italic ml-2">Vault</span>
+        </span>
+        <div class="flex gap-4 md:gap-6 overflow-x-auto items-center no-scrollbar">
+            <button onclick="tab('admin')" id="t-admin" class="hidden nav-link font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-yellow-500 hover:text-white transition whitespace-nowrap">
+                <i class="fa-solid fa-shield-halved mr-1"></i> Command
             </button>
-
-            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active font-bold text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition whitespace-nowrap">The Vault</button>
-            <button onclick="tab('rev')" id="t-rev" class="nav-link font-bold text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition whitespace-nowrap">Reviews</button>
+            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition whitespace-nowrap">The Vault</button>
+            <button onclick="tab('rev')" id="t-rev" class="nav-link font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition whitespace-nowrap">Reviews</button>
             
-            <a href="cv-studio.html" class="font-bold text-[10px] uppercase tracking-widest text-yellow-500 border border-yellow-500/30 px-4 py-2 rounded-full hover:bg-yellow-500 hover:text-black transition duration-300 shadow-[0_0_10px_rgba(212,175,55,0.1)] whitespace-nowrap">CV Studio <i class="fa-solid fa-wand-magic-sparkles ml-1"></i></a>
+            <a href="cv-studio.html" class="font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-yellow-500 border border-yellow-500/20 px-5 py-2 rounded-full hover:bg-yellow-500 hover:text-black transition duration-500 shadow-[0_0_15px_rgba(212,175,55,0.05)] hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] whitespace-nowrap">CV Studio <i class="fa-solid fa-wand-magic-sparkles ml-1"></i></a>
             
-            <button id="verify-btn" onclick="document.getElementById('payment-overlay').classList.remove('hidden')" class="font-bold text-[10px] uppercase tracking-widest bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 px-4 py-2 rounded-full hover:bg-[#25D366] hover:text-black transition duration-300 whitespace-nowrap">
+            <button id="verify-btn" onclick="document.getElementById('payment-overlay').classList.remove('hidden')" class="hidden font-bold text-[9px] md:text-[10px] uppercase tracking-widest bg-gradient-to-r from-[#25D366]/20 to-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 px-5 py-2 rounded-full hover:from-[#25D366] hover:to-[#20bd5a] hover:text-black transition duration-500 whitespace-nowrap">
                 Verify (50 KES)
             </button>
-            <button onclick="logout()" class="font-bold text-[10px] uppercase tracking-widest text-slate-500 hover:text-red-400 transition ml-2"><i class="fa-solid fa-power-off"></i></button>
+            <button onclick="logout()" class="font-bold text-[10px] uppercase tracking-widest text-slate-600 hover:text-red-500 transition ml-2 md:ml-4"><i class="fa-solid fa-power-off"></i></button>
         </div>
     </nav>
 
-    <main class="mt-28 max-w-7xl mx-auto px-6 flex-grow w-full pb-20 relative z-10">
+    <main class="mt-28 max-w-7xl mx-auto px-4 md:px-6 flex-grow w-full pb-20 relative z-10">
 
-        <section id="s-admin" class="hidden py-4">
-            <div class="mb-8 border-b border-white/5 pb-4">
-                <h2 class="text-2xl font-black uppercase tracking-widest text-yellow-500"><i class="fa-solid fa-satellite-dish mr-2"></i> Command Center</h2>
-                <p class="text-xs text-slate-500 mt-1 tracking-widest uppercase">Live User Management & Monetization</p>
+        <section id="s-admin" class="hidden py-4 fade-up">
+            <div class="mb-10 border-b border-white/5 pb-6">
+                <h2 class="text-2xl md:text-3xl font-black uppercase tracking-widest text-yellow-500 font-['Montserrat']"><i class="fa-solid fa-satellite-dish mr-3"></i> Command Center</h2>
+                <p class="text-[10px] text-slate-500 mt-2 tracking-widest uppercase">Live User Management & Monetization API</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                <div class="glass-card p-8 border-t-2 border-blue-500 bg-gradient-to-b from-blue-900/10 to-transparent">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">Total Registered Users</p>
-                    <h3 id="admin-total-users" class="text-4xl font-black text-white">0</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="glass-card p-8 border-t-2 border-blue-500 bg-gradient-to-b from-blue-900/5 to-transparent relative overflow-hidden">
+                    <i class="fa-solid fa-users absolute -right-4 -bottom-4 text-8xl text-blue-500/5"></i>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mb-3 relative z-10">Registered Users</p>
+                    <h3 id="admin-total-users" class="text-5xl font-black text-white relative z-10">0</h3>
                 </div>
-                <div class="glass-card p-8 border-t-2 border-[#25D366] bg-gradient-to-b from-[#25D366]/10 to-transparent">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">Gross Vault Revenue</p>
-                    <h3 id="admin-revenue" class="text-4xl font-black text-[#25D366]">0 <span class="text-lg text-slate-500 font-normal">KES</span></h3>
+                <div class="glass-card p-8 border-t-2 border-[#25D366] bg-gradient-to-b from-[#25D366]/5 to-transparent relative overflow-hidden">
+                    <i class="fa-solid fa-wallet absolute -right-4 -bottom-4 text-8xl text-[#25D366]/5"></i>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mb-3 relative z-10">Gross Vault Revenue</p>
+                    <h3 id="admin-revenue" class="text-5xl font-black text-[#25D366] relative z-10">0 <span class="text-lg text-slate-500 font-normal">KES</span></h3>
                 </div>
             </div>
 
-            <div class="glass-card p-8 border border-white/5 overflow-x-auto">
-                <div class="flex justify-between items-center border-b border-white/10 pb-4 mb-4">
-                    <h3 class="text-sm font-black uppercase tracking-widest text-white">Active Database: user_profiles</h3>
-                    <button onclick="loadAdminUsers()" class="text-yellow-500 hover:text-white text-xs"><i class="fa-solid fa-rotate-right"></i> Refresh Data</button>
+            <div class="glass-card p-8 border border-white/5 overflow-x-auto shadow-2xl">
+                <div class="flex justify-between items-center border-b border-white/5 pb-6 mb-6">
+                    <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-white">Database: user_profiles</h3>
+                    <button onclick="loadAdminUsers()" class="text-yellow-600 hover:text-yellow-400 text-[10px] tracking-widest uppercase font-bold transition"><i class="fa-solid fa-rotate-right mr-2"></i> Refresh Data</button>
                 </div>
-                <table class="admin-table w-full">
+                <table class="admin-table w-full whitespace-nowrap">
                     <thead>
                         <tr>
                             <th>WhatsApp Number</th>
-                            <th>Chosen Niche</th>
+                            <th>Niche Profile</th>
                             <th>Registration Date</th>
-                            <th>Payment Status</th>
-                            <th>Access Control</th>
+                            <th>Status</th>
+                            <th>Access Protocol</th>
                         </tr>
                     </thead>
                     <tbody id="admin-users-table">
-                        <tr><td colspan="5" class="text-center py-10 text-slate-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading Users...</td></tr>
+                        <tr><td colspan="5" class="text-center py-16 text-slate-600 text-xs tracking-widest uppercase"><i class="fa-solid fa-circle-notch fa-spin text-xl block mb-3"></i> Querying Database...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <section id="s-gigs">
-            <div id="trial-banner" class="bg-yellow-900/10 border border-yellow-500/20 text-yellow-500 text-[10px] font-bold uppercase tracking-widest p-3 rounded text-center mb-8 hidden">
-                Trial Active: <span id="banner-days-left" class="text-white"></span> Days Left
+        <section id="s-gigs" class="fade-up">
+            <div id="trial-banner" class="bg-gradient-to-r from-yellow-900/10 to-transparent border-l-2 border-yellow-600 text-yellow-500 text-[10px] font-bold uppercase tracking-widest p-4 rounded mb-10 hidden shadow-lg shadow-yellow-900/5">
+                <i class="fa-solid fa-clock mr-2"></i> Trial Active: <span id="banner-days-left" class="text-white mx-1"></span> Days Remaining
             </div>
-            <div id="error-banner" class="hidden bg-red-900/20 border border-red-500/20 text-red-400 text-xs font-bold p-4 rounded text-center mb-8">
-                ⚠️ SYSTEM ERROR: <span id="error-msg"></span>
+            <div id="error-banner" class="hidden bg-red-900/10 border-l-2 border-red-500 text-red-400 text-[10px] font-bold uppercase tracking-widest p-4 rounded mb-10">
+                <i class="fa-solid fa-triangle-exclamation mr-2"></i> SYSTEM ERROR: <span id="error-msg" class="text-white"></span>
             </div>
 
-            <div class="glass-card p-4 mb-8 flex flex-col md:flex-row gap-4 border-yellow-500/20">
+            <div class="glass-card p-2 md:p-3 mb-10 flex flex-col md:flex-row gap-3 border border-white/5 shadow-2xl">
                 <div class="relative flex-grow">
-                    <i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
-                    <input type="text" id="search-input" oninput="filterVault()" placeholder="Search roles, companies, keywords..." class="luxury-input pl-12 py-3 w-full text-sm">
+                    <i class="fa-solid fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="search-input" oninput="filterVault()" placeholder="Search roles, companies, keywords..." class="luxury-input pl-14 py-4 w-full text-xs tracking-wide bg-black/40 border-none shadow-inner">
                 </div>
-                <div class="w-full md:w-64 shrink-0">
-                    <select id="category-filter" onchange="filterVault()" class="luxury-input py-3 w-full text-sm cursor-pointer">
+                <div class="w-full md:w-72 shrink-0 border-l border-white/5 pl-0 md:pl-3">
+                    <select id="category-filter" onchange="filterVault()" class="luxury-input py-4 w-full text-xs cursor-pointer bg-black/40 border-none font-bold uppercase tracking-wider text-slate-300">
                         <option value="all">All Opportunities</option>
-                        <option value="tech">Tech & IT</option>
+                        <option value="tech">Tech & Software</option>
                         <option value="design">Design & Creative</option>
                         <option value="finance">Finance & Business</option>
                         <option value="scholarship">Scholarships & Edu</option>
@@ -199,33 +232,34 @@
                 </div>
             </div>
 
-            <div id="loading" class="text-center py-20 text-yellow-600 font-black tracking-widest uppercase animate-pulse">
-                <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4 block"></i> Syncing Vault Data...
+            <div id="loading" class="text-center py-32 text-yellow-600 font-black tracking-widest uppercase animate-pulse">
+                <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-6 block opacity-50"></i> Syncing Engine...
             </div>
+            
             <div id="feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </section>
 
-        <section id="s-rev" class="hidden py-4">
-            <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
-                <h2 class="text-xl font-black uppercase tracking-widest text-white">Experience Log</h2>
-                <button onclick="document.getElementById('rev-box').classList.toggle('hidden')" class="bg-white text-black px-4 py-2 rounded-full font-bold tracking-widest text-[9px] hover:bg-gray-200 transition">+ Add Entry</button>
+        <section id="s-rev" class="hidden py-4 fade-up">
+            <div class="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+                <h2 class="text-2xl font-black uppercase tracking-widest text-white font-['Montserrat']">Experience Log</h2>
+                <button onclick="document.getElementById('rev-box').classList.toggle('hidden')" class="bg-white text-black px-6 py-3 rounded-full font-black tracking-[0.2em] text-[9px] hover:bg-gray-200 transition shadow-[0_0_15px_rgba(255,255,255,0.2)]">+ Add Entry</button>
             </div>
-            <div id="rev-box" class="hidden glass-card p-8 mb-10 border border-white/10">
-                <input type="text" id="r-name" placeholder="Your Name or Alias" class="luxury-input mb-4">
-                <select id="r-msg-vault" class="luxury-input mb-6">
+            <div id="rev-box" class="hidden glass-card p-10 mb-12 border border-white/5 shadow-2xl">
+                <input type="text" id="r-name" placeholder="Your Name or Alias" class="luxury-input mb-6 text-sm">
+                <select id="r-msg-vault" class="luxury-input mb-8 text-sm bg-black/50">
                     <option value="Just secured a high-ticket gig via the Vault. Efficiency is 10/10!">"Secured a gig via the Vault. Efficiency is 10/10!"</option>
                     <option value="The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt.">"Hunter engine is accurate. Real-time pings changed my hunt."</option>
                     <option value="Luxury branding and professional job leads. Best career investment.">"Luxury branding & professional leads. Best investment."</option>
                 </select>
-                <button onclick="addReview()" class="w-full bg-yellow-600 text-black py-4 rounded font-black text-[10px] tracking-widest uppercase hover:bg-yellow-500 transition">Submit Entry</button>
+                <button onclick="addReview()" class="btn-shine w-full bg-yellow-600 text-black py-4 rounded-xl font-black text-[10px] tracking-widest uppercase hover:bg-yellow-500 transition shadow-lg shadow-yellow-600/20"><span>Submit Entry</span></button>
             </div>
-            <div id="rev-feed" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            <div id="rev-feed" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
         </section>
     </main>
 
-    <footer class="text-center py-8 text-slate-600 text-[9px] font-bold tracking-widest uppercase border-t border-white/5 bg-black/30">
+    <footer class="text-center py-10 text-slate-600 text-[9px] font-bold tracking-[0.3em] uppercase border-t border-white/5 bg-black/50 relative z-10">
         Aurent Studios © 2026 <br>
-        <span id="footer-device-id" class="text-slate-800 font-mono mt-2 block"></span>
+        <span id="footer-device-id" class="text-slate-800 font-mono mt-3 block text-[10px]"></span>
     </footer>
 
     <script>
@@ -233,10 +267,16 @@
         
         let lastId = null;
         let globalVaultData = [];
-        let currentAuthMode = 'login'; // default
+        let currentAuthMode = 'login'; 
 
         // === 1. INITIALIZATION & UI SETUP ===
         function initDeviceAndTrial() {
+            let deviceId = localStorage.getItem('aurent_device_id');
+            if (!deviceId) {
+                deviceId = 'AUR-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+                localStorage.setItem('aurent_device_id', deviceId);
+            }
+
             let trialStart = localStorage.getItem('aurent_trial_start');
             if (!trialStart) {
                 trialStart = Date.now();
@@ -244,8 +284,10 @@
             }
 
             let daysPassed = Math.floor((Date.now() - parseInt(trialStart)) / (1000 * 60 * 60 * 24));
-            let daysLeft = Math.max(0, 3 - daysPassed); // 3 DAY TRIAL
+            let daysLeft = Math.max(0, 3 - daysPassed); 
 
+            document.getElementById('display-device-id').innerText = deviceId;
+            document.getElementById('footer-device-id').innerText = "SYS_ID: " + deviceId;
             document.getElementById('display-trial-days').innerText = daysLeft;
             document.getElementById('banner-days-left').innerText = daysLeft;
             
@@ -273,14 +315,11 @@
         }
 
         function logout() {
-            localStorage.removeItem('aurent_auth');
-            localStorage.removeItem('aurent_role');
-            localStorage.removeItem('aurent_phone');
+            localStorage.clear(); 
             _supabase.auth.signOut();
             window.location.reload();
         }
 
-        // === 2. WHATSAPP AUTHENTICATION (STEALTH HACK) ===
         function showAuthForm() { document.getElementById('auth-step-1').classList.add('hidden'); document.getElementById('auth-step-2').classList.remove('hidden'); }
         function hideAuthForm() { document.getElementById('auth-step-2').classList.add('hidden'); document.getElementById('auth-step-1').classList.remove('hidden'); }
 
@@ -290,19 +329,20 @@
             const btnReg = document.getElementById('tab-register');
             const nicheDrop = document.getElementById('auth-niche');
             const submitBtn = document.getElementById('auth-submit-btn');
+            const pinInput = document.getElementById('auth-pin');
 
             if(mode === 'login') {
-                btnLog.className = "w-1/2 py-2 text-[10px] font-bold uppercase rounded bg-yellow-600 text-black transition";
-                btnReg.className = "w-1/2 py-2 text-[10px] font-bold uppercase rounded text-slate-400 transition hover:text-white";
+                btnLog.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded bg-yellow-600 text-black transition shadow-lg shadow-yellow-600/20";
+                btnReg.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded text-slate-500 transition hover:text-white";
                 nicheDrop.classList.add('hidden');
-                document.getElementById('auth-pin').placeholder = "Enter 4-Digit PIN";
-                submitBtn.innerText = "Login to Vault";
+                pinInput.placeholder = "Enter 4-Digit PIN";
+                submitBtn.innerHTML = "<span>Login to Vault</span>";
             } else {
-                btnReg.className = "w-1/2 py-2 text-[10px] font-bold uppercase rounded bg-yellow-600 text-black transition";
-                btnLog.className = "w-1/2 py-2 text-[10px] font-bold uppercase rounded text-slate-400 transition hover:text-white";
+                btnReg.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded bg-yellow-600 text-black transition shadow-lg shadow-yellow-600/20";
+                btnLog.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded text-slate-500 transition hover:text-white";
                 nicheDrop.classList.remove('hidden');
-                document.getElementById('auth-pin').placeholder = "Create 4-Digit PIN";
-                submitBtn.innerText = "Start 3-Day Trial";
+                pinInput.placeholder = "Create 4-Digit PIN";
+                submitBtn.innerHTML = "<span>Start 3-Day Trial</span>";
             }
         }
 
@@ -314,23 +354,22 @@
             const submitBtn = document.getElementById('auth-submit-btn');
             
             if(phone.length < 9 || pin.length < 4) {
-                errorDiv.innerText = "Valid Phone Number and 4-Digit PIN required."; errorDiv.classList.remove('hidden'); return;
+                errorDiv.innerHTML = "<i class='fa-solid fa-triangle-exclamation mr-2'></i> Valid Phone and 4-Digit PIN required."; errorDiv.classList.remove('hidden'); return;
             }
             if(currentAuthMode === 'register' && !niche) {
-                errorDiv.innerText = "Please select your Job Niche."; errorDiv.classList.remove('hidden'); return;
+                errorDiv.innerHTML = "<i class='fa-solid fa-triangle-exclamation mr-2'></i> Please select your Job Niche."; errorDiv.classList.remove('hidden'); return;
             }
 
             errorDiv.classList.add('hidden');
-            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i>';
 
-            // 🚨 ADMIN MASTER BYPASS 🚨
+            // ADMIN MASTER BYPASS
             if (phone === '0700000000' && pin === '2026') {
                 localStorage.setItem('aurent_auth', 'true'); localStorage.setItem('aurent_role', 'admin');
                 document.getElementById('protocol-overlay').classList.add('hidden');
                 setupRoleUI(); loadFeed(); return;
             }
 
-            // The Stealth Hack: Convert Phone to Email & PIN to Secure Password
             const email = `${phone}@aurent.local`;
             const password = `AUR${pin}ent!`;
 
@@ -338,36 +377,28 @@
             if(currentAuthMode === 'register') {
                 authResponse = await _supabase.auth.signUp({ email, password });
                 if(!authResponse.error) { 
-                    // Write the explicit Phone and Niche to the Database
-                    await _supabase.from('user_profiles').insert([{ 
-                        email: email, 
-                        phone: phone,
-                        niche: niche,
-                        payment_status: 'Trial', 
-                        is_blocked: false 
-                    }]); 
+                    await _supabase.from('user_profiles').insert([{ email: email, phone: phone, niche: niche, payment_status: 'Trial', is_blocked: false }]); 
                 }
             } else {
                 authResponse = await _supabase.auth.signInWithPassword({ email, password });
             }
 
             if (authResponse.error) {
-                errorDiv.innerText = "Invalid PIN or Number already registered."; errorDiv.classList.remove('hidden');
-                submitBtn.innerText = currentAuthMode === 'register' ? "Start 3-Day Trial" : "Login to Vault";
+                errorDiv.innerHTML = "<i class='fa-solid fa-circle-xmark mr-2'></i> Invalid PIN or Number already registered."; errorDiv.classList.remove('hidden');
+                submitBtn.innerHTML = currentAuthMode === 'register' ? "<span>Start 3-Day Trial</span>" : "<span>Login to Vault</span>";
             } else {
-                // Check Block Status
                 const { data: profile } = await _supabase.from('user_profiles').select('is_blocked').eq('email', email).single();
                 if(profile && profile.is_blocked === true) {
                     await _supabase.auth.signOut();
-                    errorDiv.innerText = "❌ ACCOUNT SUSPENDED BY ADMINISTRATOR."; errorDiv.classList.remove('hidden');
-                    submitBtn.innerText = currentAuthMode === 'register' ? "Start 3-Day Trial" : "Login to Vault";
+                    errorDiv.innerHTML = "<i class='fa-solid fa-ban mr-2'></i> ACCOUNT SUSPENDED BY ADMIN."; errorDiv.classList.remove('hidden');
+                    submitBtn.innerHTML = currentAuthMode === 'register' ? "<span>Start 3-Day Trial</span>" : "<span>Login to Vault</span>";
                     return;
                 }
 
                 localStorage.setItem('aurent_auth', 'true'); 
                 localStorage.setItem('aurent_role', 'user'); 
-                localStorage.setItem('aurent_phone', phone); // Save phone
-                localStorage.setItem('aurent_email', email); // Save stealth email
+                localStorage.setItem('aurent_phone', phone); 
+                localStorage.setItem('aurent_email', email); 
                 
                 if ("Notification" in window) Notification.requestPermission();
                 document.getElementById('protocol-overlay').classList.add('hidden');
@@ -375,7 +406,7 @@
             }
         }
 
-        // === 3. M-PESA PAYMENT (WRITES TO DATABASE) ===
+        // === 3. M-PESA PAYMENT ===
         function processPayment() {
             const phone = document.getElementById('mpesa-phone').value;
             if(phone.length < 9) { alert("Please enter a valid M-Pesa number."); return; }
@@ -388,11 +419,8 @@
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> Payment Received';
                 btn.style.backgroundColor = "#25D366"; btn.style.color = "#000";
                 
-                // Update the Database so the Admin sees "Paid"
                 const userEmail = localStorage.getItem('aurent_email');
-                if(userEmail) {
-                    await _supabase.from('user_profiles').update({ payment_status: 'Paid' }).eq('email', userEmail);
-                }
+                if(userEmail) { await _supabase.from('user_profiles').update({ payment_status: 'Paid' }).eq('email', userEmail); }
 
                 setTimeout(() => {
                     document.getElementById('payment-overlay').classList.add('hidden');
@@ -405,7 +433,7 @@
 
         // === 4. ADMIN COMMAND CENTER ENGINE ===
         async function loadAdminUsers() {
-            document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching Live Database...</td></tr>';
+            document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-16 text-slate-600 text-xs tracking-widest uppercase"><i class="fa-solid fa-circle-notch fa-spin text-xl block mb-3"></i> Querying Database...</td></tr>';
             
             const { data, error } = await _supabase.from('user_profiles').select('*').order('created_at', { ascending: false });
             if (error) { document.getElementById('admin-users-table').innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Error: ${error.message}</td></tr>`; return; }
@@ -415,28 +443,20 @@
             document.getElementById('admin-revenue').innerHTML = `${paidUsers * 50} <span class="text-lg text-slate-500 font-normal">KES</span>`;
 
             if(data.length === 0) {
-                document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-500">No users registered yet.</td></tr>';
+                document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-16 text-slate-600 text-xs tracking-widest uppercase">No users registered yet.</td></tr>';
             } else {
                 document.getElementById('admin-users-table').innerHTML = data.map(user => {
-                    const dateObj = new Date(user.created_at);
-                    const fDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    const fDate = new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    let statusBadge = user.is_blocked ? `<span class="status-blocked"><i class="fa-solid fa-ban mr-1"></i> Suspended</span>` : (user.payment_status === 'Paid' ? `<span class="status-paid">Paid 50 KES</span>` : `<span class="status-pending">Trial</span>`);
+                    let actionBtn = user.is_blocked ? `<button onclick="toggleBlockUser('${user.email}', false)" class="bg-green-600/20 text-green-500 border border-green-600/50 px-4 py-2 rounded text-[9px] uppercase font-bold hover:bg-green-600 hover:text-white transition tracking-wider">Unblock</button>` : `<button onclick="toggleBlockUser('${user.email}', true)" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded text-[9px] uppercase font-bold hover:bg-red-600 hover:text-white transition tracking-wider">Block</button>`;
                     
-                    let statusBadge = user.is_blocked 
-                        ? `<span class="status-blocked"><i class="fa-solid fa-ban"></i> Suspended</span>`
-                        : (user.payment_status === 'Paid' ? `<span class="status-paid">Paid 50 KES</span>` : `<span class="status-pending">Trial / Unpaid</span>`);
-
-                    let actionBtn = user.is_blocked
-                        ? `<button onclick="toggleBlockUser('${user.email}', false)" class="bg-green-600/20 text-green-500 border border-green-600/50 px-3 py-1 rounded text-[10px] uppercase font-bold hover:bg-green-600 hover:text-white transition">Unblock</button>`
-                        : `<button onclick="toggleBlockUser('${user.email}', true)" class="bg-red-600/20 text-red-500 border border-red-600/50 px-3 py-1 rounded text-[10px] uppercase font-bold hover:bg-red-600 hover:text-white transition">Block</button>`;
-
-                    // Fallback to displaying email if phone/niche is empty (for old accounts)
                     const displayPhone = user.phone || user.email.split('@')[0];
                     const displayNiche = user.niche || "Not Selected";
 
                     return `
-                    <tr>
-                        <td class="font-bold text-white font-mono tracking-widest">${displayPhone}</td>
-                        <td class="text-yellow-500 text-xs font-bold uppercase">${displayNiche}</td>
+                    <tr class="transition-colors duration-200">
+                        <td class="font-bold text-white font-mono tracking-[0.2em]">${displayPhone}</td>
+                        <td class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest">${displayNiche}</td>
                         <td class="font-mono text-[10px] text-slate-500">${fDate}</td>
                         <td>${statusBadge}</td>
                         <td>${actionBtn}</td>
@@ -446,12 +466,8 @@
             }
         }
 
-        async function toggleBlockUser(email, blockStatus) {
-            await _supabase.from('user_profiles').update({ is_blocked: blockStatus }).eq('email', email);
-            loadAdminUsers(); // Refresh the table
-        }
+        async function toggleBlockUser(email, blockStatus) { await _supabase.from('user_profiles').update({ is_blocked: blockStatus }).eq('email', email); loadAdminUsers(); }
 
-        // === 5. UI TABS ===
         function tab(t) {
             ['s-gigs', 's-rev', 's-admin'].forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById('s-'+t).classList.remove('hidden');
@@ -461,7 +477,7 @@
             if(t === 'admin') loadAdminUsers();
         }
 
-        // === 6. THE ELITE VAULT FEED (WITH SEARCH) ===
+        // === 5. THE ELITE VAULT FEED ===
         async function loadFeed() {
             const { data, error } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false }).limit(100);
             document.getElementById('loading').style.display = 'none';
@@ -477,7 +493,7 @@
                 globalVaultData = data; 
                 renderFeed(globalVaultData); 
             } else {
-                document.getElementById('feed').innerHTML = `<div class="col-span-full glass-card p-16 text-center border border-dashed border-slate-700"><i class="fas fa-radar text-4xl text-yellow-600 mb-6 animate-pulse"></i><h3 class="text-xl font-black uppercase text-white tracking-widest">Vault is Empty</h3></div>`;
+                document.getElementById('feed').innerHTML = `<div class="col-span-full glass-card p-20 text-center border border-white/5"><i class="fas fa-radar text-5xl text-yellow-600/50 mb-6 animate-pulse block"></i><h3 class="text-xl font-black uppercase text-white tracking-[0.3em]">Vault is Empty</h3><p class="text-slate-500 text-[10px] font-bold tracking-widest mt-4">Awaiting signals from the Hunter Engine...</p></div>`;
             }
         }
 
@@ -509,33 +525,33 @@
         function renderFeed(dataToRender) {
             const feedDiv = document.getElementById('feed');
             if(dataToRender.length === 0) {
-                feedDiv.innerHTML = `<div class="col-span-full glass-card p-16 text-center border border-dashed border-slate-700"><i class="fa-solid fa-ghost text-4xl text-slate-500 mb-6"></i><h3 class="text-xl font-black uppercase text-white tracking-widest">No Matches Found</h3><p class="text-slate-500 text-xs uppercase mt-3">Try adjusting your search filters.</p></div>`;
+                feedDiv.innerHTML = `<div class="col-span-full glass-card p-20 text-center border border-white/5"><i class="fa-solid fa-ghost text-5xl text-slate-600 mb-6 block"></i><h3 class="text-xl font-black uppercase text-white tracking-[0.3em]">No Matches Found</h3><p class="text-slate-500 text-[10px] font-bold tracking-widest mt-4">Try adjusting your search filters.</p></div>`;
                 return;
             }
 
-            feedDiv.innerHTML = dataToRender.map(g => {
+            feedDiv.innerHTML = dataToRender.map((g, index) => {
                 const dateObj = new Date(g.created_at);
                 const fDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 const imgUrl = g.image_link || 'https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT';
 
                 return `
-                <div class="glass-card flex flex-col overflow-hidden group hover:border-yellow-600/50 transition-all duration-500">
-                    <div class="relative w-full h-64 bg-black overflow-hidden border-b border-white/5 flex justify-center items-center">
-                        <img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl transition-transform duration-700 group-hover:scale-110">
-                        <img src="${imgUrl}" class="relative z-10 w-full h-full object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT'">
-                        <div class="absolute top-3 left-3 bg-black/80 backdrop-blur border border-white/10 px-3 py-1 rounded text-[9px] font-black text-yellow-500 tracking-widest uppercase z-20 shadow-lg">${fDate}</div>
+                <div class="fade-up glass-card flex flex-col overflow-hidden group hover:border-yellow-600/40 transition-all duration-500 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.3)]" style="animation-delay: ${index * 0.05}s; opacity: 0;">
+                    <div class="relative w-full h-64 bg-[#020202] overflow-hidden border-b border-white/5 flex justify-center items-center">
+                        <img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover opacity-20 blur-[30px] transition-transform duration-1000 group-hover:scale-125">
+                        <img src="${imgUrl}" class="relative z-10 w-full h-full object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-[1.03]" onerror="this.src='https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT'">
+                        <div class="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full text-[8px] font-black text-yellow-500 tracking-widest uppercase z-20 shadow-lg">${fDate}</div>
                     </div>
-                    <div class="p-6 flex-1 flex flex-col bg-[#08080a]">
-                        <h3 class="text-lg font-black uppercase mb-3 text-white leading-snug group-hover:text-yellow-500 transition-colors font-['Montserrat'] line-clamp-2">${g.title}</h3>
-                        <p class="text-slate-400 text-xs mb-6 leading-relaxed line-clamp-3">${g.description.substring(0, 180)}...</p>
-                        <a href="${g.apply_link}" target="_blank" class="mt-auto block w-full text-center bg-transparent border border-white/10 hover:border-yellow-500 hover:bg-yellow-500 transition text-white hover:text-black font-bold py-3 rounded-md text-[10px] uppercase tracking-widest">View Full Details</a>
+                    <div class="p-8 flex-1 flex flex-col bg-gradient-to-b from-[#0a0a0c] to-[#050505]">
+                        <h3 class="text-lg font-black uppercase mb-4 text-white leading-snug group-hover:text-yellow-500 transition-colors duration-300 font-['Montserrat'] line-clamp-2">${g.title}</h3>
+                        <p class="text-slate-400 text-xs mb-8 leading-relaxed line-clamp-3">${g.description.substring(0, 180)}...</p>
+                        <a href="${g.apply_link}" target="_blank" class="btn-shine mt-auto block w-full text-center bg-transparent border border-white/10 hover:border-yellow-500 hover:bg-yellow-500 transition-all duration-300 text-slate-300 hover:text-black font-black py-4 rounded-lg text-[9px] uppercase tracking-[0.2em]"><span>Access Portal</span></a>
                     </div>
                 </div>
                 `;
             }).join('');
         }
 
-        // === 7. REVIEWS ENGINE ===
+        // === 6. REVIEWS ENGINE ===
         async function addReview() {
             const name = document.getElementById('r-name').value || "Verified User";
             const text = document.getElementById('r-msg-vault').value;
@@ -546,17 +562,18 @@
         async function loadReviews() {
             const { data } = await _supabase.from('reviews').select('*').order('created_at', { ascending: false });
             if(data) {
-                document.getElementById('rev-feed').innerHTML = data.slice(0, 10).map(r => `
-                    <div class="glass-card p-6 border-t-2 border-yellow-600 bg-gradient-to-b from-yellow-900/5 to-transparent">
-                        <p class="text-slate-300 text-xs leading-relaxed italic">"${r.text}"</p>
-                        <p class="text-white font-black text-[9px] mt-4 tracking-[0.2em] uppercase">— ${r.name}</p>
+                document.getElementById('rev-feed').innerHTML = data.slice(0, 10).map((r, index) => `
+                    <div class="fade-up glass-card p-8 border-t-2 border-yellow-600 bg-gradient-to-b from-yellow-900/5 to-transparent relative overflow-hidden" style="animation-delay: ${index * 0.1}s; opacity: 0;">
+                        <i class="fa-solid fa-quote-left absolute -left-4 -top-4 text-6xl text-white/5"></i>
+                        <p class="text-slate-300 text-xs leading-relaxed italic relative z-10">"${r.text}"</p>
+                        <p class="text-yellow-500 font-black text-[9px] mt-6 tracking-[0.2em] uppercase relative z-10">— ${r.name}</p>
                     </div>
                 `).join('');
             }
         }
 
         // --- INIT CALLS ---
-        initDeviceAndTrial();
+        window.onload = initDeviceAndTrial;
         _supabase.channel('aurent-radar').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gigs' }, (payload) => {
               document.getElementById('notification-sound').play(); loadFeed(); 
         }).subscribe();
