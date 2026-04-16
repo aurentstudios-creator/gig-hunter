@@ -11,28 +11,13 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700;900&family=Montserrat:wght@400;600;800;900&display=swap');
         
-        /* 1. CINEMATIC NOISE & TEXTURE */
-        body { 
-            font-family: 'Space Grotesk', sans-serif; 
-            background-color: #050505; 
-            color: white; 
-            background-image: radial-gradient(circle at 50% 0%, #15151c 0%, #050505 70%);
-            background-attachment: fixed;
-            position: relative;
-        }
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.04; pointer-events: none; z-index: 9999;
-        }
-
+        body { font-family: 'Space Grotesk', sans-serif; background-color: #050505; color: white; background-image: radial-gradient(circle at 50% 0%, #15151c 0%, #050505 70%); background-attachment: fixed; position: relative; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); opacity: 0.04; pointer-events: none; z-index: 9999; }
         .css-watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22vw; font-weight: 900; font-style: italic; letter-spacing: -0.05em; color: rgba(255, 255, 255, 0.015); z-index: 0; pointer-events: none; }
         
-        /* 2. REFINED GLASSMORPHISM */
         .glass-card { background: rgba(10, 10, 12, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0.75rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .nav-link.active { color: #fff; border-bottom: 2px solid #d4af37; text-shadow: 0 0 10px rgba(212,175,55,0.5); }
         
-        /* 3. PREMIUM INPUTS */
         .luxury-input { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.5rem; padding: 1rem; color: white; width: 100%; transition: all 0.3s ease;}
         .luxury-input:focus { border-color: #d4af37; outline: none; box-shadow: 0 0 15px rgba(212,175,55,0.1); background: rgba(0,0,0,0.8); }
         select option { background-color: #0a0a0c !important; color: white !important; }
@@ -44,20 +29,21 @@
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
 
-        /* 4. ELITE ANIMATIONS */
         .slide-in { animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-
         .fade-up { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* THE LUXURY BUTTON SHINE EFFECT */
         .btn-shine { position: relative; overflow: hidden; }
         .btn-shine::after { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); transition: 0.5s; z-index: 1; }
         .btn-shine:hover::after { left: 150%; }
         .btn-shine span { position: relative; z-index: 2; }
 
-        /* Admin Table */
+        /* RADAR CHIPS */
+        .niche-chip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; text-align: center; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #cbd5e1; letter-spacing: 1px;}
+        .niche-chip:hover { background: rgba(255,255,255,0.1); }
+        .niche-chip.active { background: rgba(212,175,55,0.1); border-color: #d4af37; color: #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
+
         .admin-table { width: 100%; text-align: left; border-collapse: collapse; }
         .admin-table th { padding: 18px 15px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #d4af37; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
         .admin-table td { padding: 18px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 12px; color: #cbd5e1; }
@@ -84,7 +70,7 @@
                     <ul class="list-disc pl-4 space-y-4">
                         <li><span class="text-yellow-500 font-bold">DEVICE ID:</span> <span id="display-device-id" class="font-mono text-white bg-white/10 px-2 py-1 rounded tracking-widest"></span></li>
                         <li><span class="text-yellow-500 font-bold">FREE TRIAL:</span> <span id="display-trial-days" class="text-white font-bold text-lg">3</span> Days Remaining.</li>
-                        <li><span class="text-yellow-500 font-bold">VIP ALERTS:</span> Select your job niche to receive curated, high-ticket jobs directly to your WhatsApp.</li>
+                        <li><span class="text-yellow-500 font-bold">VIP ALERTS:</span> Configure your radar inside the Vault to receive curated, high-ticket jobs directly to your WhatsApp.</li>
                         <li>After 3 days, a 50 KSH monthly verification fee applies to maintain Vault access and WhatsApp DMs.</li>
                         <li class="text-red-400 font-bold border border-red-900/30 bg-red-900/10 p-3 rounded mt-4 leading-relaxed">
                             DISCLAIMER: Aurent Vault is an intelligence aggregator, NOT an employer. We hold zero liability for third-party hiring processes, scams, or external disputes.
@@ -104,25 +90,34 @@
                 
                 <div id="auth-error" class="hidden bg-red-900/20 text-red-400 text-[10px] p-4 rounded-lg mb-6 font-bold uppercase border border-red-900/50 tracking-wider"></div>
 
-                <div class="space-y-5 mb-8">
-                    <input type="tel" id="auth-phone" placeholder="WhatsApp No. (e.g. 0712345678)" class="luxury-input text-xs text-center tracking-[0.2em] font-mono" maxlength="10">
-                    
-                    <select id="auth-niche" class="luxury-input text-xs hidden uppercase tracking-widest text-center text-slate-300 font-bold">
-                        <option value="" disabled selected>-- Select Your Job Niche --</option>
-                        <option value="Tech & Software">Tech & Software</option>
-                        <option value="Design & Creative">Design & Creative</option>
-                        <option value="Finance & Business">Finance & Business</option>
-                        <option value="Scholarships">Scholarships & Education</option>
-                        <option value="Remote Work">Remote / WFH</option>
-                    </select>
-
-                    <input type="password" id="auth-pin" placeholder="Enter 4-Digit PIN" class="luxury-input text-sm text-center tracking-[1em] font-mono" maxlength="4">
+                <div class="space-y-6 mb-8">
+                    <input type="tel" id="auth-phone" placeholder="WhatsApp No. (e.g. 0712345678)" class="luxury-input text-xs text-center tracking-[0.2em] font-mono py-4" maxlength="10">
+                    <input type="password" id="auth-pin" placeholder="Enter 4-Digit PIN" class="luxury-input text-sm text-center tracking-[1em] font-mono py-4" maxlength="4">
                 </div>
 
                 <button id="auth-submit-btn" onclick="executeAuth()" class="btn-shine w-full bg-yellow-600 hover:bg-yellow-500 transition text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(212,175,55,0.2)]"><span>Access Vault</span></button>
                 
                 <button onclick="hideAuthForm()" class="text-[9px] text-slate-500 mt-6 uppercase tracking-widest hover:text-white transition"><i class="fa-solid fa-arrow-left mr-2"></i> Return to Terms</button>
             </div>
+        </div>
+    </div>
+
+    <div id="prefs-overlay" class="overlay hidden">
+        <div class="max-w-md w-full glass-card p-10 border-t-2 border-yellow-600 shadow-[0_0_50px_rgba(212,175,55,0.15)] relative overflow-hidden">
+            <h1 class="text-2xl font-black mb-2 tracking-widest uppercase text-white font-['Montserrat'] text-center">Configure Radar</h1>
+            <p class="text-[9px] uppercase text-slate-400 font-bold mb-8 tracking-widest text-center">Select the sectors you want sent to your WhatsApp</p>
+            
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <div class="niche-chip" data-niche="Tech & Software" onclick="toggleNiche(this)">Tech & Software</div>
+                <div class="niche-chip" data-niche="Design & Creative" onclick="toggleNiche(this)">Design & Creative</div>
+                <div class="niche-chip" data-niche="Finance & Business" onclick="toggleNiche(this)">Finance & Business</div>
+                <div class="niche-chip" data-niche="Scholarships" onclick="toggleNiche(this)">Scholarships</div>
+                <div class="niche-chip" data-niche="Remote Work" onclick="toggleNiche(this)">Remote Work</div>
+                <div class="niche-chip" data-niche="Engineering" onclick="toggleNiche(this)">Engineering</div>
+            </div>
+
+            <button id="save-prefs-btn" onclick="savePrefs()" class="btn-shine w-full bg-yellow-600 text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-lg shadow-yellow-600/20"><span>Save & Update Radar</span></button>
+            <button onclick="document.getElementById('prefs-overlay').classList.add('hidden')" class="w-full text-center text-[9px] text-slate-500 mt-6 uppercase tracking-widest hover:text-white transition">Cancel</button>
         </div>
     </div>
 
@@ -144,7 +139,7 @@
         </div>
     </div>
 
-    <nav class="fixed top-0 w-full bg-[#050505]/70 backdrop-blur-xl z-[100] border-b border-white/5 px-6 py-4 flex justify-between items-center transition-all duration-300">
+    <nav class="fixed top-0 w-full bg-[#050505]/80 backdrop-blur-xl z-[100] border-b border-white/5 px-6 py-4 flex justify-between items-center transition-all duration-300">
         <span class="font-black text-[12px] md:text-[14px] tracking-[0.2em] uppercase text-white font-['Montserrat'] flex items-center">
             Aurent <span class="text-yellow-600 italic ml-2">Vault</span>
         </span>
@@ -152,9 +147,14 @@
             <button onclick="tab('admin')" id="t-admin" class="hidden nav-link font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-yellow-500 hover:text-white transition whitespace-nowrap">
                 <i class="fa-solid fa-shield-halved mr-1"></i> Command
             </button>
+            
             <button onclick="tab('gigs')" id="t-gigs" class="nav-link active font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition whitespace-nowrap">The Vault</button>
             <button onclick="tab('rev')" id="t-rev" class="nav-link font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition whitespace-nowrap">Reviews</button>
             
+            <button id="t-prefs" onclick="openPrefs()" class="hidden font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500 hover:text-yellow-500 transition whitespace-nowrap">
+                <i class="fa-solid fa-crosshairs mr-1"></i> Radar Settings
+            </button>
+
             <a href="cv-studio.html" class="font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-yellow-500 border border-yellow-500/20 px-5 py-2 rounded-full hover:bg-yellow-500 hover:text-black transition duration-500 shadow-[0_0_15px_rgba(212,175,55,0.05)] hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] whitespace-nowrap">CV Studio <i class="fa-solid fa-wand-magic-sparkles ml-1"></i></a>
             
             <button id="verify-btn" onclick="document.getElementById('payment-overlay').classList.remove('hidden')" class="hidden font-bold text-[9px] md:text-[10px] uppercase tracking-widest bg-gradient-to-r from-[#25D366]/20 to-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 px-5 py-2 rounded-full hover:from-[#25D366] hover:to-[#20bd5a] hover:text-black transition duration-500 whitespace-nowrap">
@@ -194,7 +194,7 @@
                     <thead>
                         <tr>
                             <th>WhatsApp Number</th>
-                            <th>Niche Profile</th>
+                            <th>Radar Profile</th>
                             <th>Registration Date</th>
                             <th>Status</th>
                             <th>Access Protocol</th>
@@ -268,6 +268,7 @@
         let lastId = null;
         let globalVaultData = [];
         let currentAuthMode = 'login'; 
+        let userNiches = []; // Array to hold multiple radar selections
 
         // === 1. INITIALIZATION & UI SETUP ===
         function initDeviceAndTrial() {
@@ -304,11 +305,13 @@
             const role = localStorage.getItem('aurent_role');
             if (role === 'admin') {
                 document.getElementById('t-admin').classList.remove('hidden');
+                document.getElementById('t-prefs').classList.remove('hidden');
                 document.getElementById('verify-btn').classList.add('hidden');
                 document.getElementById('trial-banner').classList.add('hidden');
                 loadAdminUsers();
             } else {
                 document.getElementById('t-admin').classList.add('hidden');
+                document.getElementById('t-prefs').classList.remove('hidden'); // Show radar settings to users
                 document.getElementById('verify-btn').classList.remove('hidden');
                 document.getElementById('trial-banner').classList.remove('hidden');
             }
@@ -320,6 +323,7 @@
             window.location.reload();
         }
 
+        // === 2. WHATSAPP AUTHENTICATION ===
         function showAuthForm() { document.getElementById('auth-step-1').classList.add('hidden'); document.getElementById('auth-step-2').classList.remove('hidden'); }
         function hideAuthForm() { document.getElementById('auth-step-2').classList.add('hidden'); document.getElementById('auth-step-1').classList.remove('hidden'); }
 
@@ -327,20 +331,17 @@
             currentAuthMode = mode;
             const btnLog = document.getElementById('tab-login');
             const btnReg = document.getElementById('tab-register');
-            const nicheDrop = document.getElementById('auth-niche');
             const submitBtn = document.getElementById('auth-submit-btn');
             const pinInput = document.getElementById('auth-pin');
 
             if(mode === 'login') {
                 btnLog.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded bg-yellow-600 text-black transition shadow-lg shadow-yellow-600/20";
                 btnReg.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded text-slate-500 transition hover:text-white";
-                nicheDrop.classList.add('hidden');
                 pinInput.placeholder = "Enter 4-Digit PIN";
                 submitBtn.innerHTML = "<span>Login to Vault</span>";
             } else {
                 btnReg.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded bg-yellow-600 text-black transition shadow-lg shadow-yellow-600/20";
                 btnLog.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded text-slate-500 transition hover:text-white";
-                nicheDrop.classList.remove('hidden');
                 pinInput.placeholder = "Create 4-Digit PIN";
                 submitBtn.innerHTML = "<span>Start 3-Day Trial</span>";
             }
@@ -349,15 +350,11 @@
         async function executeAuth() {
             const phone = document.getElementById('auth-phone').value;
             const pin = document.getElementById('auth-pin').value;
-            const niche = document.getElementById('auth-niche').value;
             const errorDiv = document.getElementById('auth-error');
             const submitBtn = document.getElementById('auth-submit-btn');
             
             if(phone.length < 9 || pin.length < 4) {
                 errorDiv.innerHTML = "<i class='fa-solid fa-triangle-exclamation mr-2'></i> Valid Phone and 4-Digit PIN required."; errorDiv.classList.remove('hidden'); return;
-            }
-            if(currentAuthMode === 'register' && !niche) {
-                errorDiv.innerHTML = "<i class='fa-solid fa-triangle-exclamation mr-2'></i> Please select your Job Niche."; errorDiv.classList.remove('hidden'); return;
             }
 
             errorDiv.classList.add('hidden');
@@ -377,7 +374,8 @@
             if(currentAuthMode === 'register') {
                 authResponse = await _supabase.auth.signUp({ email, password });
                 if(!authResponse.error) { 
-                    await _supabase.from('user_profiles').insert([{ email: email, phone: phone, niche: niche, payment_status: 'Trial', is_blocked: false }]); 
+                    // Set niche to Pending initially
+                    await _supabase.from('user_profiles').insert([{ email: email, phone: phone, niche: 'Pending Configuration', payment_status: 'Trial', is_blocked: false }]); 
                 }
             } else {
                 authResponse = await _supabase.auth.signInWithPassword({ email, password });
@@ -406,7 +404,57 @@
             }
         }
 
-        // === 3. M-PESA PAYMENT ===
+        // === 3. RADAR PREFERENCES ENGINE ===
+        function toggleNiche(element) {
+            const nicheName = element.getAttribute('data-niche');
+            if(userNiches.includes(nicheName)) {
+                userNiches = userNiches.filter(n => n !== nicheName);
+                element.classList.remove('active');
+            } else {
+                userNiches.push(nicheName);
+                element.classList.add('active');
+            }
+        }
+
+        async function openPrefs() {
+            document.getElementById('prefs-overlay').classList.remove('hidden');
+            const email = localStorage.getItem('aurent_email');
+            
+            // Load current preferences from DB
+            const { data } = await _supabase.from('user_profiles').select('niche').eq('email', email).single();
+            if(data && data.niche && data.niche !== 'Pending Configuration') {
+                userNiches = data.niche.split(', ');
+                
+                // Light up the correct chips
+                document.querySelectorAll('.niche-chip').forEach(chip => {
+                    if(userNiches.includes(chip.getAttribute('data-niche'))) {
+                        chip.classList.add('active');
+                    } else {
+                        chip.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        async function savePrefs() {
+            const btn = document.getElementById('save-prefs-btn');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i>';
+            
+            const email = localStorage.getItem('aurent_email');
+            const nicheStr = userNiches.length > 0 ? userNiches.join(', ') : 'Pending Configuration';
+            
+            await _supabase.from('user_profiles').update({ niche: nicheStr }).eq('email', email);
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span><i class="fa-solid fa-check mr-2"></i> Radar Updated</span>';
+                setTimeout(() => {
+                    document.getElementById('prefs-overlay').classList.add('hidden');
+                    btn.innerHTML = '<span>Save & Update Radar</span>';
+                }, 1000);
+            }, 800);
+        }
+
+        // === 4. M-PESA PAYMENT ===
         function processPayment() {
             const phone = document.getElementById('mpesa-phone').value;
             if(phone.length < 9) { alert("Please enter a valid M-Pesa number."); return; }
@@ -431,7 +479,7 @@
             }, 3500);
         }
 
-        // === 4. ADMIN COMMAND CENTER ENGINE ===
+        // === 5. ADMIN COMMAND CENTER ===
         async function loadAdminUsers() {
             document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-16 text-slate-600 text-xs tracking-widest uppercase"><i class="fa-solid fa-circle-notch fa-spin text-xl block mb-3"></i> Querying Database...</td></tr>';
             
@@ -451,12 +499,12 @@
                     let actionBtn = user.is_blocked ? `<button onclick="toggleBlockUser('${user.email}', false)" class="bg-green-600/20 text-green-500 border border-green-600/50 px-4 py-2 rounded text-[9px] uppercase font-bold hover:bg-green-600 hover:text-white transition tracking-wider">Unblock</button>` : `<button onclick="toggleBlockUser('${user.email}', true)" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded text-[9px] uppercase font-bold hover:bg-red-600 hover:text-white transition tracking-wider">Block</button>`;
                     
                     const displayPhone = user.phone || user.email.split('@')[0];
-                    const displayNiche = user.niche || "Not Selected";
+                    const displayNiche = user.niche || "Pending Configuration";
 
                     return `
                     <tr class="transition-colors duration-200">
                         <td class="font-bold text-white font-mono tracking-[0.2em]">${displayPhone}</td>
-                        <td class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest">${displayNiche}</td>
+                        <td class="text-yellow-500 text-[10px] font-bold uppercase tracking-wider">${displayNiche}</td>
                         <td class="font-mono text-[10px] text-slate-500">${fDate}</td>
                         <td>${statusBadge}</td>
                         <td>${actionBtn}</td>
@@ -468,6 +516,7 @@
 
         async function toggleBlockUser(email, blockStatus) { await _supabase.from('user_profiles').update({ is_blocked: blockStatus }).eq('email', email); loadAdminUsers(); }
 
+        // === 6. UI TABS & FEED ===
         function tab(t) {
             ['s-gigs', 's-rev', 's-admin'].forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById('s-'+t).classList.remove('hidden');
@@ -477,7 +526,6 @@
             if(t === 'admin') loadAdminUsers();
         }
 
-        // === 5. THE ELITE VAULT FEED ===
         async function loadFeed() {
             const { data, error } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false }).limit(100);
             document.getElementById('loading').style.display = 'none';
@@ -487,7 +535,6 @@
             if(data && data.length > 0) {
                 if(lastId && data[0].id !== lastId) {
                     document.getElementById('notification-sound').play();
-                    new Notification("Aurent Vault", { body: "New Opportunity Synced!" });
                 }
                 lastId = data[0].id;
                 globalVaultData = data; 
@@ -551,7 +598,6 @@
             }).join('');
         }
 
-        // === 6. REVIEWS ENGINE ===
         async function addReview() {
             const name = document.getElementById('r-name').value || "Verified User";
             const text = document.getElementById('r-msg-vault').value;
@@ -572,7 +618,6 @@
             }
         }
 
-        // --- INIT CALLS ---
         window.onload = initDeviceAndTrial;
         _supabase.channel('aurent-radar').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gigs' }, (payload) => {
               document.getElementById('notification-sound').play(); loadFeed(); 
