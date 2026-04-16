@@ -30,7 +30,6 @@
         .slide-in { animation: slideIn 0.4s ease forwards; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* Admin Table Styles */
         .admin-table { width: 100%; text-align: left; border-collapse: collapse; }
         .admin-table th { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #d4af37; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
         .admin-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #cbd5e1; }
@@ -50,16 +49,16 @@
             
             <div id="auth-step-1">
                 <h1 class="text-4xl font-black mb-2 tracking-widest uppercase italic">Aurent</h1>
-                <p class="text-[10px] uppercase text-yellow-500 font-bold mb-6 tracking-widest">Access Protocol</p>
+                <p class="text-[10px] uppercase text-yellow-500 font-bold mb-6 tracking-widest">The VIP Network</p>
                 
                 <div class="text-left bg-black/60 p-5 rounded-xl mb-6 border border-white/5 text-[10px] leading-relaxed text-slate-400 h-48 overflow-y-auto">
-                    <b class="text-white block mb-3 uppercase tracking-tighter border-b border-white/10 pb-2">Terms of Service & Device Reg</b>
+                    <b class="text-white block mb-3 uppercase tracking-tighter border-b border-white/10 pb-2">Terms of Service</b>
                     <ul class="list-disc pl-4 space-y-3">
-                        <li><span class="text-yellow-500 font-bold">DEVICE ID:</span> <span id="display-device-id" class="font-mono text-white bg-white/10 px-2 py-1 rounded"></span></li>
-                        <li><span class="text-yellow-500 font-bold">FREE TRIAL:</span> <span id="display-trial-days" class="text-white font-bold text-lg">7</span> Days Remaining.</li>
-                        <li>After the 7-day trial, a 50 KSH verification fee applies to maintain this device's access.</li>
+                        <li><span class="text-yellow-500 font-bold">3-DAY FREE TRIAL:</span> You get 3 days of full access to the Vault and CV Studio.</li>
+                        <li><span class="text-yellow-500 font-bold">VIP WHATSAPP ALERTS:</span> Select your job niche to receive curated, high-ticket jobs directly to your WhatsApp.</li>
+                        <li>After 3 days, a 50 KSH monthly verification fee applies to maintain Vault access and WhatsApp DMs.</li>
                         <li class="text-red-400 font-bold border border-red-900/50 bg-red-900/10 p-2 rounded">
-                            DISCLAIMER: Aurent Vault is an intelligence aggregator, NOT an employer or job provider. We hold zero liability for third-party hiring processes, scams, or external disputes.
+                            DISCLAIMER: Aurent Vault is an intelligence aggregator, NOT an employer. We hold zero liability for third-party hiring processes, scams, or external disputes.
                         </li>
                     </ul>
                 </div>
@@ -67,20 +66,32 @@
             </div>
 
             <div id="auth-step-2" class="hidden slide-in">
-                <h1 class="text-2xl font-black mb-2 tracking-widest uppercase text-white">Identify</h1>
-                <p class="text-[10px] uppercase text-slate-400 font-bold mb-6 tracking-widest">Register or Login to the Vault</p>
+                <h1 class="text-2xl font-black mb-4 tracking-widest uppercase text-white">Identify</h1>
+                
+                <div class="flex mb-6 bg-black/50 p-1 rounded-lg border border-white/10">
+                    <button id="tab-login" onclick="setAuthMode('login')" class="w-1/2 py-2 text-[10px] font-bold uppercase rounded bg-yellow-600 text-black transition">Login</button>
+                    <button id="tab-register" onclick="setAuthMode('register')" class="w-1/2 py-2 text-[10px] font-bold uppercase rounded text-slate-400 transition hover:text-white">Register</button>
+                </div>
                 
                 <div id="auth-error" class="hidden bg-red-900/50 text-red-300 text-[10px] p-3 rounded mb-4 font-bold uppercase border border-red-900"></div>
 
                 <div class="space-y-4 mb-6">
-                    <input type="email" id="auth-email" placeholder="Secure Email Address" class="luxury-input text-sm">
-                    <input type="password" id="auth-pass" placeholder="Password (Min 6 chars)" class="luxury-input text-sm">
+                    <input type="tel" id="auth-phone" placeholder="WhatsApp Number (e.g. 0712345678)" class="luxury-input text-sm text-center tracking-widest font-mono" maxlength="10">
+                    
+                    <select id="auth-niche" class="luxury-input text-sm hidden">
+                        <option value="" disabled selected>-- Select Your Job Niche --</option>
+                        <option value="Tech & Software">Tech & Software</option>
+                        <option value="Design & Creative">Design & Creative</option>
+                        <option value="Finance & Business">Finance & Business</option>
+                        <option value="Scholarships">Scholarships & Education</option>
+                        <option value="Remote Work">Remote / WFH</option>
+                    </select>
+
+                    <input type="password" id="auth-pin" placeholder="Create 4-Digit PIN" class="luxury-input text-sm text-center tracking-[1em] font-mono" maxlength="4">
                 </div>
 
-                <div class="flex gap-3">
-                    <button onclick="handleAuth('login')" class="w-1/2 bg-transparent border border-yellow-600 text-yellow-500 hover:bg-yellow-600 hover:text-black transition font-black py-3 rounded-lg uppercase tracking-widest text-[10px]" id="btn-login">Login</button>
-                    <button onclick="handleAuth('register')" class="w-1/2 bg-yellow-600 text-black hover:bg-yellow-500 transition font-black py-3 rounded-lg uppercase tracking-widest text-[10px]" id="btn-reg">Register</button>
-                </div>
+                <button id="auth-submit-btn" onclick="executeAuth()" class="w-full bg-yellow-600 hover:bg-yellow-500 transition text-black font-black py-4 rounded-xl uppercase tracking-widest text-[11px] shadow-lg shadow-yellow-600/20">Access Vault</button>
+                
                 <button onclick="hideAuthForm()" class="text-[10px] text-slate-500 mt-6 uppercase tracking-widest hover:text-white transition">← Back to Terms</button>
             </div>
         </div>
@@ -105,6 +116,7 @@
     <nav class="fixed top-0 w-full bg-[#030303]/90 backdrop-blur-md z-[100] border-b border-white/5 px-6 py-4 flex justify-between items-center">
         <span class="font-black text-[14px] tracking-[0.2em] uppercase text-white font-['Montserrat']">Aurent <span class="text-yellow-600 italic">Vault</span></span>
         <div class="flex gap-4 overflow-x-auto items-center">
+            
             <button onclick="tab('admin')" id="t-admin" class="hidden nav-link font-bold text-[10px] uppercase tracking-widest text-yellow-500 hover:text-white transition whitespace-nowrap">
                 <i class="fa-solid fa-shield-halved mr-1"></i> Command Center
             </button>
@@ -148,14 +160,15 @@
                 <table class="admin-table w-full">
                     <thead>
                         <tr>
-                            <th>Email Address</th>
+                            <th>WhatsApp Number</th>
+                            <th>Chosen Niche</th>
                             <th>Registration Date</th>
                             <th>Payment Status</th>
                             <th>Access Control</th>
                         </tr>
                     </thead>
                     <tbody id="admin-users-table">
-                        <tr><td colspan="4" class="text-center py-10 text-slate-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading Users...</td></tr>
+                        <tr><td colspan="5" class="text-center py-10 text-slate-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading Users...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -168,6 +181,24 @@
             <div id="error-banner" class="hidden bg-red-900/20 border border-red-500/20 text-red-400 text-xs font-bold p-4 rounded text-center mb-8">
                 ⚠️ SYSTEM ERROR: <span id="error-msg"></span>
             </div>
+
+            <div class="glass-card p-4 mb-8 flex flex-col md:flex-row gap-4 border-yellow-500/20">
+                <div class="relative flex-grow">
+                    <i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="search-input" oninput="filterVault()" placeholder="Search roles, companies, keywords..." class="luxury-input pl-12 py-3 w-full text-sm">
+                </div>
+                <div class="w-full md:w-64 shrink-0">
+                    <select id="category-filter" onchange="filterVault()" class="luxury-input py-3 w-full text-sm cursor-pointer">
+                        <option value="all">All Opportunities</option>
+                        <option value="tech">Tech & IT</option>
+                        <option value="design">Design & Creative</option>
+                        <option value="finance">Finance & Business</option>
+                        <option value="scholarship">Scholarships & Edu</option>
+                        <option value="remote">Remote / WFH</option>
+                    </select>
+                </div>
+            </div>
+
             <div id="loading" class="text-center py-20 text-yellow-600 font-black tracking-widest uppercase animate-pulse">
                 <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4 block"></i> Syncing Vault Data...
             </div>
@@ -199,23 +230,22 @@
 
     <script>
         const _supabase = supabase.createClient("https://nujhdywfoosjwxoxiito.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs");
+        
         let lastId = null;
+        let globalVaultData = [];
+        let currentAuthMode = 'login'; // default
 
         // === 1. INITIALIZATION & UI SETUP ===
         function initDeviceAndTrial() {
-            let deviceId = localStorage.getItem('aurent_device_id');
-            if (!deviceId) {
-                deviceId = 'AUR-' + Math.random().toString(36).substr(2, 5).toUpperCase();
-                localStorage.setItem('aurent_device_id', deviceId);
-                localStorage.setItem('aurent_trial_start', Date.now());
+            let trialStart = localStorage.getItem('aurent_trial_start');
+            if (!trialStart) {
+                trialStart = Date.now();
+                localStorage.setItem('aurent_trial_start', trialStart);
             }
 
-            let trialStart = parseInt(localStorage.getItem('aurent_trial_start'));
-            let daysPassed = Math.floor((Date.now() - trialStart) / (1000 * 60 * 60 * 24));
-            let daysLeft = Math.max(0, 7 - daysPassed);
+            let daysPassed = Math.floor((Date.now() - parseInt(trialStart)) / (1000 * 60 * 60 * 24));
+            let daysLeft = Math.max(0, 3 - daysPassed); // 3 DAY TRIAL
 
-            document.getElementById('display-device-id').innerText = deviceId;
-            document.getElementById('footer-device-id').innerText = "DEVICE_ID: " + deviceId;
             document.getElementById('display-trial-days').innerText = daysLeft;
             document.getElementById('banner-days-left').innerText = daysLeft;
             
@@ -234,7 +264,7 @@
                 document.getElementById('t-admin').classList.remove('hidden');
                 document.getElementById('verify-btn').classList.add('hidden');
                 document.getElementById('trial-banner').classList.add('hidden');
-                loadAdminUsers(); // Preload admin data
+                loadAdminUsers();
             } else {
                 document.getElementById('t-admin').classList.add('hidden');
                 document.getElementById('verify-btn').classList.remove('hidden');
@@ -245,69 +275,100 @@
         function logout() {
             localStorage.removeItem('aurent_auth');
             localStorage.removeItem('aurent_role');
-            localStorage.removeItem('aurent_email');
+            localStorage.removeItem('aurent_phone');
             _supabase.auth.signOut();
             window.location.reload();
         }
 
-        // === 2. REAL DATABASE AUTHENTICATION & BLOCK LOGIC ===
+        // === 2. WHATSAPP AUTHENTICATION (STEALTH HACK) ===
         function showAuthForm() { document.getElementById('auth-step-1').classList.add('hidden'); document.getElementById('auth-step-2').classList.remove('hidden'); }
         function hideAuthForm() { document.getElementById('auth-step-2').classList.add('hidden'); document.getElementById('auth-step-1').classList.remove('hidden'); }
 
-        async function handleAuth(type) {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-pass').value;
+        function setAuthMode(mode) {
+            currentAuthMode = mode;
+            const btnLog = document.getElementById('tab-login');
+            const btnReg = document.getElementById('tab-register');
+            const nicheDrop = document.getElementById('auth-niche');
+            const submitBtn = document.getElementById('auth-submit-btn');
+
+            if(mode === 'login') {
+                btnLog.className = "w-1/2 py-2 text-[10px] font-bold uppercase rounded bg-yellow-600 text-black transition";
+                btnReg.className = "w-1/2 py-2 text-[10px] font-bold uppercase rounded text-slate-400 transition hover:text-white";
+                nicheDrop.classList.add('hidden');
+                document.getElementById('auth-pin').placeholder = "Enter 4-Digit PIN";
+                submitBtn.innerText = "Login to Vault";
+            } else {
+                btnReg.className = "w-1/2 py-2 text-[10px] font-bold uppercase rounded bg-yellow-600 text-black transition";
+                btnLog.className = "w-1/2 py-2 text-[10px] font-bold uppercase rounded text-slate-400 transition hover:text-white";
+                nicheDrop.classList.remove('hidden');
+                document.getElementById('auth-pin').placeholder = "Create 4-Digit PIN";
+                submitBtn.innerText = "Start 3-Day Trial";
+            }
+        }
+
+        async function executeAuth() {
+            const phone = document.getElementById('auth-phone').value;
+            const pin = document.getElementById('auth-pin').value;
+            const niche = document.getElementById('auth-niche').value;
             const errorDiv = document.getElementById('auth-error');
-            const btnReg = document.getElementById('btn-reg');
-            const btnLog = document.getElementById('btn-login');
+            const submitBtn = document.getElementById('auth-submit-btn');
             
-            if(!email || password.length < 6) {
-                errorDiv.innerText = "Valid email and 6+ char password required."; errorDiv.classList.remove('hidden'); return;
+            if(phone.length < 9 || pin.length < 4) {
+                errorDiv.innerText = "Valid Phone Number and 4-Digit PIN required."; errorDiv.classList.remove('hidden'); return;
+            }
+            if(currentAuthMode === 'register' && !niche) {
+                errorDiv.innerText = "Please select your Job Niche."; errorDiv.classList.remove('hidden'); return;
             }
 
             errorDiv.classList.add('hidden');
-            btnReg.innerText = "Wait..."; btnLog.innerText = "Wait...";
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
 
             // 🚨 ADMIN MASTER BYPASS 🚨
-            if (email === 'admin@aurent.com' && password === 'VaultMaster2026') {
-                localStorage.setItem('aurent_auth', 'true');
-                localStorage.setItem('aurent_role', 'admin');
+            if (phone === '0700000000' && pin === '2026') {
+                localStorage.setItem('aurent_auth', 'true'); localStorage.setItem('aurent_role', 'admin');
                 document.getElementById('protocol-overlay').classList.add('hidden');
                 setupRoleUI(); loadFeed(); return;
             }
 
-            // Normal User Logic connecting to user_profiles table
+            // The Stealth Hack: Convert Phone to Email & PIN to Secure Password
+            const email = `${phone}@aurent.local`;
+            const password = `AUR${pin}ent!`;
+
             let authResponse;
-            if(type === 'register') {
+            if(currentAuthMode === 'register') {
                 authResponse = await _supabase.auth.signUp({ email, password });
-                // Automatically inject them into your tracking table
-                if(!authResponse.error) {
-                    await _supabase.from('user_profiles').insert([{ email: email, payment_status: 'Pending', is_blocked: false }]);
+                if(!authResponse.error) { 
+                    // Write the explicit Phone and Niche to the Database
+                    await _supabase.from('user_profiles').insert([{ 
+                        email: email, 
+                        phone: phone,
+                        niche: niche,
+                        payment_status: 'Trial', 
+                        is_blocked: false 
+                    }]); 
                 }
             } else {
                 authResponse = await _supabase.auth.signInWithPassword({ email, password });
             }
 
             if (authResponse.error) {
-                errorDiv.innerText = authResponse.error.message;
-                errorDiv.classList.remove('hidden');
-                btnReg.innerText = "Register"; btnLog.innerText = "Login";
+                errorDiv.innerText = "Invalid PIN or Number already registered."; errorDiv.classList.remove('hidden');
+                submitBtn.innerText = currentAuthMode === 'register' ? "Start 3-Day Trial" : "Login to Vault";
             } else {
-                // Check if they are BLOCKED before letting them in!
+                // Check Block Status
                 const { data: profile } = await _supabase.from('user_profiles').select('is_blocked').eq('email', email).single();
-                
                 if(profile && profile.is_blocked === true) {
                     await _supabase.auth.signOut();
-                    errorDiv.innerText = "❌ ACCOUNT SUSPENDED BY ADMINISTRATOR.";
-                    errorDiv.classList.remove('hidden');
-                    btnReg.innerText = "Register"; btnLog.innerText = "Login";
+                    errorDiv.innerText = "❌ ACCOUNT SUSPENDED BY ADMINISTRATOR."; errorDiv.classList.remove('hidden');
+                    submitBtn.innerText = currentAuthMode === 'register' ? "Start 3-Day Trial" : "Login to Vault";
                     return;
                 }
 
-                // Success! Let them in.
-                localStorage.setItem('aurent_auth', 'true');
-                localStorage.setItem('aurent_role', 'user');
-                localStorage.setItem('aurent_email', email); // Save email to update payment later
+                localStorage.setItem('aurent_auth', 'true'); 
+                localStorage.setItem('aurent_role', 'user'); 
+                localStorage.setItem('aurent_phone', phone); // Save phone
+                localStorage.setItem('aurent_email', email); // Save stealth email
+                
                 if ("Notification" in window) Notification.requestPermission();
                 document.getElementById('protocol-overlay').classList.add('hidden');
                 setupRoleUI(); loadFeed();
@@ -337,28 +398,24 @@
                     document.getElementById('payment-overlay').classList.add('hidden');
                     document.getElementById('trial-banner').classList.add('hidden');
                     document.getElementById('verify-btn').classList.add('hidden');
-                    alert("Account verified successfully. Welcome to the elite tier.");
+                    alert("Account verified successfully. Unlimited Vault and WhatsApp Alerts granted.");
                 }, 1500);
             }, 3500);
         }
 
         // === 4. ADMIN COMMAND CENTER ENGINE ===
         async function loadAdminUsers() {
-            document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="4" class="text-center py-10 text-slate-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching Live Database...</td></tr>';
+            document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-500"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching Live Database...</td></tr>';
             
             const { data, error } = await _supabase.from('user_profiles').select('*').order('created_at', { ascending: false });
-            
-            if (error) {
-                document.getElementById('admin-users-table').innerHTML = `<tr><td colspan="4" class="text-center text-red-500">Error: ${error.message}</td></tr>`;
-                return;
-            }
+            if (error) { document.getElementById('admin-users-table').innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Error: ${error.message}</td></tr>`; return; }
 
             document.getElementById('admin-total-users').innerText = data.length;
             const paidUsers = data.filter(u => u.payment_status === 'Paid').length;
             document.getElementById('admin-revenue').innerHTML = `${paidUsers * 50} <span class="text-lg text-slate-500 font-normal">KES</span>`;
 
             if(data.length === 0) {
-                document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="4" class="text-center py-10 text-slate-500">No users registered yet.</td></tr>';
+                document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-500">No users registered yet.</td></tr>';
             } else {
                 document.getElementById('admin-users-table').innerHTML = data.map(user => {
                     const dateObj = new Date(user.created_at);
@@ -369,12 +426,17 @@
                         : (user.payment_status === 'Paid' ? `<span class="status-paid">Paid 50 KES</span>` : `<span class="status-pending">Trial / Unpaid</span>`);
 
                     let actionBtn = user.is_blocked
-                        ? `<button onclick="toggleBlockUser('${user.email}', false)" class="bg-green-600/20 text-green-500 border border-green-600/50 px-3 py-1 rounded text-[10px] uppercase font-bold hover:bg-green-600 hover:text-white transition">Unblock Access</button>`
-                        : `<button onclick="toggleBlockUser('${user.email}', true)" class="bg-red-600/20 text-red-500 border border-red-600/50 px-3 py-1 rounded text-[10px] uppercase font-bold hover:bg-red-600 hover:text-white transition">Block Access</button>`;
+                        ? `<button onclick="toggleBlockUser('${user.email}', false)" class="bg-green-600/20 text-green-500 border border-green-600/50 px-3 py-1 rounded text-[10px] uppercase font-bold hover:bg-green-600 hover:text-white transition">Unblock</button>`
+                        : `<button onclick="toggleBlockUser('${user.email}', true)" class="bg-red-600/20 text-red-500 border border-red-600/50 px-3 py-1 rounded text-[10px] uppercase font-bold hover:bg-red-600 hover:text-white transition">Block</button>`;
+
+                    // Fallback to displaying email if phone/niche is empty (for old accounts)
+                    const displayPhone = user.phone || user.email.split('@')[0];
+                    const displayNiche = user.niche || "Not Selected";
 
                     return `
                     <tr>
-                        <td class="font-bold text-white">${user.email}</td>
+                        <td class="font-bold text-white font-mono tracking-widest">${displayPhone}</td>
+                        <td class="text-yellow-500 text-xs font-bold uppercase">${displayNiche}</td>
                         <td class="font-mono text-[10px] text-slate-500">${fDate}</td>
                         <td>${statusBadge}</td>
                         <td>${actionBtn}</td>
@@ -385,7 +447,6 @@
         }
 
         async function toggleBlockUser(email, blockStatus) {
-            // Instantly update the database to block/unblock the user
             await _supabase.from('user_profiles').update({ is_blocked: blockStatus }).eq('email', email);
             loadAdminUsers(); // Refresh the table
         }
@@ -400,38 +461,78 @@
             if(t === 'admin') loadAdminUsers();
         }
 
-        // === 6. THE ELITE VAULT FEED ===
+        // === 6. THE ELITE VAULT FEED (WITH SEARCH) ===
         async function loadFeed() {
-            const { data, error } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false }).limit(50);
+            const { data, error } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false }).limit(100);
             document.getElementById('loading').style.display = 'none';
 
             if (error) { document.getElementById('error-banner').classList.remove('hidden'); document.getElementById('error-msg').innerText = error.message; return; }
             
             if(data && data.length > 0) {
+                if(lastId && data[0].id !== lastId) {
+                    document.getElementById('notification-sound').play();
+                    new Notification("Aurent Vault", { body: "New Opportunity Synced!" });
+                }
                 lastId = data[0].id;
-                document.getElementById('feed').innerHTML = data.map(g => {
-                    const dateObj = new Date(g.created_at);
-                    const fDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    const imgUrl = g.image_link || 'https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT';
-
-                    return `
-                    <div class="glass-card flex flex-col overflow-hidden group hover:border-yellow-600/50 transition-all duration-500">
-                        <div class="relative w-full h-64 bg-black overflow-hidden border-b border-white/5 flex justify-center items-center">
-                            <img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl transition-transform duration-700 group-hover:scale-110">
-                            <img src="${imgUrl}" class="relative z-10 w-full h-full object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT'">
-                            <div class="absolute top-3 left-3 bg-black/80 backdrop-blur border border-white/10 px-3 py-1 rounded text-[9px] font-black text-yellow-500 tracking-widest uppercase z-20 shadow-lg">${fDate}</div>
-                        </div>
-                        <div class="p-6 flex-1 flex flex-col bg-[#08080a]">
-                            <h3 class="text-lg font-black uppercase mb-3 text-white leading-snug group-hover:text-yellow-500 transition-colors font-['Montserrat'] line-clamp-2">${g.title}</h3>
-                            <p class="text-slate-400 text-xs mb-6 leading-relaxed line-clamp-3">${g.description.substring(0, 180)}...</p>
-                            <a href="${g.apply_link}" target="_blank" class="mt-auto block w-full text-center bg-transparent border border-white/10 hover:border-yellow-500 hover:bg-yellow-500 transition text-white hover:text-black font-bold py-3 rounded-md text-[10px] uppercase tracking-widest">View Full Details</a>
-                        </div>
-                    </div>
-                    `;
-                }).join('');
+                globalVaultData = data; 
+                renderFeed(globalVaultData); 
             } else {
                 document.getElementById('feed').innerHTML = `<div class="col-span-full glass-card p-16 text-center border border-dashed border-slate-700"><i class="fas fa-radar text-4xl text-yellow-600 mb-6 animate-pulse"></i><h3 class="text-xl font-black uppercase text-white tracking-widest">Vault is Empty</h3></div>`;
             }
+        }
+
+        function filterVault() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const category = document.getElementById('category-filter').value;
+            
+            const categoryKeywords = {
+                'tech': ['developer', 'software', 'it', 'tech', 'data', 'engineer', 'code', 'cyber'],
+                'design': ['design', 'creative', 'art', 'ui', 'ux', 'graphic', 'video', 'content'],
+                'finance': ['finance', 'business', 'sales', 'manager', 'accountant', 'market', 'trade'],
+                'scholarship': ['scholarship', 'university', 'student', 'grant', 'degree', 'edu', 'fellow'],
+                'remote': ['remote', 'wfh', 'work from home', 'anywhere']
+            };
+
+            const filteredData = globalVaultData.filter(g => {
+                const titleDesc = (g.title + " " + (g.description || "")).toLowerCase();
+                const matchesSearch = titleDesc.includes(searchTerm);
+                let matchesCategory = true;
+                if (category !== 'all') {
+                    const keywords = categoryKeywords[category] || [];
+                    matchesCategory = keywords.some(kw => titleDesc.includes(kw));
+                }
+                return matchesSearch && matchesCategory;
+            });
+            renderFeed(filteredData);
+        }
+
+        function renderFeed(dataToRender) {
+            const feedDiv = document.getElementById('feed');
+            if(dataToRender.length === 0) {
+                feedDiv.innerHTML = `<div class="col-span-full glass-card p-16 text-center border border-dashed border-slate-700"><i class="fa-solid fa-ghost text-4xl text-slate-500 mb-6"></i><h3 class="text-xl font-black uppercase text-white tracking-widest">No Matches Found</h3><p class="text-slate-500 text-xs uppercase mt-3">Try adjusting your search filters.</p></div>`;
+                return;
+            }
+
+            feedDiv.innerHTML = dataToRender.map(g => {
+                const dateObj = new Date(g.created_at);
+                const fDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const imgUrl = g.image_link || 'https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT';
+
+                return `
+                <div class="glass-card flex flex-col overflow-hidden group hover:border-yellow-600/50 transition-all duration-500">
+                    <div class="relative w-full h-64 bg-black overflow-hidden border-b border-white/5 flex justify-center items-center">
+                        <img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl transition-transform duration-700 group-hover:scale-110">
+                        <img src="${imgUrl}" class="relative z-10 w-full h-full object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT'">
+                        <div class="absolute top-3 left-3 bg-black/80 backdrop-blur border border-white/10 px-3 py-1 rounded text-[9px] font-black text-yellow-500 tracking-widest uppercase z-20 shadow-lg">${fDate}</div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col bg-[#08080a]">
+                        <h3 class="text-lg font-black uppercase mb-3 text-white leading-snug group-hover:text-yellow-500 transition-colors font-['Montserrat'] line-clamp-2">${g.title}</h3>
+                        <p class="text-slate-400 text-xs mb-6 leading-relaxed line-clamp-3">${g.description.substring(0, 180)}...</p>
+                        <a href="${g.apply_link}" target="_blank" class="mt-auto block w-full text-center bg-transparent border border-white/10 hover:border-yellow-500 hover:bg-yellow-500 transition text-white hover:text-black font-bold py-3 rounded-md text-[10px] uppercase tracking-widest">View Full Details</a>
+                    </div>
+                </div>
+                `;
+            }).join('');
         }
 
         // === 7. REVIEWS ENGINE ===
@@ -442,7 +543,6 @@
             document.getElementById('rev-box').classList.add('hidden');
             loadReviews();
         }
-
         async function loadReviews() {
             const { data } = await _supabase.from('reviews').select('*').order('created_at', { ascending: false });
             if(data) {
