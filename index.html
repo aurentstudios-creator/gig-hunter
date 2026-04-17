@@ -27,6 +27,7 @@
         .glass-card { background: rgba(10, 10, 12, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0.75rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .nav-link.active { color: #fff; border-bottom: 2px solid #d4af37; text-shadow: 0 0 10px rgba(212,175,55,0.5); }
         
+        /* Font size 16px prevents iOS auto-zoom on inputs */
         .luxury-input { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.5rem; padding: 1rem; color: white; width: 100%; transition: all 0.3s ease; font-size: 16px;}
         .luxury-input:focus { border-color: #d4af37; outline: none; box-shadow: 0 0 15px rgba(212,175,55,0.1); background: rgba(0,0,0,0.8); }
         select option { background-color: #0a0a0c !important; color: white !important; }
@@ -38,6 +39,7 @@
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
 
+        /* Mobile swipe hide scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -49,8 +51,11 @@
         .btn-shine { position: relative; overflow: hidden; }
         .btn-shine::after { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); transition: 0.5s; z-index: 1; }
         .btn-shine:hover::after { left: 150%; }
+        .btn-shine span { position: relative; z-index: 2; }
 
+        /* RADAR CHIPS */
         .niche-chip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; text-align: center; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #cbd5e1; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; height: 100%;}
+        .niche-chip:hover { background: rgba(255,255,255,0.1); }
         .niche-chip.active { background: rgba(212,175,55,0.1); border-color: #d4af37; color: #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
 
         .admin-table { width: 100%; text-align: left; border-collapse: collapse; }
@@ -306,19 +311,19 @@
         let currentAuthMode = 'login'; 
         let userNiches = [];
 
-        // === 1. DYNAMIC SECTOR THEME ENGINE ===
-        function getSectorTheme(title) {
+        // === 1. DYNAMIC SECTOR BADGE ENGINE (Only for the Text Tag, NO FAKE IMAGES) ===
+        function getSectorBadge(title) {
             const t = title.toLowerCase();
-            if (/(scholarship|fellowship|grant|bursary)/.test(t)) return { name: 'Scholarship', img: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80' };
-            if (/(aviation|pilot|aircraft|flight|airline)/.test(t)) return { name: 'Aviation', img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80' };
-            if (/(engineer|civil|mechanical|electrical|structural)/.test(t)) return { name: 'Engineering', img: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=800&q=80' };
-            if (/(software|developer|tech|data|cyber|cloud|it)/.test(t)) return { name: 'Tech', img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80' };
-            if (/(finance|account|audit|tax|bank|economist)/.test(t)) return { name: 'Finance', img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80' };
-            if (/(nurse|doctor|medical|health|clinical|pharm)/.test(t)) return { name: 'Health', img: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80' };
-            if (/(ngo|volunteer|unicef|humanitarian)/.test(t)) return { name: 'NGO', img: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&w=800&q=80' };
-            if (/(design|creative|art|graphic|writer)/.test(t)) return { name: 'Design', img: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80' };
-            if (/(logistics|driver|supply|procurement)/.test(t)) return { name: 'Logistics', img: 'https://images.unsplash.com/photo-1586528116311-ad8c7bd76a0e?auto=format&fit=crop&w=800&q=80' };
-            return { name: 'Corporate', img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80' };
+            if (/(scholarship|fellowship|grant|bursary)/.test(t)) return 'Scholarship';
+            if (/(aviation|pilot|aircraft|flight|airline)/.test(t)) return 'Aviation';
+            if (/(engineer|civil|mechanical|electrical|structural)/.test(t)) return 'Engineering';
+            if (/(software|developer|tech|data|cyber|cloud|it)/.test(t)) return 'Tech';
+            if (/(finance|account|audit|tax|bank|economist)/.test(t)) return 'Finance';
+            if (/(nurse|doctor|medical|health|clinical|pharm)/.test(t)) return 'Health';
+            if (/(ngo|volunteer|unicef|humanitarian)/.test(t)) return 'NGO';
+            if (/(design|creative|art|graphic|writer)/.test(t)) return 'Design';
+            if (/(logistics|driver|supply|procurement)/.test(t)) return 'Logistics';
+            return 'Corporate';
         }
 
         // === 2. INITIALIZATION & UI SETUP ===
@@ -385,6 +390,7 @@
                 document.getElementById('t-admin').classList.remove('hidden');
                 document.getElementById('t-prefs').classList.add('hidden');
                 
+                // FORCE hide verify buttons for Admins using strict inline styles to override Tailwind
                 if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
                 if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
                 if(trialBanner) trialBanner.style.setProperty('display', 'none', 'important');
@@ -394,6 +400,7 @@
                 document.getElementById('t-admin').classList.add('hidden');
                 document.getElementById('t-prefs').classList.remove('hidden');
                 
+                // Restore defaults for normal users (Payment check happens in initDeviceAndTrial)
                 if(vBtnDesk) vBtnDesk.style.removeProperty('display');
                 if(vBtnMob) vBtnMob.style.removeProperty('display');
                 if(trialBanner) trialBanner.style.removeProperty('display');
@@ -447,7 +454,7 @@
             errorDiv.classList.add('hidden');
             submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i>';
 
-            // ADMIN MASTER BYPASS
+            // ADMIN MASTER BYPASS: 0700000000 / 9988
             if (phone === '0700000000' && pin === '9988') {
                 localStorage.setItem('aurent_auth', 'true'); localStorage.setItem('aurent_role', 'admin');
                 document.getElementById('protocol-overlay').classList.add('hidden');
@@ -458,10 +465,12 @@
             const password = `AUR${pin}ent!`;
 
             let authResponse;
+            let isNewRegistration = false;
 
             if(currentAuthMode === 'register') {
                 authResponse = await _supabase.auth.signUp({ email, password });
                 if(!authResponse.error) { 
+                    isNewRegistration = true;
                     await _supabase.from('user_profiles').insert([{ email: email, phone: phone, niche: 'Pending Configuration', payment_status: 'Trial', is_blocked: false }]); 
                 }
             } else {
@@ -487,9 +496,23 @@
                 
                 if ("Notification" in window) Notification.requestPermission();
                 document.getElementById('protocol-overlay').classList.add('hidden');
-                
-                // Let init handle radar popups and feeds
-                window.location.reload();
+                setupRoleUI(); loadFeed();
+
+                // Setup checks based on profile
+                if(profile) {
+                    if (profile.niche === 'Pending Configuration' || !profile.niche) {
+                        setTimeout(() => { openPrefs(); }, 800);
+                    }
+                    // Hide verification elements if already paid
+                    if (profile.payment_status === 'Paid') {
+                        const vBtnDesk = document.getElementById('verify-btn');
+                        const vBtnMob = document.getElementById('verify-btn-mobile');
+                        const banner = document.getElementById('trial-banner');
+                        if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
+                        if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
+                        if(banner) banner.style.setProperty('display', 'none', 'important');
+                    }
+                }
             }
         }
 
@@ -559,6 +582,7 @@
                 setTimeout(() => {
                     document.getElementById('payment-overlay').classList.add('hidden');
                     
+                    // Force hide everything
                     const vBtnDesk = document.getElementById('verify-btn');
                     const vBtnMob = document.getElementById('verify-btn-mobile');
                     const banner = document.getElementById('trial-banner');
@@ -646,7 +670,7 @@
             
             if (!isAdmin && userNiches.length > 0 && !userNiches.includes('Pending Configuration') && category === 'all') {
                 radarFilteredData = globalVaultData.filter(g => {
-                    const themeName = getSectorTheme(g.title).name.toLowerCase();
+                    const themeName = getSectorBadge(g.title).toLowerCase();
                     return userNiches.some(niche => {
                         const n = niche.toLowerCase();
                         if (n.includes('tech') && themeName === 'tech') return true;
@@ -656,7 +680,7 @@
                         if (n.includes('engineering') && themeName === 'engineering') return true;
                         if (n.includes('health') && themeName === 'health') return true;
                         if (n.includes('aviation') && themeName === 'aviation') return true;
-                        if (n.includes('remote') && (g.title.toLowerCase().includes('remote') || g.description.toLowerCase().includes('remote'))) return true;
+                        if (n.includes('remote') && (g.title.toLowerCase().includes('remote') || (g.description && g.description.toLowerCase().includes('remote')))) return true;
                         return false;
                     });
                 });
@@ -687,22 +711,19 @@
                 const dateObj = new Date(g.created_at);
                 const fDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 
-                // Fetch dynamic sector theme image and badge
-                const themeInfo = getSectorTheme(g.title);
-                let imgUrl = g.image_link;
+                // Get the sector name for the corner badge ONLY
+                const sectorName = getSectorBadge(g.title);
                 
-                // If python failed to upload image, use the stunning fallback
-                if (!imgUrl || imgUrl.includes('via.placeholder.com')) {
-                    imgUrl = themeInfo.img;
-                }
+                // STICTLY use the generated poster from the database
+                const imgUrl = g.image_link || 'https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT';
 
                 return `
                 <div class="fade-up glass-card flex flex-col overflow-hidden group hover:border-yellow-600/40 transition-all duration-500 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.3)]" style="animation-delay: ${index * 0.05}s; opacity: 0;">
                     <div class="relative w-full h-48 md:h-64 bg-[#020202] overflow-hidden border-b border-white/5 flex justify-center items-center">
                         <img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover opacity-20 blur-[30px] transition-transform duration-1000 group-hover:scale-125">
-                        <img src="${imgUrl}" class="relative z-10 w-full h-full object-cover p-0 drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-[1.03]" onerror="this.src='${themeInfo.img}'">
+                        <img src="${imgUrl}" class="relative z-10 w-full h-full object-contain p-2 md:p-0 drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-[1.03]" onerror="this.src='https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT'">
                         <div class="absolute top-3 md:top-4 left-3 md:left-4 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-[7px] md:text-[8px] font-black text-yellow-500 tracking-widest uppercase z-20 shadow-lg">${fDate}</div>
-                        <div class="absolute top-3 md:top-4 right-3 md:right-4 bg-yellow-600 text-black px-2.5 md:px-3 py-1 md:py-1.5 rounded text-[7px] md:text-[8px] font-black uppercase tracking-widest z-20 shadow-lg shadow-yellow-600/20">${themeInfo.name}</div>
+                        <div class="absolute top-3 md:top-4 right-3 md:right-4 bg-yellow-600 text-black px-2.5 md:px-3 py-1 md:py-1.5 rounded text-[7px] md:text-[8px] font-black uppercase tracking-widest z-20 shadow-lg shadow-yellow-600/20">${sectorName}</div>
                     </div>
                     <div class="p-6 md:p-8 flex-1 flex flex-col bg-gradient-to-b from-[#0a0a0c] to-[#050505]">
                         <h3 class="text-base md:text-lg font-black uppercase mb-3 md:mb-4 text-white leading-snug group-hover:text-yellow-500 transition-colors duration-300 font-['Montserrat'] line-clamp-2">${g.title}</h3>
