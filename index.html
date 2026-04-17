@@ -27,7 +27,6 @@
         .glass-card { background: rgba(10, 10, 12, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0.75rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .nav-link.active { color: #fff; border-bottom: 2px solid #d4af37; text-shadow: 0 0 10px rgba(212,175,55,0.5); }
         
-        /* Font size 16px prevents iOS auto-zoom on inputs */
         .luxury-input { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.5rem; padding: 1rem; color: white; width: 100%; transition: all 0.3s ease; font-size: 16px;}
         .luxury-input:focus { border-color: #d4af37; outline: none; box-shadow: 0 0 15px rgba(212,175,55,0.1); background: rgba(0,0,0,0.8); }
         select option { background-color: #0a0a0c !important; color: white !important; }
@@ -39,7 +38,6 @@
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
 
-        /* Mobile swipe hide scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -51,11 +49,8 @@
         .btn-shine { position: relative; overflow: hidden; }
         .btn-shine::after { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); transition: 0.5s; z-index: 1; }
         .btn-shine:hover::after { left: 150%; }
-        .btn-shine span { position: relative; z-index: 2; }
 
-        /* RADAR CHIPS */
         .niche-chip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; text-align: center; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #cbd5e1; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; height: 100%;}
-        .niche-chip:hover { background: rgba(255,255,255,0.1); }
         .niche-chip.active { background: rgba(212,175,55,0.1); border-color: #d4af37; color: #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
 
         .admin-table { width: 100%; text-align: left; border-collapse: collapse; }
@@ -121,15 +116,17 @@
     <div id="prefs-overlay" class="overlay hidden slide-in">
         <div class="max-w-md w-full glass-card p-6 md:p-10 border-t-2 border-yellow-600 shadow-[0_0_50px_rgba(212,175,55,0.15)] relative overflow-y-auto max-h-[90vh] no-scrollbar">
             <h1 class="text-xl md:text-2xl font-black mb-2 tracking-widest uppercase text-white font-['Montserrat'] text-center">Configure Radar</h1>
-            <p class="text-[9px] uppercase text-slate-400 font-bold mb-6 md:mb-8 tracking-widest text-center leading-relaxed">Select your industries below to receive VIP WhatsApp Alerts. You can browse all jobs globally in the background.</p>
+            <p class="text-[9px] uppercase text-slate-400 font-bold mb-6 md:mb-8 tracking-widest text-center leading-relaxed">Select your industries below to receive VIP WhatsApp Alerts and tailor your Vault feed.</p>
             
             <div class="grid grid-cols-2 gap-2 md:gap-3 mb-6 md:mb-8">
                 <div class="niche-chip" data-niche="Tech & Software" onclick="toggleNiche(this)">Tech & Software</div>
                 <div class="niche-chip" data-niche="Design & Creative" onclick="toggleNiche(this)">Design & Creative</div>
                 <div class="niche-chip" data-niche="Finance & Business" onclick="toggleNiche(this)">Finance & Business</div>
                 <div class="niche-chip" data-niche="Scholarships" onclick="toggleNiche(this)">Scholarships</div>
-                <div class="niche-chip" data-niche="Remote Work" onclick="toggleNiche(this)">Remote Work</div>
+                <div class="niche-chip" data-niche="Health & Medical" onclick="toggleNiche(this)">Health & Medical</div>
                 <div class="niche-chip" data-niche="Engineering" onclick="toggleNiche(this)">Engineering</div>
+                <div class="niche-chip" data-niche="Aviation" onclick="toggleNiche(this)">Aviation</div>
+                <div class="niche-chip" data-niche="Remote Work" onclick="toggleNiche(this)">Remote Work</div>
             </div>
 
             <button id="save-prefs-btn" onclick="savePrefs()" class="btn-shine w-full bg-yellow-600 text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-lg shadow-yellow-600/20"><span>Save & Enable Alerts</span></button>
@@ -256,9 +253,10 @@
                         <option value="design">Design & Creative</option>
                         <option value="finance">Finance & Business</option>
                         <option value="scholarship">Scholarships & Edu</option>
-                        <option value="remote">Remote / WFH</option>
                         <option value="engineering">Engineering</option>
                         <option value="aviation">Aviation</option>
+                        <option value="health">Health & Medical</option>
+                        <option value="remote">Remote / WFH</option>
                     </select>
                 </div>
             </div>
@@ -308,7 +306,22 @@
         let currentAuthMode = 'login'; 
         let userNiches = [];
 
-        // === 1. INITIALIZATION & UI SETUP ===
+        // === 1. DYNAMIC SECTOR THEME ENGINE ===
+        function getSectorTheme(title) {
+            const t = title.toLowerCase();
+            if (/(scholarship|fellowship|grant|bursary)/.test(t)) return { name: 'Scholarship', img: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80' };
+            if (/(aviation|pilot|aircraft|flight|airline)/.test(t)) return { name: 'Aviation', img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80' };
+            if (/(engineer|civil|mechanical|electrical|structural)/.test(t)) return { name: 'Engineering', img: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=800&q=80' };
+            if (/(software|developer|tech|data|cyber|cloud|it)/.test(t)) return { name: 'Tech', img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80' };
+            if (/(finance|account|audit|tax|bank|economist)/.test(t)) return { name: 'Finance', img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80' };
+            if (/(nurse|doctor|medical|health|clinical|pharm)/.test(t)) return { name: 'Health', img: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80' };
+            if (/(ngo|volunteer|unicef|humanitarian)/.test(t)) return { name: 'NGO', img: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&w=800&q=80' };
+            if (/(design|creative|art|graphic|writer)/.test(t)) return { name: 'Design', img: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80' };
+            if (/(logistics|driver|supply|procurement)/.test(t)) return { name: 'Logistics', img: 'https://images.unsplash.com/photo-1586528116311-ad8c7bd76a0e?auto=format&fit=crop&w=800&q=80' };
+            return { name: 'Corporate', img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80' };
+        }
+
+        // === 2. INITIALIZATION & UI SETUP ===
         async function initDeviceAndTrial() {
             let deviceId = localStorage.getItem('aurent_device_id');
             if (!deviceId) {
@@ -333,18 +346,17 @@
             if (localStorage.getItem('aurent_auth')) {
                 document.getElementById('protocol-overlay').classList.add('hidden');
                 setupRoleUI();
-                loadFeed();
                 
-                // SILENT RADAR CHECK & PAYMENT CHECK
                 const email = localStorage.getItem('aurent_email');
                 if (email && localStorage.getItem('aurent_role') !== 'admin') {
                     const { data } = await _supabase.from('user_profiles').select('niche, payment_status').eq('email', email).single();
                     if (data) {
                         if (data.niche === 'Pending Configuration' || !data.niche) {
                             setTimeout(() => { openPrefs(); }, 800);
+                        } else {
+                            userNiches = data.niche.split(', ');
                         }
                         
-                        // If they have paid, completely hide the Verify buttons and Trial Banner
                         if (data.payment_status === 'Paid') {
                             const vBtnDesk = document.getElementById('verify-btn');
                             const vBtnMob = document.getElementById('verify-btn-mobile');
@@ -355,6 +367,9 @@
                         }
                     }
                 }
+                
+                // Load feed AFTER niches are loaded so we can instantly lock the UI
+                loadFeed();
             } else {
                 document.getElementById('protocol-overlay').classList.remove('hidden');
             }
@@ -370,7 +385,6 @@
                 document.getElementById('t-admin').classList.remove('hidden');
                 document.getElementById('t-prefs').classList.add('hidden');
                 
-                // FORCE hide verify buttons for Admins using strict inline styles to override Tailwind
                 if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
                 if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
                 if(trialBanner) trialBanner.style.setProperty('display', 'none', 'important');
@@ -380,7 +394,6 @@
                 document.getElementById('t-admin').classList.add('hidden');
                 document.getElementById('t-prefs').classList.remove('hidden');
                 
-                // Restore defaults for normal users (Payment check happens in initDeviceAndTrial)
                 if(vBtnDesk) vBtnDesk.style.removeProperty('display');
                 if(vBtnMob) vBtnMob.style.removeProperty('display');
                 if(trialBanner) trialBanner.style.removeProperty('display');
@@ -397,7 +410,7 @@
             window.location.reload();
         }
 
-        // === 2. WHATSAPP AUTHENTICATION ===
+        // === 3. WHATSAPP AUTHENTICATION ===
         function showAuthForm() { document.getElementById('auth-step-1').classList.add('hidden'); document.getElementById('auth-step-2').classList.remove('hidden'); }
         function hideAuthForm() { document.getElementById('auth-step-2').classList.add('hidden'); document.getElementById('auth-step-1').classList.remove('hidden'); }
 
@@ -434,7 +447,7 @@
             errorDiv.classList.add('hidden');
             submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i>';
 
-            // ADMIN MASTER BYPASS: 0700000000 / 9988
+            // ADMIN MASTER BYPASS
             if (phone === '0700000000' && pin === '9988') {
                 localStorage.setItem('aurent_auth', 'true'); localStorage.setItem('aurent_role', 'admin');
                 document.getElementById('protocol-overlay').classList.add('hidden');
@@ -445,12 +458,10 @@
             const password = `AUR${pin}ent!`;
 
             let authResponse;
-            let isNewRegistration = false;
 
             if(currentAuthMode === 'register') {
                 authResponse = await _supabase.auth.signUp({ email, password });
                 if(!authResponse.error) { 
-                    isNewRegistration = true;
                     await _supabase.from('user_profiles').insert([{ email: email, phone: phone, niche: 'Pending Configuration', payment_status: 'Trial', is_blocked: false }]); 
                 }
             } else {
@@ -476,27 +487,13 @@
                 
                 if ("Notification" in window) Notification.requestPermission();
                 document.getElementById('protocol-overlay').classList.add('hidden');
-                setupRoleUI(); loadFeed();
-
-                // Setup checks based on profile
-                if(profile) {
-                    if (profile.niche === 'Pending Configuration' || !profile.niche) {
-                        setTimeout(() => { openPrefs(); }, 800);
-                    }
-                    // Hide verification elements if already paid
-                    if (profile.payment_status === 'Paid') {
-                        const vBtnDesk = document.getElementById('verify-btn');
-                        const vBtnMob = document.getElementById('verify-btn-mobile');
-                        const banner = document.getElementById('trial-banner');
-                        if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
-                        if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
-                        if(banner) banner.style.setProperty('display', 'none', 'important');
-                    }
-                }
+                
+                // Let init handle radar popups and feeds
+                window.location.reload();
             }
         }
 
-        // === 3. RADAR PREFERENCES ENGINE ===
+        // === 4. RADAR PREFERENCES ENGINE ===
         function toggleNiche(element) {
             const nicheName = element.getAttribute('data-niche');
             if(userNiches.includes(nicheName)) {
@@ -538,11 +535,12 @@
                 setTimeout(() => {
                     document.getElementById('prefs-overlay').classList.add('hidden');
                     btn.innerHTML = '<span>Save & Enable Alerts</span>';
+                    filterVault(); // Instantly apply their new settings to the UI
                 }, 1000);
             }, 800);
         }
 
-        // === 4. M-PESA PAYMENT ===
+        // === 5. M-PESA PAYMENT ===
         function processPayment() {
             const phone = document.getElementById('mpesa-phone').value;
             if(phone.length < 9) { alert("Please enter a valid M-Pesa number."); return; }
@@ -561,7 +559,6 @@
                 setTimeout(() => {
                     document.getElementById('payment-overlay').classList.add('hidden');
                     
-                    // Force hide everything
                     const vBtnDesk = document.getElementById('verify-btn');
                     const vBtnMob = document.getElementById('verify-btn-mobile');
                     const banner = document.getElementById('trial-banner');
@@ -574,7 +571,7 @@
             }, 3500);
         }
 
-        // === 5. ADMIN COMMAND CENTER ===
+        // === 6. ADMIN COMMAND CENTER ===
         async function loadAdminUsers() {
             document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-10 md:py-16 text-slate-600 text-[10px] tracking-widest uppercase"><i class="fa-solid fa-circle-notch fa-spin text-lg block mb-2"></i> Querying Database...</td></tr>';
             
@@ -611,7 +608,7 @@
 
         async function toggleBlockUser(email, blockStatus) { await _supabase.from('user_profiles').update({ is_blocked: blockStatus }).eq('email', email); loadAdminUsers(); }
 
-        // === 6. UI TABS & FEED ===
+        // === 7. UI TABS & FEED ENGINE ===
         function tab(t) {
             ['s-gigs', 's-rev', 's-admin'].forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById('s-'+t).classList.remove('hidden');
@@ -633,7 +630,7 @@
                 }
                 lastId = data[0].id;
                 globalVaultData = data; 
-                renderFeed(globalVaultData); 
+                filterVault(); // Initial render applies radar filters automatically
             } else {
                 document.getElementById('feed').innerHTML = `<div class="col-span-full glass-card p-12 md:p-20 text-center border border-white/5"><i class="fas fa-radar text-4xl md:text-5xl text-yellow-600/50 mb-4 md:mb-6 animate-pulse block"></i><h3 class="text-lg md:text-xl font-black uppercase text-white tracking-[0.2em] md:tracking-[0.3em]">Vault is Empty</h3><p class="text-slate-500 text-[9px] md:text-[10px] font-bold tracking-widest mt-3 md:mt-4">Awaiting signals from the Hunter Engine...</p></div>`;
             }
@@ -642,48 +639,70 @@
         function filterVault() {
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
             const category = document.getElementById('category-filter').value;
+            const isAdmin = localStorage.getItem('aurent_role') === 'admin';
             
-            const categoryKeywords = {
-                'tech': ['developer', 'software', 'it', 'tech', 'data', 'engineer', 'code', 'cyber'],
-                'design': ['design', 'creative', 'art', 'ui', 'ux', 'graphic', 'video', 'content'],
-                'finance': ['finance', 'business', 'sales', 'manager', 'accountant', 'market', 'trade'],
-                'scholarship': ['scholarship', 'university', 'student', 'grant', 'degree', 'edu', 'fellow'],
-                'remote': ['remote', 'wfh', 'work from home', 'anywhere'],
-                'engineering': ['engineer', 'civil', 'mechanical', 'electrical', 'structural', 'petroleum'],
-                'aviation': ['aviation', 'pilot', 'cabin crew', 'aircraft', 'aerospace', 'flight']
-            };
+            // 1. Apply Strict Radar Filter (Only if not Admin and not searching broadly)
+            let radarFilteredData = globalVaultData;
+            
+            if (!isAdmin && userNiches.length > 0 && !userNiches.includes('Pending Configuration') && category === 'all') {
+                radarFilteredData = globalVaultData.filter(g => {
+                    const themeName = getSectorTheme(g.title).name.toLowerCase();
+                    return userNiches.some(niche => {
+                        const n = niche.toLowerCase();
+                        if (n.includes('tech') && themeName === 'tech') return true;
+                        if (n.includes('design') && themeName === 'design') return true;
+                        if (n.includes('finance') && themeName === 'finance') return true;
+                        if (n.includes('scholarship') && themeName === 'scholarship') return true;
+                        if (n.includes('engineering') && themeName === 'engineering') return true;
+                        if (n.includes('health') && themeName === 'health') return true;
+                        if (n.includes('aviation') && themeName === 'aviation') return true;
+                        if (n.includes('remote') && (g.title.toLowerCase().includes('remote') || g.description.toLowerCase().includes('remote'))) return true;
+                        return false;
+                    });
+                });
+            }
 
-            const filteredData = globalVaultData.filter(g => {
+            // 2. Apply Manual Search & Dropdown Filters
+            const finalData = radarFilteredData.filter(g => {
                 const titleDesc = (g.title + " " + (g.description || "")).toLowerCase();
                 const matchesSearch = titleDesc.includes(searchTerm);
                 let matchesCategory = true;
                 if (category !== 'all') {
-                    const keywords = categoryKeywords[category] || [];
-                    matchesCategory = keywords.some(kw => titleDesc.includes(kw));
+                    matchesCategory = titleDesc.includes(category);
                 }
                 return matchesSearch && matchesCategory;
             });
-            renderFeed(filteredData);
+            
+            renderFeed(finalData);
         }
 
         function renderFeed(dataToRender) {
             const feedDiv = document.getElementById('feed');
             if(dataToRender.length === 0) {
-                feedDiv.innerHTML = `<div class="col-span-full glass-card p-12 md:p-20 text-center border border-white/5"><i class="fa-solid fa-ghost text-4xl md:text-5xl text-slate-600 mb-4 md:mb-6 block"></i><h3 class="text-lg md:text-xl font-black uppercase text-white tracking-[0.2em] md:tracking-[0.3em]">No Matches Found</h3><p class="text-slate-500 text-[9px] md:text-[10px] font-bold tracking-widest mt-3 md:mt-4">Try adjusting your search filters.</p></div>`;
+                feedDiv.innerHTML = `<div class="col-span-full glass-card p-12 md:p-20 text-center border border-white/5"><i class="fa-solid fa-ghost text-4xl md:text-5xl text-slate-600 mb-4 md:mb-6 block"></i><h3 class="text-lg md:text-xl font-black uppercase text-white tracking-[0.2em] md:tracking-[0.3em]">No Matches Found</h3><p class="text-slate-500 text-[9px] md:text-[10px] font-bold tracking-widest mt-3 md:mt-4">Adjust your Radar Settings or Search terms.</p></div>`;
                 return;
             }
 
             feedDiv.innerHTML = dataToRender.map((g, index) => {
                 const dateObj = new Date(g.created_at);
                 const fDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                const imgUrl = g.image_link || 'https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT';
+                
+                // Fetch dynamic sector theme image and badge
+                const themeInfo = getSectorTheme(g.title);
+                let imgUrl = g.image_link;
+                
+                // If python failed to upload image, use the stunning fallback
+                if (!imgUrl || imgUrl.includes('via.placeholder.com')) {
+                    imgUrl = themeInfo.img;
+                }
 
                 return `
                 <div class="fade-up glass-card flex flex-col overflow-hidden group hover:border-yellow-600/40 transition-all duration-500 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.3)]" style="animation-delay: ${index * 0.05}s; opacity: 0;">
                     <div class="relative w-full h-48 md:h-64 bg-[#020202] overflow-hidden border-b border-white/5 flex justify-center items-center">
                         <img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover opacity-20 blur-[30px] transition-transform duration-1000 group-hover:scale-125">
-                        <img src="${imgUrl}" class="relative z-10 w-full h-full object-contain p-2 md:p-0 drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-[1.03]" onerror="this.src='https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT'">
+                        <img src="${imgUrl}" class="relative z-10 w-full h-full object-cover p-0 drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-[1.03]" onerror="this.src='${themeInfo.img}'">
                         <div class="absolute top-3 md:top-4 left-3 md:left-4 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-[7px] md:text-[8px] font-black text-yellow-500 tracking-widest uppercase z-20 shadow-lg">${fDate}</div>
+                        <div class="absolute top-3 md:top-4 right-3 md:right-4 bg-yellow-600 text-black px-2.5 md:px-3 py-1 md:py-1.5 rounded text-[7px] md:text-[8px] font-black uppercase tracking-widest z-20 shadow-lg shadow-yellow-600/20">${themeInfo.name}</div>
                     </div>
                     <div class="p-6 md:p-8 flex-1 flex flex-col bg-gradient-to-b from-[#0a0a0c] to-[#050505]">
                         <h3 class="text-base md:text-lg font-black uppercase mb-3 md:mb-4 text-white leading-snug group-hover:text-yellow-500 transition-colors duration-300 font-['Montserrat'] line-clamp-2">${g.title}</h3>
