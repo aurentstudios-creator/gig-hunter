@@ -1,511 +1,725 @@
-import asyncio
-import os
-import urllib.parse
-import datetime
-import requests
-import json
-import re
-import hashlib
-import gc
-import random
-from playwright.async_api import async_playwright
-from supabase import create_client
-from poster_maker import create_and_upload_job
-from PIL import Image
-
-# ==========================================
-# 🎯 HARDCODED PREMIUM TARGET WEBSITES
-# ==========================================
-TARGET_WEBSITES = [
-    # === LOCAL JOB AGGREGATORS ===
-    "https://www.brightermonday.co.ke/jobs",
-    "https://www.fuzu.com/kenya/jobs",
-    "https://www.myjobmag.co.ke/",
-
-    # === BANKING & FINANCE ===
-    "https://ke.kcbgroup.com/careers", 
-    "https://equitygroupholdings.com/ke/careers",
-    "https://www.co-opbank.co.ke/careers/", 
-    "https://ke.ncbagroup.com/careers/",
-    "https://absa.wd3.myworkdayjobs.com/AbsaCareers", 
-    "https://www.stanbicbank.co.ke/kenya/personal/about-us/careers",
-    "https://www.centralbank.go.ke/careers/", 
-    "https://www.imbankgroup.com/ke/about-us/careers/",
-
-    # === TECH & TELECOM ===
-    "https://www.safaricom.co.ke/careers", 
-    "https://airtel.africa/careers",
-    "https://www.liquid.tech/about-us/careers", 
-    "https://andela.com/careers/",
-    "https://www.cellulant.io/careers/",
-
-    # === GOVERNMENT & PARASTATALS ===
-    "https://erecruitment.kra.go.ke/", 
-    "https://www.kplc.co.ke/category/view/34/career-opportunities", 
-    "https://jobs.kengen.co.ke/", 
-    "https://www.kpa.co.ke/Careers/Pages/Vacancies.aspx", 
-    "https://www.kcaa.or.ke/about-us/careers/vacancies",
-    "http://www.kws.go.ke/info/careers", 
-    "https://www.sha.go.ke/careers/", 
-    "https://www.npsc.go.ke/vacancies/", 
-    "https://www.kerra.go.ke/careers",
-
-    # === NGO & MULTILATERALS ===
-    "https://www.unep.org/work-with-us", 
-    "https://jobs.unicef.org/cw/en-us/filter/?job-mail-subscribe-privacy=agree&search-keyword=&work-type=fixed%20term%20staff&location=kenya", 
-    "https://amref.org/vacancies/", 
-    "https://www.redcross.or.ke/careers/",
-    "https://www.care.org/careers/",
-
-    # === FMCG & MANUFACTURING ===
-    "https://careers.unilever.com/search-jobs/Kenya", 
-    "https://diageo.wd3.myworkdayjobs.com/Diageo_Careers", 
-    "https://www.bidcoafrica.com/careers/",
-    "https://www.isuzu.co.ke/about-us/careers",
-
-    # === HEALTHCARE ===
-    "https://knh.or.ke/index.php/vacancies/",
-    "https://www.aku.edu/careers/Pages/home.aspx",
-    "https://thenairobihosp.org/careers/", 
-    "https://www.materkenya.com/careers", 
-
-    # === LOGISTICS & AVIATION ===
-    "https://www.jambojet.com/en-us/about-jambojet/jambojet-careers/work-with-us/", 
-    "https://siginon.com/careers/",
-    "https://www.kaa.go.ke/corporate1/careers/?v=25bc6654798e",
-    "https://astral-aviation.com/careers/",
-    "https://careers.qatarairways.com/global/SearchJobs/?7330=57892&7330_format=1202&7331=%5B57936%2C57938%5D&7331_format=1203&listFilterMode=1&jobRecordsPerPage=6&",
-    "https://ag.wd3.myworkdayjobs.com/Airbus?jobFamilyGroup=f5811cef9cb5018463377f3f550a1bf2"
-]
-
-BLACKLIST_DOMAINS = [
-    "opportunitiesforafricans.com", "opportunitydesk.org", "youthop.com", "scholarshiproar.com", "taleo.net"
-]
-
-# ==========================================
-# 🛰️ MASTER CONFIGURATION & API KEYS
-# ==========================================
-SUPABASE_URL = "https://nujhdywfoosjwxoxiito.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTgxMTk5NCwiZXhwIjoyMDkxMzg3OTk0fQ.AQRVtlpqcfXEklhTJ7IECXP3R8pe60SiT0nXUE28A3k"
-db = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# GREEN API (WHATSAPP)
-WA_ID = "7107581321"
-WA_TOKEN = "bc85d972f01d4db187b1d724e91d596bf62bc7308f214813b5"
-GREEN_API_BASE = f"https://7107.api.greenapi.com/waInstance{WA_ID}"
-
-# TELEGRAM BROADCAST API
-TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN_HERE"  # <--- MUST REPLACE BEFORE RUNNING
-TELEGRAM_CHAT_ID = "@aurentgighunter" 
-
-# ==========================================
-# 🛑 HARD LIMITS, MEMORY & CONCURRENCY
-# ==========================================
-MAX_JOBS_PER_SITE = 3 
-CLOUD_MEMORY_IDS = set()
-SEMAPHORE = asyncio.Semaphore(3) 
-
-# ==========================================
-# 🖼️ THE WHATSAPP AUTO-SQUARER
-# ==========================================
-def make_square_for_whatsapp(image_path):
-    try:
-        img = Image.open(image_path)
-        width, height = img.size
-        max_dim = max(width, height)
-        square_img = Image.new('RGB', (max_dim, max_dim), (255, 255, 255))
-        offset = ((max_dim - width) // 2, (max_dim - height) // 2)
-        square_img.paste(img, offset)
-        square_img.save(image_path)
-    except Exception as e:
-        print(f"⚠️ Squaring failed: {e}")
-
-# ==========================================
-# 🚫 THE NUCLEAR JUNK VAPORIZER & SECTOR AI
-# ==========================================
-def clean_job_text(text):
-    junk_patterns = [
-        r"This site uses cookies.*", r"By using the site you are consenting.*", 
-        r"This is the main content of our website.*", r"Please note: To provide our products.*",
-        r"Find out why we use cookies.*", r"manage your settings.*", r"More about cookies.*",
-        r"Never pay for any notarisation.*", r"When in doubt, contact us", 
-        r"Please note that we do not charge any fee.*", r"do not pay any money to get a job", 
-        r"Factorhouse Ltd.*", r"Our Vision, Our Mission.*", r"Only shortlisted candidates will be contacted.*", 
-        r"Application deadline.*", r"Click here to apply.*", r"Skip to main content"
-    ]
-    cleaned = text
-    for pattern in junk_patterns: 
-        cleaned = re.sub(pattern, "", cleaned, flags=re.I | re.S)
-    return re.sub(r'\s+', ' ', cleaned).strip()
-
-def get_sector(title):
-    t_title = title.lower()
-    if any(w in t_title for w in ["scholarship", "fellowship", "fully funded", "bursary", "grant"]): return "Scholarship"
-    if any(w in t_title for w in ["aviation", "pilot", "cabin crew", "aircraft", "aerospace", "flight", "airline", "dispatcher"]): return "Aviation"
-    if any(w in t_title for w in ["engineer", "civil", "mechanical", "electrical", "structural", "petroleum", "manufacturing", "maintenance", "technician"]): return "Engineering"
-    if any(w in t_title for w in ["software", "developer", "tech", "it ", "ict", "programmer", "cyber", "data analyst", "cloud", "ui/ux"]): return "Tech"
-    if any(w in t_title for w in ["accountant", "finance", "audit", "tax", "cpa", "bank", "credit", "payroll", "economist", "teller"]): return "Finance"
-    if any(w in t_title for w in ["nurse", "medical", "doctor", "health", "clinical", "pharm", "surgeon", "laboratory", "hospital", "therapy", "dental"]): return "Health"
-    if any(w in t_title for w in ["ngo", "volunteer", "humanitarian", "m&e", "unicef", "wfp", "usaid"]): return "Ngo"
-    if any(w in t_title for w in ["sales", "marketing", "retail", "business dev", "salesperson", "cashier", "customer"]): return "Sales"
-    if any(w in t_title for w in ["driver", "logistics", "supply chain", "warehouse", "procurement", "transport", "fleet", "courier", "shipping"]): return "Logistics"
-    if any(w in t_title for w in ["design", "creative", "art", "writer", "content", "video", "graphics"]): return "Design"
-    return "Corporate"
-
-def is_junk_title(title):
-    t = title.lower().replace('\n', ' ').replace('\xa0', ' ').strip()
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aurent Vault | Elite Professional Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    # 1. EXACT MATCH ASSASSIN (Kills single words or exact short phrases used as buttons/nav)
-    exact_blacklisted = [
-        "home", "about", "about us", "contact", "contact us", "menu", "search", "filter", "sort",
-        "clear all", "next", "previous", "next page", "previous page", "skip to main content",
-        "load more", "show more", "read more", "view details", "view all", "browse", "click here",
-        "apply", "apply now", "submit", "cancel", "get started", "start now!", "start now",
-        "login", "log in", "sign in", "sign up", "register", "logout", "log out",
-        "create account", "create an account", "my account", "dashboard", "profile",
-        "forgot password", "reset password", "already a member", "already a member?", "already registered",
-        "help", "support", "faq", "faqs", "help center", "customer service",
-        "legal", "privacy", "privacy policy", "terms", "terms of use", "terms and conditions",
-        "cookies", "cookie policy", "accessibility", "disclaimer", "fraud alert", "scam alert",
-        "news", "blog", "events", "media", "media center", "press releases", "press",
-        "services", "products", "solutions", "portfolio", "case study", "brochure", "download",
-        "subscribe", "newsletter", "investors", "investor relations", "annual report", "financial statements",
-        "sustainability", "corporate governance", "vision and mission", "our story", "history",
-        "careers", "careers home", "working at", "life at", "why join us", "benefits", "diversity", "inclusion",
-        "culture", "values", "our team", "leadership", "meet our people", "board of directors",
-        "job market news", "post a job", "find a job", "job seekers", "remote jobs", "job vacancies",
-        "search jobs", "join our talent network", "talent community", "return to home", "search results"
-    ]
-    if t in exact_blacklisted: return True
-
-    # 2. KEYWORD ASSASSIN (Kills any title *containing* these toxic phrases)
-    junk_keywords = [
-        "jobs by", "jobs at", "view all", "click here", "read more", "learn more",
-        "meet our", "working at", "life at", "sign in", "log in", "sign up",
-        "create an account", "already a member", "forgot password", "reset password",
-        "join our", "talent network", "privacy policy", "terms of use", "terms and conditions",
-        "cookie policy", "all jobs", "search results", "back to", "return to",
-        "get to know our leaders", "search this job", "if you are not redirected",
-        "get started for free", "search for jobs and apply", "skip to content",
-        "tender", "tenders", "bid", "bids", "eoi", "expression of interest", 
-        "supplier prequalification", "prequalification", "addendum", "procurement of",
-        "request for proposal", "rfp", "request for quotation", "rfq", "asset disposal", "auction",
-        "download brochure", "annual report", "financial statement", "fraud alert", "scam warning"
-    ]
-    if any(k in t for k in junk_keywords): return True
-
-    # 3. LENGTH & NUMBER ASSASSIN (Real jobs are not 1 word or 20 words, or purely numbers)
-    words = t.split()
-    if len(words) < 2 or len(words) > 15: return True
-    if re.search(r'^\d+$', t): return True
-    if t.replace(',', '').replace('.', '').isdigit(): return True
-    if "0800211178" in t.replace(" ", ""): return True # Known scam number
-
-    return False
-
-# ==========================================
-# 📱 TELEGRAM DISPATCHER
-# ==========================================
-def send_telegram_message(img_path, caption):
-    if "YOUR_TELEGRAM_BOT_TOKEN" in TELEGRAM_BOT_TOKEN:
-        print("⚠️ Telegram skipped: Add your bot token first.")
-        return 
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto"
-    try:
-        with open(img_path, 'rb') as f:
-            payload = {'chat_id': TELEGRAM_CHAT_ID, 'caption': caption, 'parse_mode': 'Markdown'}
-            requests.post(url, data=payload, files={'photo': f})
-        print("✈️ Broadcasted to Telegram")
-    except Exception as e:
-        print(f"⚠️ Telegram Error: {e}")
-
-# ==========================================
-# 📱 WHATSAPP VIP MESSAGING ENGINE
-# ==========================================
-def send_wa_text(chat_id, text):
-    url = f"{GREEN_API_BASE}/sendMessage/{WA_TOKEN}"
-    try: requests.post(url, json={"chatId": chat_id, "message": text})
-    except: pass
-
-def send_wa_image(chat_id, img_path, caption):
-    url = f"{GREEN_API_BASE}/sendFileByUpload/{WA_TOKEN}"
-    try:
-        with open(img_path, 'rb') as f:
-            requests.post(url, data={'chatId': chat_id, 'caption': caption}, files={'file': f})
-    except: pass
-
-def dispatch_to_vip_users(title, full_desc, apply_link, img_path, sector):
-    print("📡 Querying VIP Database for Dispatch...")
-    response = db.table("user_profiles").select("*").execute()
-    users = response.data
-
-    search_target = f"{title} {sector}".lower()
-
-    for user in users:
-        if user.get('is_blocked'): continue
-
-        phone = user.get('phone', '')
-        if not phone: continue
-        if phone.startswith("0"): phone = "254" + phone[1:]
-        chat_id = f"{phone}@c.us"
-
-        status = user.get('payment_status', 'Trial')
-        niche = user.get('niche', 'Pending Configuration').lower()
-
-        if status == 'Trial':
-            welcome_msg = (
-                "AURENT VAULT | ACCESS GRANTED\n"
-                "━━━━━━━━━━━━━━━━━━━━\n"
-                "Welcome to the Aurent Studios Gigs Hunting Portal.\n\n"
-                "You are now a registered user on a 3-day trial. Our system will monitor and send you highly curated opportunities based on your Radar Settings.\n\n"
-                "If the system impresses you, a 50 KES fee will be required at the end of your trial to support our database management and secure your full access.\n\n"
-                "Thank you for your trust in us. We hope to serve you well.\n"
-                "━━━━━━━━━━━━━━━━━━━━\n"
-                "_Aurent Studios Intelligence_"
-            )
-            send_wa_text(chat_id, welcome_msg)
-            db.table("user_profiles").update({"payment_status": "Trial_Active"}).eq("email", user['email']).execute()
-            status = 'Trial_Active'
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700;900&family=Montserrat:wght@400;600;800;900&display=swap');
         
-        created_date = datetime.datetime.fromisoformat(user['created_at'].replace("Z", "+00:00"))
-        days_passed = (datetime.datetime.now(datetime.timezone.utc) - created_date).days
-
-        if status in ['Trial', 'Trial_Active'] and days_passed > 3:
-            expire_msg = (
-                "AURENT VAULT | TRIAL EXPIRED\n"
-                "━━━━━━━━━━━━━━━━━━━━\n"
-                "Your 3-day VIP access to the Aurent Intelligence Engine has ended. We have paused your personalized job alerts.\n\n"
-                "To renew your access for the whole month:\n"
-                "1️⃣ Log in to the Aurent Vault website.\n"
-                "2️⃣ Click the green *'Verify (50 KES)'* button at the top.\n"
-                "3️⃣ Enter your M-Pesa number to activate your monthly sub.\n\n"
-                "🔗 *Log in here:* https://aurentstudios-creator.github.io/gig-hunter/index.html"
-            )
-            send_wa_text(chat_id, expire_msg)
-            db.table("user_profiles").update({"payment_status": "Expired"}).eq("email", user['email']).execute()
-            continue
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            background-color: #050505; color: white; 
+            background-image: radial-gradient(circle at 50% 0%, #15151c 0%, #050505 70%); 
+            background-attachment: fixed; position: relative; overflow-x: hidden;
+        }
+        body::before { 
+            content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); 
+            opacity: 0.04; pointer-events: none; z-index: 9999; 
+        }
+        .css-watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22vw; font-weight: 900; font-style: italic; letter-spacing: -0.05em; color: rgba(255, 255, 255, 0.015); z-index: 0; pointer-events: none; }
         
-        if status == 'Expired': continue
-
-        matches = False
-        if "pending" in niche or "all" in niche: matches = True
-        else:
-            niches = [n.strip() for n in niche.split(',')]
-            for n in niches:
-                if "tech" in n and any(kw in search_target for kw in ["tech", "software", "developer", "data", "it ", "cyber"]): matches = True
-                elif "design" in n and any(kw in search_target for kw in ["design", "creative", "art", "writer"]): matches = True
-                elif "finance" in n and any(kw in search_target for kw in ["finance", "business", "account", "sales", "bank"]): matches = True
-                elif "scholarship" in n and any(kw in search_target for kw in ["scholarship", "education", "grant"]): matches = True
-                elif "remote" in n and "remote" in search_target: matches = True
-                elif "engineering" in n and any(kw in search_target for kw in ["engineer", "civil", "mechanical", "electrical", "structural"]): matches = True
-                elif "health" in n and any(kw in search_target for kw in ["health", "med", "nurse", "doctor", "clinical", "pharm"]): matches = True
-                elif "aviation" in n and any(kw in search_target for kw in ["aviation", "pilot", "flight", "aircraft"]): matches = True
-
-        if matches:
-            op_type = "OPPORTUNITY" if sector in ["Scholarship", "Training", "Giveaway"] else "EXECUTIVE GIG"
-            caption = (
-                f"AURENT VAULT | {op_type}\n"
-                f"━━━━━━━━━━━━━━━━━━━━\n"
-                f"📌 *Role:* {title}\n"
-                f"💼 *Sector:* {sector}\n\n"
-                f"📝 *Details:* {full_desc[:250]}...\n\n"
-                f"🔗 *Access Portal:* {apply_link}\n"
-                f"━━━━━━━━━━━━━━━━━━━━\n"
-                f"_Aurent Intelligence Engine_"
-            )
-            if img_path and os.path.exists(img_path):
-                send_wa_image(chat_id, img_path, caption)
-                print(f"✅ VIP DM sent to {phone}")
-
-# ==========================================
-# 🛰️ THE DEEP SCREEN INTERACTOR (EXTRACTOR)
-# ==========================================
-async def extract_details(context, raw_url, title):
-    page = await context.new_page()
-    try:
-        await page.set_extra_http_headers({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"})
-        await page.goto(raw_url, wait_until="networkidle", timeout=45000)
+        .glass-card { background: rgba(10, 10, 12, 0.5); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0.75rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .nav-link.active { color: #fff; border-bottom: 2px solid #d4af37; text-shadow: 0 0 10px rgba(212,175,55,0.5); }
         
-        for _ in range(4):
-            await page.evaluate("window.scrollBy(0, 600);")
-            await page.wait_for_timeout(1000)
+        /* Font size 16px prevents iOS auto-zoom on inputs */
+        .luxury-input { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.5rem; padding: 1rem; color: white; width: 100%; transition: all 0.3s ease; font-size: 16px;}
+        .luxury-input:focus { border-color: #d4af37; outline: none; box-shadow: 0 0 15px rgba(212,175,55,0.1); background: rgba(0,0,0,0.8); }
+        select option { background-color: #0a0a0c !important; color: white !important; }
+        
+        .overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(25px); }
 
-        try:
-            await page.evaluate("""
-                document.querySelectorAll('button, a, div, span').forEach(el => {
-                    let text = el.innerText ? el.innerText.toLowerCase() : '';
-                    if(text.includes('expand') || text.includes('read more') || text.includes('show full') || text.includes('qualifications')) {
-                        try { el.click(); } catch(e){}
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+
+        /* Mobile swipe hide scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .slide-in { animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        .fade-up { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn-shine { position: relative; overflow: hidden; }
+        .btn-shine::after { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); transition: 0.5s; z-index: 1; }
+        .btn-shine:hover::after { left: 150%; }
+        .btn-shine span { position: relative; z-index: 2; }
+
+        /* RADAR CHIPS */
+        .niche-chip { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; text-align: center; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #cbd5e1; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; height: 100%;}
+        .niche-chip:hover { background: rgba(255,255,255,0.1); }
+        .niche-chip.active { background: rgba(212,175,55,0.1); border-color: #d4af37; color: #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
+
+        .admin-table { width: 100%; text-align: left; border-collapse: collapse; }
+        .admin-table th { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #d4af37; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .admin-table td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 11px; color: #cbd5e1; }
+        .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
+        
+        .status-badge { padding: 4px 6px; border-radius: 4px; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .status-pending { color: #f39c12; background: rgba(243, 156, 18, 0.1); }
+        .status-paid { color: #25D366; background: rgba(37, 211, 102, 0.1); }
+        .status-blocked { color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <div class="css-watermark">AURENT</div>
+    <audio id="notification-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
+
+    <div id="protocol-overlay" class="overlay hidden">
+        <div class="max-w-md w-full glass-card p-6 md:p-10 text-center border-t-2 border-yellow-600 shadow-[0_0_50px_rgba(212,175,55,0.15)] relative overflow-y-auto max-h-[90vh] no-scrollbar">
+            
+            <div id="auth-step-1">
+                <h1 class="text-3xl md:text-4xl font-black mb-2 tracking-widest uppercase italic font-['Montserrat'] text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Aurent</h1>
+                <p class="text-[9px] uppercase text-yellow-500 font-bold mb-6 md:mb-8 tracking-[0.3em]">The VIP Network</p>
+                
+                <div class="text-left bg-black/40 p-5 md:p-6 rounded-xl mb-6 md:mb-8 border border-white/5 text-[10px] leading-relaxed text-slate-400 h-48 md:h-52 overflow-y-auto no-scrollbar">
+                    <b class="text-white block mb-4 uppercase tracking-widest border-b border-white/10 pb-3 text-xs">Terms of Registration</b>
+                    <ul class="list-disc pl-4 space-y-4">
+                        <li><span class="text-yellow-500 font-bold">DEVICE ID:</span> <span id="display-device-id" class="font-mono text-white bg-white/10 px-2 py-1 rounded tracking-widest"></span></li>
+                        <li><span class="text-yellow-500 font-bold">FREE TRIAL:</span> <span id="display-trial-days" class="text-white font-bold text-lg">3</span> Days Remaining.</li>
+                        <li><span class="text-yellow-500 font-bold">VIP ALERTS:</span> Configure your radar inside the Vault to receive curated, high-ticket jobs directly to your WhatsApp.</li>
+                        <li>After 3 days, a 50 KSH monthly verification fee applies to maintain Vault access and WhatsApp DMs.</li>
+                        <li class="text-red-400 font-bold border border-red-900/30 bg-red-900/10 p-3 rounded mt-4 leading-relaxed">
+                            DISCLAIMER: Aurent Vault is an intelligence aggregator, NOT an employer. We hold zero liability for third-party hiring processes, scams, or external disputes.
+                        </li>
+                    </ul>
+                </div>
+                <button onclick="showAuthForm()" class="btn-shine w-full bg-yellow-600 text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px]"><span>Accept Terms & Continue</span></button>
+            </div>
+
+            <div id="auth-step-2" class="hidden slide-in">
+                <h1 class="text-xl md:text-2xl font-black mb-4 tracking-widest uppercase text-white font-['Montserrat']">Identify</h1>
+                
+                <div class="flex mb-6 md:mb-8 bg-black/60 p-1 rounded-lg border border-white/5">
+                    <button id="tab-login" onclick="setAuthMode('login')" class="w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded bg-yellow-600 text-black transition shadow-lg shadow-yellow-600/20">Login</button>
+                    <button id="tab-register" onclick="setAuthMode('register')" class="w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded text-slate-500 transition hover:text-white">Register</button>
+                </div>
+                
+                <div id="auth-error" class="hidden bg-red-900/20 text-red-400 text-[10px] p-3 rounded-lg mb-5 md:mb-6 font-bold uppercase border border-red-900/50 tracking-wider"></div>
+
+                <div class="space-y-4 md:space-y-6 mb-6 md:mb-8">
+                    <input type="tel" id="auth-phone" placeholder="WhatsApp No. (07...)" class="luxury-input text-xs text-center tracking-[0.2em] font-mono py-3 md:py-4" maxlength="10">
+                    <input type="password" id="auth-pin" placeholder="Enter 4-Digit PIN" class="luxury-input text-sm text-center tracking-[1em] font-mono py-3 md:py-4" maxlength="4">
+                </div>
+
+                <button id="auth-submit-btn" onclick="executeAuth()" class="btn-shine w-full bg-yellow-600 hover:bg-yellow-500 transition text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(212,175,55,0.2)]"><span>Access Vault</span></button>
+                
+                <button onclick="hideAuthForm()" class="text-[9px] text-slate-500 mt-5 md:mt-6 uppercase tracking-widest hover:text-white transition block w-full text-center"><i class="fa-solid fa-arrow-left mr-2"></i> Return to Terms</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="prefs-overlay" class="overlay hidden slide-in">
+        <div class="max-w-md w-full glass-card p-6 md:p-10 border-t-2 border-yellow-600 shadow-[0_0_50px_rgba(212,175,55,0.15)] relative overflow-y-auto max-h-[90vh] no-scrollbar">
+            <h1 class="text-xl md:text-2xl font-black mb-2 tracking-widest uppercase text-white font-['Montserrat'] text-center">Configure Radar</h1>
+            <p class="text-[9px] uppercase text-slate-400 font-bold mb-6 md:mb-8 tracking-widest text-center leading-relaxed">Select your industries below to receive VIP WhatsApp Alerts. You can browse all jobs globally in the background.</p>
+            
+            <div class="grid grid-cols-2 gap-2 md:gap-3 mb-6 md:mb-8">
+                <div class="niche-chip" data-niche="Tech & Software" onclick="toggleNiche(this)">Tech & Software</div>
+                <div class="niche-chip" data-niche="Design & Creative" onclick="toggleNiche(this)">Design & Creative</div>
+                <div class="niche-chip" data-niche="Finance & Business" onclick="toggleNiche(this)">Finance & Business</div>
+                <div class="niche-chip" data-niche="Scholarships" onclick="toggleNiche(this)">Scholarships</div>
+                <div class="niche-chip" data-niche="Remote Work" onclick="toggleNiche(this)">Remote Work</div>
+                <div class="niche-chip" data-niche="Engineering" onclick="toggleNiche(this)">Engineering</div>
+            </div>
+
+            <button id="save-prefs-btn" onclick="savePrefs()" class="btn-shine w-full bg-yellow-600 text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-lg shadow-yellow-600/20"><span>Save & Enable Alerts</span></button>
+            <button onclick="document.getElementById('prefs-overlay').classList.add('hidden')" class="w-full text-center text-[9px] text-slate-500 mt-5 md:mt-6 uppercase tracking-widest hover:text-white transition">Skip for now</button>
+        </div>
+    </div>
+
+    <div id="payment-overlay" class="overlay hidden">
+        <div class="max-w-sm w-full glass-card p-6 md:p-10 text-center border-t-2 border-[#25D366] shadow-[0_0_50px_rgba(37,211,102,0.1)] overflow-y-auto max-h-[90vh] no-scrollbar">
+            <div class="w-14 h-14 md:w-16 md:h-16 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 border border-[#25D366]/30">
+                <i class="fa-solid fa-mobile-screen-button text-xl md:text-2xl text-[#25D366]"></i>
+            </div>
+            <h1 class="text-xl md:text-2xl font-black mb-2 uppercase tracking-widest text-white font-['Montserrat']">Verification Fee</h1>
+            <p class="text-[10px] uppercase text-slate-400 font-bold mb-6 md:mb-8 tracking-widest">Amount: <span class="text-[#25D366] font-black text-base md:text-lg">50 KES</span></p>
+            <p class="text-xs text-slate-400 mb-6 md:mb-8 leading-relaxed">Enter your M-Pesa number. An STK Push will be sent to your phone to securely complete verification.</p>
+            
+            <input type="text" id="mpesa-phone" placeholder="e.g. 0712345678" class="luxury-input text-center text-base md:text-lg tracking-[0.2em] mb-6 md:mb-8 font-mono" maxlength="10">
+            
+            <button id="mpesa-btn" onclick="processPayment()" class="btn-shine w-full bg-[#25D366] text-black font-black py-4 rounded-xl uppercase tracking-widest text-[10px] shadow-[0_0_20px_rgba(37,211,102,0.2)]">
+                <span>Send M-Pesa Request</span>
+            </button>
+            <button onclick="document.getElementById('payment-overlay').classList.add('hidden')" class="block w-full text-center text-[9px] text-slate-500 mt-5 md:mt-6 uppercase tracking-widest hover:text-white transition">Cancel Request</button>
+        </div>
+    </div>
+
+    <nav class="fixed top-0 w-full bg-[#050505]/90 backdrop-blur-xl z-[100] border-b border-white/5 px-4 md:px-6 py-3 md:py-4 flex flex-col md:flex-row justify-between items-center transition-all duration-300 gap-3 md:gap-0">
+        <div class="flex justify-between items-center w-full md:w-auto">
+            <span class="font-black text-[13px] md:text-[14px] tracking-[0.2em] uppercase text-white font-['Montserrat'] flex items-center">
+                Aurent <span class="text-yellow-600 italic ml-2">Vault</span>
+            </span>
+            <div class="flex md:hidden items-center gap-3">
+                <button id="verify-btn-mobile" onclick="document.getElementById('payment-overlay').classList.remove('hidden')" class="hidden font-bold text-[8px] uppercase tracking-widest bg-gradient-to-r from-[#25D366]/20 to-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 px-3 py-1.5 rounded-full">
+                    Verify
+                </button>
+                <button onclick="logout()" class="text-[10px] text-slate-500 hover:text-red-500"><i class="fa-solid fa-power-off"></i></button>
+            </div>
+        </div>
+        
+        <div class="flex gap-4 md:gap-6 overflow-x-auto w-full md:w-auto items-center no-scrollbar pb-1 md:pb-0 shrink-0">
+            <button onclick="tab('admin')" id="t-admin" class="hidden nav-link font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-yellow-500 hover:text-white transition whitespace-nowrap shrink-0">
+                <i class="fa-solid fa-shield-halved mr-1"></i> Command
+            </button>
+            
+            <button onclick="tab('gigs')" id="t-gigs" class="nav-link active font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition whitespace-nowrap shrink-0">The Vault</button>
+            <button onclick="tab('rev')" id="t-rev" class="nav-link font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition whitespace-nowrap shrink-0">Reviews</button>
+            
+            <button id="t-prefs" onclick="openPrefs()" class="hidden font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-slate-500 hover:text-yellow-500 transition whitespace-nowrap shrink-0">
+                <i class="fa-solid fa-crosshairs mr-1"></i> Radar Settings
+            </button>
+
+            <a href="cv-studio.html" class="font-bold text-[9px] md:text-[10px] uppercase tracking-widest text-yellow-500 border border-yellow-500/20 px-4 md:px-5 py-1.5 md:py-2 rounded-full hover:bg-yellow-500 hover:text-black transition duration-500 shrink-0">CV Studio <i class="fa-solid fa-wand-magic-sparkles ml-1"></i></a>
+            
+            <button id="verify-btn" onclick="document.getElementById('payment-overlay').classList.remove('hidden')" class="hidden md:block font-bold text-[10px] uppercase tracking-widest bg-gradient-to-r from-[#25D366]/20 to-[#25D366]/10 text-[#25D366] border border-[#25D366]/30 px-5 py-2 rounded-full hover:from-[#25D366] hover:to-[#20bd5a] hover:text-black transition shrink-0">
+                Verify (50 KES)
+            </button>
+            
+            <button onclick="logout()" class="hidden md:block font-bold text-[10px] uppercase tracking-widest text-slate-600 hover:text-red-500 transition ml-2 shrink-0"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+    </nav>
+
+    <main class="mt-24 md:mt-28 max-w-7xl mx-auto px-4 md:px-6 flex-grow w-full pb-20 relative z-10">
+
+        <section id="s-admin" class="hidden py-4 fade-up">
+            <div class="mb-8 md:mb-10 border-b border-white/5 pb-4 md:pb-6">
+                <h2 class="text-xl md:text-3xl font-black uppercase tracking-widest text-yellow-500 font-['Montserrat']"><i class="fa-solid fa-satellite-dish mr-2 md:mr-3"></i> Command Center</h2>
+                <p class="text-[9px] md:text-[10px] text-slate-500 mt-2 tracking-widest uppercase">Live User Management & Monetization API</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-8 md:mb-12">
+                <div class="glass-card p-6 md:p-8 border-t-2 border-blue-500 bg-gradient-to-b from-blue-900/5 to-transparent relative overflow-hidden">
+                    <i class="fa-solid fa-users absolute -right-2 -bottom-2 md:-right-4 md:-bottom-4 text-6xl md:text-8xl text-blue-500/5"></i>
+                    <p class="text-[8px] md:text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mb-2 md:mb-3 relative z-10">Registered Users</p>
+                    <h3 id="admin-total-users" class="text-3xl md:text-5xl font-black text-white relative z-10">0</h3>
+                </div>
+                <div class="glass-card p-6 md:p-8 border-t-2 border-[#25D366] bg-gradient-to-b from-[#25D366]/5 to-transparent relative overflow-hidden">
+                    <i class="fa-solid fa-wallet absolute -right-2 -bottom-2 md:-right-4 md:-bottom-4 text-6xl md:text-8xl text-[#25D366]/5"></i>
+                    <p class="text-[8px] md:text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em] mb-2 md:mb-3 relative z-10">Gross Vault Revenue</p>
+                    <h3 id="admin-revenue" class="text-3xl md:text-5xl font-black text-[#25D366] relative z-10">0 <span class="text-sm md:text-lg text-slate-500 font-normal">KES</span></h3>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 md:p-8 border border-white/5 shadow-2xl">
+                <div class="flex justify-between items-center border-b border-white/5 pb-4 mb-4 md:pb-6 md:mb-6">
+                    <h3 class="text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] text-white">Database: user_profiles</h3>
+                    <button onclick="loadAdminUsers()" class="text-yellow-600 hover:text-yellow-400 text-[8px] md:text-[10px] tracking-widest uppercase font-bold transition"><i class="fa-solid fa-rotate-right mr-1 md:mr-2"></i> Refresh Data</button>
+                </div>
+                
+                <div class="overflow-x-auto no-scrollbar pb-2">
+                    <table class="admin-table w-full whitespace-nowrap">
+                        <thead>
+                            <tr>
+                                <th>WhatsApp Number</th>
+                                <th>Radar Profile</th>
+                                <th>Registration Date</th>
+                                <th>Status</th>
+                                <th>Access Protocol</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-table">
+                            <tr><td colspan="5" class="text-center py-10 md:py-16 text-slate-600 text-[10px] tracking-widest uppercase"><i class="fa-solid fa-circle-notch fa-spin text-lg block mb-2"></i> Querying Database...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="s-gigs" class="fade-up">
+            <div id="trial-banner" class="bg-gradient-to-r from-yellow-900/10 to-transparent border-l-2 border-yellow-600 text-yellow-500 text-[9px] md:text-[10px] font-bold uppercase tracking-widest p-3 md:p-4 rounded mb-6 md:mb-10 hidden shadow-lg shadow-yellow-900/5">
+                <i class="fa-solid fa-clock mr-2"></i> Trial Active: <span id="banner-days-left" class="text-white mx-1"></span> Days Remaining
+            </div>
+            <div id="error-banner" class="hidden bg-red-900/10 border-l-2 border-red-500 text-red-400 text-[9px] md:text-[10px] font-bold uppercase tracking-widest p-3 md:p-4 rounded mb-6 md:mb-10">
+                <i class="fa-solid fa-triangle-exclamation mr-2"></i> SYSTEM ERROR: <span id="error-msg" class="text-white"></span>
+            </div>
+
+            <div class="glass-card p-2 md:p-3 mb-8 md:mb-10 flex flex-col md:flex-row gap-2 md:gap-3 border border-white/5 shadow-2xl">
+                <div class="relative flex-grow">
+                    <i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 text-sm"></i>
+                    <input type="text" id="search-input" oninput="filterVault()" placeholder="Search roles, companies, keywords..." class="luxury-input pl-10 md:pl-14 py-3 md:py-4 w-full text-[10px] md:text-xs tracking-wide bg-black/40 border-none shadow-inner">
+                </div>
+                <div class="w-full md:w-64 shrink-0 border-t md:border-t-0 md:border-l border-white/5 pt-2 md:pt-0 md:pl-3">
+                    <select id="category-filter" onchange="filterVault()" class="luxury-input py-3 md:py-4 w-full text-[10px] md:text-xs cursor-pointer bg-black/40 border-none font-bold uppercase tracking-wider text-slate-300">
+                        <option value="all">All Opportunities</option>
+                        <option value="tech">Tech & Software</option>
+                        <option value="design">Design & Creative</option>
+                        <option value="finance">Finance & Business</option>
+                        <option value="scholarship">Scholarships & Edu</option>
+                        <option value="remote">Remote / WFH</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="aviation">Aviation</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="loading" class="text-center py-20 md:py-32 text-yellow-600 font-black tracking-widest uppercase animate-pulse">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl md:text-4xl mb-4 md:mb-6 block opacity-50"></i> <span class="text-[10px] md:text-xs">Syncing Engine...</span>
+            </div>
+            
+            <div id="feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"></div>
+        </section>
+
+        <section id="s-rev" class="hidden py-4 fade-up">
+            <div class="flex justify-between items-center mb-6 md:mb-10 border-b border-white/5 pb-4 md:pb-6">
+                <h2 class="text-xl md:text-2xl font-black uppercase tracking-widest text-white font-['Montserrat']">Experience Log</h2>
+                <button onclick="document.getElementById('rev-box').classList.toggle('hidden')" class="bg-white text-black px-4 md:px-6 py-2 md:py-3 rounded-full font-black tracking-[0.2em] text-[8px] md:text-[9px] hover:bg-gray-200 transition shadow-[0_0_15px_rgba(255,255,255,0.2)]">+ Add Entry</button>
+            </div>
+            <div id="rev-box" class="hidden glass-card p-6 md:p-10 mb-8 md:mb-12 border border-white/5 shadow-2xl">
+                <input type="text" id="r-name" placeholder="Your Name or Alias" class="luxury-input mb-4 md:mb-6 text-xs md:text-sm">
+                <select id="r-msg-vault" class="luxury-input mb-6 md:mb-8 text-xs md:text-sm bg-black/50">
+                    <option value="Just secured a high-ticket gig via the Vault. Efficiency is 10/10!">"Secured a high-ticket gig via the Vault. Efficiency is 10/10!"</option>
+                    <option value="The Aurent Hunter engine is incredibly accurate. Real-time pings changed my hunt.">"Hunter engine is accurate. Real-time pings changed my hunt."</option>
+                    <option value="Luxury branding and professional job leads. Best career investment.">"Luxury branding & professional leads. Best investment."</option>
+                    <option value="Finally, a platform that filters out the noise. Only premium opportunities here.">"Filters out the noise. Only premium opportunities."</option>
+                    <option value="The WhatsApp alerts are a game-changer. I apply before anyone else even sees the job.">"WhatsApp alerts are a game-changer. Apply first."</option>
+                    <option value="Worth every penny. The 50 KES verification fee pays for itself immediately.">"Worth every penny. Verification pays for itself."</option>
+                    <option value="CV Studio paired with the Vault's job feeds landed me an interview in 48 hours.">"CV Studio + Vault = Interview in 48 hours."</option>
+                    <option value="Sleek, fast, and highly curated. This is how job hunting should feel in 2026.">"Sleek, fast, highly curated. Job hunting in 2026."</option>
+                    <option value="No more scrolling through scammy sites. Aurent delivers pure intelligence.">"No scammy sites. Aurent delivers pure intelligence."</option>
+                    <option value="The Radar settings are incredibly precise. I only get exactly what I'm looking for.">"Radar is incredibly precise. Exactly what I want."</option>
+                </select>
+                <button onclick="addReview()" class="btn-shine w-full bg-yellow-600 text-black py-3 md:py-4 rounded-xl font-black text-[9px] md:text-[10px] tracking-widest uppercase hover:bg-yellow-500 transition shadow-lg shadow-yellow-600/20"><span>Submit Entry</span></button>
+            </div>
+            <div id="rev-feed" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8"></div>
+        </section>
+    </main>
+
+    <footer class="text-center py-8 md:py-10 text-slate-600 text-[8px] md:text-[9px] font-bold tracking-[0.3em] uppercase border-t border-white/5 bg-black/50 relative z-10 mt-auto">
+        Aurent Studios © 2026 <br>
+        <span id="footer-device-id" class="text-slate-800 font-mono mt-2 md:mt-3 block text-[8px] md:text-[10px]"></span>
+    </footer>
+
+    <script>
+        const _supabase = supabase.createClient("https://nujhdywfoosjwxoxiito.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51amhkeXdmb29zand4b3hpaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTE5OTQsImV4cCI6MjA5MTM4Nzk5NH0.pfpuA0q4bZOsPQUlr1S6UrFPY49uBQp1SV7lLrbcGQs");
+        
+        let lastId = null;
+        let globalVaultData = [];
+        let currentAuthMode = 'login'; 
+        let userNiches = [];
+
+        // === 1. INITIALIZATION & UI SETUP ===
+        async function initDeviceAndTrial() {
+            let deviceId = localStorage.getItem('aurent_device_id');
+            if (!deviceId) {
+                deviceId = 'AUR-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+                localStorage.setItem('aurent_device_id', deviceId);
+            }
+
+            let trialStart = localStorage.getItem('aurent_trial_start');
+            if (!trialStart) {
+                trialStart = Date.now();
+                localStorage.setItem('aurent_trial_start', trialStart);
+            }
+
+            let daysPassed = Math.floor((Date.now() - parseInt(trialStart)) / (1000 * 60 * 60 * 24));
+            let daysLeft = Math.max(0, 3 - daysPassed); 
+
+            document.getElementById('display-device-id').innerText = deviceId;
+            document.getElementById('footer-device-id').innerText = "SYS_ID: " + deviceId;
+            document.getElementById('display-trial-days').innerText = daysLeft;
+            document.getElementById('banner-days-left').innerText = daysLeft;
+            
+            if (localStorage.getItem('aurent_auth')) {
+                document.getElementById('protocol-overlay').classList.add('hidden');
+                setupRoleUI();
+                loadFeed();
+                
+                // SILENT RADAR CHECK & PAYMENT CHECK
+                const email = localStorage.getItem('aurent_email');
+                if (email && localStorage.getItem('aurent_role') !== 'admin') {
+                    const { data } = await _supabase.from('user_profiles').select('niche, payment_status').eq('email', email).single();
+                    if (data) {
+                        if (data.niche === 'Pending Configuration' || !data.niche) {
+                            setTimeout(() => { openPrefs(); }, 800);
+                        }
+                        
+                        // If they have paid, completely hide the Verify buttons and Trial Banner
+                        if (data.payment_status === 'Paid') {
+                            const vBtnDesk = document.getElementById('verify-btn');
+                            const vBtnMob = document.getElementById('verify-btn-mobile');
+                            const banner = document.getElementById('trial-banner');
+                            if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
+                            if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
+                            if(banner) banner.style.setProperty('display', 'none', 'important');
+                        }
                     }
+                }
+            } else {
+                document.getElementById('protocol-overlay').classList.remove('hidden');
+            }
+        }
+
+        function setupRoleUI() {
+            const role = localStorage.getItem('aurent_role');
+            const vBtnDesk = document.getElementById('verify-btn');
+            const vBtnMob = document.getElementById('verify-btn-mobile');
+            const trialBanner = document.getElementById('trial-banner');
+
+            if (role === 'admin') {
+                document.getElementById('t-admin').classList.remove('hidden');
+                document.getElementById('t-prefs').classList.add('hidden');
+                
+                // FORCE hide verify buttons for Admins using strict inline styles to override Tailwind
+                if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
+                if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
+                if(trialBanner) trialBanner.style.setProperty('display', 'none', 'important');
+                
+                loadAdminUsers();
+            } else {
+                document.getElementById('t-admin').classList.add('hidden');
+                document.getElementById('t-prefs').classList.remove('hidden');
+                
+                // Restore defaults for normal users (Payment check happens in initDeviceAndTrial)
+                if(vBtnDesk) vBtnDesk.style.removeProperty('display');
+                if(vBtnMob) vBtnMob.style.removeProperty('display');
+                if(trialBanner) trialBanner.style.removeProperty('display');
+                
+                if(vBtnDesk) vBtnDesk.classList.remove('hidden');
+                if(vBtnMob) vBtnMob.classList.remove('hidden');
+                if(trialBanner) trialBanner.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            localStorage.clear(); 
+            _supabase.auth.signOut();
+            window.location.reload();
+        }
+
+        // === 2. WHATSAPP AUTHENTICATION ===
+        function showAuthForm() { document.getElementById('auth-step-1').classList.add('hidden'); document.getElementById('auth-step-2').classList.remove('hidden'); }
+        function hideAuthForm() { document.getElementById('auth-step-2').classList.add('hidden'); document.getElementById('auth-step-1').classList.remove('hidden'); }
+
+        function setAuthMode(mode) {
+            currentAuthMode = mode;
+            const btnLog = document.getElementById('tab-login');
+            const btnReg = document.getElementById('tab-register');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const pinInput = document.getElementById('auth-pin');
+
+            if(mode === 'login') {
+                btnLog.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded bg-yellow-600 text-black transition shadow-lg shadow-yellow-600/20";
+                btnReg.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded text-slate-500 transition hover:text-white";
+                pinInput.placeholder = "Enter 4-Digit PIN";
+                submitBtn.innerHTML = "<span>Login to Vault</span>";
+            } else {
+                btnReg.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded bg-yellow-600 text-black transition shadow-lg shadow-yellow-600/20";
+                btnLog.className = "w-1/2 py-3 text-[9px] font-black uppercase tracking-widest rounded text-slate-500 transition hover:text-white";
+                pinInput.placeholder = "Create 4-Digit PIN";
+                submitBtn.innerHTML = "<span>Start 3-Day Trial</span>";
+            }
+        }
+
+        async function executeAuth() {
+            const phone = document.getElementById('auth-phone').value;
+            const pin = document.getElementById('auth-pin').value;
+            const errorDiv = document.getElementById('auth-error');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            
+            if(phone.length < 9 || pin.length < 4) {
+                errorDiv.innerHTML = "<i class='fa-solid fa-triangle-exclamation mr-2'></i> Valid Phone and 4-Digit PIN required."; errorDiv.classList.remove('hidden'); return;
+            }
+
+            errorDiv.classList.add('hidden');
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i>';
+
+            // ADMIN MASTER BYPASS: 0700000000 / 9988
+            if (phone === '0700000000' && pin === '9988') {
+                localStorage.setItem('aurent_auth', 'true'); localStorage.setItem('aurent_role', 'admin');
+                document.getElementById('protocol-overlay').classList.add('hidden');
+                setupRoleUI(); loadFeed(); return;
+            }
+
+            const email = `${phone}@aurent.local`;
+            const password = `AUR${pin}ent!`;
+
+            let authResponse;
+            let isNewRegistration = false;
+
+            if(currentAuthMode === 'register') {
+                authResponse = await _supabase.auth.signUp({ email, password });
+                if(!authResponse.error) { 
+                    isNewRegistration = true;
+                    await _supabase.from('user_profiles').insert([{ email: email, phone: phone, niche: 'Pending Configuration', payment_status: 'Trial', is_blocked: false }]); 
+                }
+            } else {
+                authResponse = await _supabase.auth.signInWithPassword({ email, password });
+            }
+
+            if (authResponse.error) {
+                errorDiv.innerHTML = "<i class='fa-solid fa-circle-xmark mr-2'></i> Invalid PIN or Number already registered."; errorDiv.classList.remove('hidden');
+                submitBtn.innerHTML = currentAuthMode === 'register' ? "<span>Start 3-Day Trial</span>" : "<span>Login to Vault</span>";
+            } else {
+                const { data: profile } = await _supabase.from('user_profiles').select('is_blocked, niche, payment_status').eq('email', email).single();
+                if(profile && profile.is_blocked === true) {
+                    await _supabase.auth.signOut();
+                    errorDiv.innerHTML = "<i class='fa-solid fa-ban mr-2'></i> ACCOUNT SUSPENDED BY ADMIN."; errorDiv.classList.remove('hidden');
+                    submitBtn.innerHTML = currentAuthMode === 'register' ? "<span>Start 3-Day Trial</span>" : "<span>Login to Vault</span>";
+                    return;
+                }
+
+                localStorage.setItem('aurent_auth', 'true'); 
+                localStorage.setItem('aurent_role', 'user'); 
+                localStorage.setItem('aurent_phone', phone); 
+                localStorage.setItem('aurent_email', email); 
+                
+                if ("Notification" in window) Notification.requestPermission();
+                document.getElementById('protocol-overlay').classList.add('hidden');
+                setupRoleUI(); loadFeed();
+
+                // Setup checks based on profile
+                if(profile) {
+                    if (profile.niche === 'Pending Configuration' || !profile.niche) {
+                        setTimeout(() => { openPrefs(); }, 800);
+                    }
+                    // Hide verification elements if already paid
+                    if (profile.payment_status === 'Paid') {
+                        const vBtnDesk = document.getElementById('verify-btn');
+                        const vBtnMob = document.getElementById('verify-btn-mobile');
+                        const banner = document.getElementById('trial-banner');
+                        if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
+                        if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
+                        if(banner) banner.style.setProperty('display', 'none', 'important');
+                    }
+                }
+            }
+        }
+
+        // === 3. RADAR PREFERENCES ENGINE ===
+        function toggleNiche(element) {
+            const nicheName = element.getAttribute('data-niche');
+            if(userNiches.includes(nicheName)) {
+                userNiches = userNiches.filter(n => n !== nicheName);
+                element.classList.remove('active');
+            } else {
+                userNiches.push(nicheName);
+                element.classList.add('active');
+            }
+        }
+
+        async function openPrefs() {
+            document.getElementById('prefs-overlay').classList.remove('hidden');
+            const email = localStorage.getItem('aurent_email');
+            
+            const { data } = await _supabase.from('user_profiles').select('niche').eq('email', email).single();
+            userNiches = []; 
+            document.querySelectorAll('.niche-chip').forEach(chip => chip.classList.remove('active'));
+
+            if(data && data.niche && data.niche !== 'Pending Configuration') {
+                userNiches = data.niche.split(', ');
+                document.querySelectorAll('.niche-chip').forEach(chip => {
+                    if(userNiches.includes(chip.getAttribute('data-niche'))) { chip.classList.add('active'); }
                 });
-            """)
-            await page.wait_for_timeout(1500)
-        except: pass
+            }
+        }
 
-        elements = await page.query_selector_all('article, [itemprop="description"], .job-description, .job-details, .show-more-content, .description, main p, main li')
-        
-        if not elements:
-            elements = await page.query_selector_all("p, li")
-
-        all_texts = []
-        for el in elements:
-            txt = await el.text_content()
-            if txt:
-                clean_txt = clean_job_text(txt)
-                if len(clean_txt) > 30 and clean_txt not in all_texts:
-                    all_texts.append(clean_txt)
-
-        vital_keywords = ["phd", "bachelor", "degree", "diploma", "experience", "years", "certification", "masters", "qualification", "responsibilities", "duties"]
-        requirements = []
-        intro = []
-
-        for sentence in all_texts:
-            if any(kw in sentence.lower() for kw in vital_keywords):
-                if sentence not in requirements:
-                    requirements.append(f"🎓 {sentence}")
-            else:
-                if len(intro) < 4 and len(sentence) > 60:
-                    intro.append(sentence)
-
-        final_desc = ""
-        if requirements:
-            if intro: final_desc += " ".join(intro) + "\n\n"
-            final_desc += "*Key Insights:*\n" + "\n".join(requirements[:6])
-        else:
-            final_desc = f"Official Listing: {title.upper()}\n\nFull education, experience requirements, and application instructions are hosted directly on the employer's secure portal."
-
-        return page.url, final_desc
-
-    except Exception as e:
-        return raw_url, f"Official Listing: {title.upper()}\n\nAccess the portal below for complete responsibilities and secure application instructions."
-    finally:
-        await page.close()
-
-# ==========================================
-# 🕵️ SITE SCANNER CORE LOGIC (DEEP SCROLL)
-# ==========================================
-async def scan_site(context, url):
-    jobs_from_this_site = 0 
-    
-    async with SEMAPHORE:
-        page = await context.new_page()
-        try:
-            print(f"📡 Scanning Site: {url}")
-            await page.goto(url, wait_until="load", timeout=60000)
+        async function savePrefs() {
+            const btn = document.getElementById('save-prefs-btn');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-lg"></i>';
             
-            for page_num in range(1, 4):
-                if jobs_from_this_site >= MAX_JOBS_PER_SITE: break
-                    
-                for i in range(7):
-                    await page.evaluate("window.scrollBy(0, 1000);")
-                    await page.wait_for_timeout(1500)
-                    
-                broad_selectors = (
-                    'h1 a, h2 a, h3 a, h4 a, h5 a, .job-title a, .vacancy-link, .search-result-title a, '
-                    '.job-list-title a, table a, a[href*="/job"], a[href*="/vacancy"], a[href*="/career"], a[href*="/scholarship"]'
-                )
-                links = await page.query_selector_all(broad_selectors)
+            const email = localStorage.getItem('aurent_email');
+            const nicheStr = userNiches.length > 0 ? userNiches.join(', ') : 'Pending Configuration';
+            
+            await _supabase.from('user_profiles').update({ niche: nicheStr }).eq('email', email);
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span><i class="fa-solid fa-check mr-2"></i> Radar Updated</span>';
+                setTimeout(() => {
+                    document.getElementById('prefs-overlay').classList.add('hidden');
+                    btn.innerHTML = '<span>Save & Enable Alerts</span>';
+                }, 1000);
+            }, 800);
+        }
+
+        // === 4. M-PESA PAYMENT ===
+        function processPayment() {
+            const phone = document.getElementById('mpesa-phone').value;
+            if(phone.length < 9) { alert("Please enter a valid M-Pesa number."); return; }
+            
+            const btn = document.getElementById('mpesa-btn');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Awaiting PIN...';
+            btn.style.backgroundColor = "#111"; btn.style.color = "#25D366";
+            
+            setTimeout(async () => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Payment Received';
+                btn.style.backgroundColor = "#25D366"; btn.style.color = "#000";
                 
-                for link in links[:30]: 
-                    if jobs_from_this_site >= MAX_JOBS_PER_SITE: break
-                        
-                    title = (await link.inner_text()).strip()
-                    href = await link.get_attribute('href')
+                const userEmail = localStorage.getItem('aurent_email');
+                if(userEmail) { await _supabase.from('user_profiles').update({ payment_status: 'Paid' }).eq('email', userEmail); }
+
+                setTimeout(() => {
+                    document.getElementById('payment-overlay').classList.add('hidden');
                     
-                    if not href or is_junk_title(title): continue
-                    if not href.startswith('http'): href = urllib.parse.urljoin(url, href)
-                    if any(bad_domain in href for bad_domain in BLACKLIST_DOMAINS): continue
+                    // Force hide everything
+                    const vBtnDesk = document.getElementById('verify-btn');
+                    const vBtnMob = document.getElementById('verify-btn-mobile');
+                    const banner = document.getElementById('trial-banner');
+                    if(vBtnDesk) vBtnDesk.style.setProperty('display', 'none', 'important');
+                    if(vBtnMob) vBtnMob.style.setProperty('display', 'none', 'important');
+                    if(banner) banner.style.setProperty('display', 'none', 'important');
                     
-                    stable_hash_hex = hashlib.md5(title.encode('utf-8')).hexdigest()[:8]
-                    job_id_num = int(stable_hash_hex, 16) % 2000000000 
-                    job_id_str = str(job_id_num)
-                    
-                    if job_id_str not in CLOUD_MEMORY_IDS:
-                        sector = get_sector(title)
-                        
-                        final_url, full_desc = await extract_details(context, href, title)
+                    alert("Account verified successfully. Unlimited Vault and WhatsApp Alerts granted.");
+                }, 1500);
+            }, 3500);
+        }
 
-                        print(f"🎯 Extraction Complete: {title} ({sector})")
-                        clean_intro = full_desc.split("*Key Insights:*")[0][:220].strip() if "*Key Insights:*" in full_desc else full_desc[:220]
-                        
-                        img_path = create_and_upload_job(title, "Direct", clean_intro, final_url, sector=sector)
-                        if img_path and os.path.exists(img_path): make_square_for_whatsapp(img_path)
-
-                        image_cloud_link = "https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT+VAULT"
-                        
-                        if img_path and os.path.exists(img_path):
-                            file_name = f"vault_poster_{job_id_str}.jpg"
-                            try:
-                                with open(img_path, 'rb') as f:
-                                    db.storage.from_('gig-images').upload(file_name, f.read(), {"content-type": "image/jpeg"})
-                                image_cloud_link = f"{SUPABASE_URL}/storage/v1/object/public/gig-images/{file_name}"
-                            except Exception: pass
-
-                        try:
-                            db.table("gigs").upsert({
-                                "id": job_id_num, "title": title[:85], "description": full_desc[:550], 
-                                "apply_link": final_url, "image_link": image_cloud_link,
-                                "created_at": datetime.datetime.now().isoformat()
-                            }).execute()
-                            print(f"✅ Vault Database Synced.")
-                        except Exception as e: print(f"⚠️ Vault Error: {e}")
-
-                        if img_path and os.path.exists(img_path):
-                            dispatch_to_vip_users(title, full_desc, final_url, img_path, sector)
-                            
-                            tg_caption = f"🚀 *{title}*\n\n📂 *Sector:* {sector}\n\n📝 {clean_intro}...\n\n🔗 [Apply on the Vault Portal]({final_url})"
-                            send_telegram_message(img_path, tg_caption)
-                        
-                        with open("posted_links.txt", "a") as mem_file: mem_file.write(job_id_str + "\n")
-                        CLOUD_MEMORY_IDS.add(job_id_str)
-                        
-                        jobs_from_this_site += 1
-                        print(f"✅ Finished: {jobs_from_this_site}/{MAX_JOBS_PER_SITE} for this site.")
-                        await asyncio.sleep(5) 
-                
-                if jobs_from_this_site >= MAX_JOBS_PER_SITE: break
-                    
-                next_button = await page.query_selector('a:has-text("Next"), a.next, a.next_page, li.next a, [aria-label="Next"]')
-                if next_button:
-                    print(f"➡️ Advancing to next page on {url}...")
-                    try:
-                        await next_button.click(timeout=5000)
-                        await page.wait_for_timeout(4000)
-                    except: break
-                else: break
-
-        except Exception as e: print(f"⚠️ Scan Error on {url}: {e}")
-        finally: await page.close()
-
-# ==========================================
-# 🏁 MAIN EXECUTION ENGINE (40 MIN INTERVAL)
-# ==========================================
-async def main():
-    global CLOUD_MEMORY_IDS
-    if os.name == 'nt': asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-    
-    if os.path.exists("posted_links.txt"):
-        with open("posted_links.txt", "r") as f:
-            CLOUD_MEMORY_IDS = set(line.strip() for line in f if line.strip())
-
-    while True:
-        print(f"\n🚀 --- GLOBAL HUNT STARTED: {datetime.datetime.now().strftime('%H:%M:%S')} ---")
-        
-        active_targets = TARGET_WEBSITES.copy()
-        random.shuffle(active_targets)
-        
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            context = await browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+        // === 5. ADMIN COMMAND CENTER ===
+        async function loadAdminUsers() {
+            document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-10 md:py-16 text-slate-600 text-[10px] tracking-widest uppercase"><i class="fa-solid fa-circle-notch fa-spin text-lg block mb-2"></i> Querying Database...</td></tr>';
             
-            await asyncio.gather(*[scan_site(context, url) for url in active_targets])
-            await browser.close()
+            const { data, error } = await _supabase.from('user_profiles').select('*').order('created_at', { ascending: false });
+            if (error) { document.getElementById('admin-users-table').innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Error: ${error.message}</td></tr>`; return; }
+
+            document.getElementById('admin-total-users').innerText = data.length;
+            const paidUsers = data.filter(u => u.payment_status === 'Paid').length;
+            document.getElementById('admin-revenue').innerHTML = `${paidUsers * 50} <span class="text-sm md:text-lg text-slate-500 font-normal">KES</span>`;
+
+            if(data.length === 0) {
+                document.getElementById('admin-users-table').innerHTML = '<tr><td colspan="5" class="text-center py-10 md:py-16 text-slate-600 text-[10px] tracking-widest uppercase">No users registered yet.</td></tr>';
+            } else {
+                document.getElementById('admin-users-table').innerHTML = data.map(user => {
+                    const fDate = new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    let statusBadge = user.is_blocked ? `<span class="status-badge status-blocked"><i class="fa-solid fa-ban mr-1"></i> Suspended</span>` : (user.payment_status === 'Paid' ? `<span class="status-badge status-paid">Paid 50 KES</span>` : `<span class="status-badge status-pending">Trial</span>`);
+                    let actionBtn = user.is_blocked ? `<button onclick="toggleBlockUser('${user.email}', false)" class="bg-green-600/20 text-green-500 border border-green-600/50 px-3 py-1.5 rounded text-[8px] uppercase font-bold hover:bg-green-600 hover:text-white transition tracking-wider">Unblock</button>` : `<button onclick="toggleBlockUser('${user.email}', true)" class="bg-red-600/20 text-red-500 border border-red-600/50 px-3 py-1.5 rounded text-[8px] uppercase font-bold hover:bg-red-600 hover:text-white transition tracking-wider">Block</button>`;
+                    
+                    const displayPhone = user.phone || user.email.split('@')[0];
+                    const displayNiche = user.niche || "Pending Configuration";
+
+                    return `
+                    <tr class="transition-colors duration-200 border-b border-white/5">
+                        <td class="font-bold text-white font-mono tracking-[0.1em]">${displayPhone}</td>
+                        <td class="text-yellow-500 text-[9px] font-bold uppercase tracking-wider">${displayNiche}</td>
+                        <td class="font-mono text-[9px] text-slate-500">${fDate}</td>
+                        <td>${statusBadge}</td>
+                        <td>${actionBtn}</td>
+                    </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        async function toggleBlockUser(email, blockStatus) { await _supabase.from('user_profiles').update({ is_blocked: blockStatus }).eq('email', email); loadAdminUsers(); }
+
+        // === 6. UI TABS & FEED ===
+        function tab(t) {
+            ['s-gigs', 's-rev', 's-admin'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            document.getElementById('s-'+t).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active', 'text-white'));
+            document.getElementById('t-'+t).classList.add('active', 'text-white');
+            if(t === 'rev') loadReviews();
+            if(t === 'admin') loadAdminUsers();
+        }
+
+        async function loadFeed() {
+            const { data, error } = await _supabase.from('gigs').select('*').order('created_at', { ascending: false }).limit(100);
+            document.getElementById('loading').style.display = 'none';
+
+            if (error) { document.getElementById('error-banner').classList.remove('hidden'); document.getElementById('error-msg').innerText = error.message; return; }
             
-        gc.collect()
-        print("💤 Hunt complete. Engine entering standby for 40 minutes...")
-        await asyncio.sleep(2400)
+            if(data && data.length > 0) {
+                if(lastId && data[0].id !== lastId) {
+                    document.getElementById('notification-sound').play();
+                }
+                lastId = data[0].id;
+                globalVaultData = data; 
+                renderFeed(globalVaultData); 
+            } else {
+                document.getElementById('feed').innerHTML = `<div class="col-span-full glass-card p-12 md:p-20 text-center border border-white/5"><i class="fas fa-radar text-4xl md:text-5xl text-yellow-600/50 mb-4 md:mb-6 animate-pulse block"></i><h3 class="text-lg md:text-xl font-black uppercase text-white tracking-[0.2em] md:tracking-[0.3em]">Vault is Empty</h3><p class="text-slate-500 text-[9px] md:text-[10px] font-bold tracking-widest mt-3 md:mt-4">Awaiting signals from the Hunter Engine...</p></div>`;
+            }
+        }
 
-if __name__ == "__main__":
-    asyncio.run(main())
+        function filterVault() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const category = document.getElementById('category-filter').value;
+            
+            const categoryKeywords = {
+                'tech': ['developer', 'software', 'it', 'tech', 'data', 'engineer', 'code', 'cyber'],
+                'design': ['design', 'creative', 'art', 'ui', 'ux', 'graphic', 'video', 'content'],
+                'finance': ['finance', 'business', 'sales', 'manager', 'accountant', 'market', 'trade'],
+                'scholarship': ['scholarship', 'university', 'student', 'grant', 'degree', 'edu', 'fellow'],
+                'remote': ['remote', 'wfh', 'work from home', 'anywhere'],
+                'engineering': ['engineer', 'civil', 'mechanical', 'electrical', 'structural', 'petroleum'],
+                'aviation': ['aviation', 'pilot', 'cabin crew', 'aircraft', 'aerospace', 'flight']
+            };
 
-# === END OF SCRIPT ===
+            const filteredData = globalVaultData.filter(g => {
+                const titleDesc = (g.title + " " + (g.description || "")).toLowerCase();
+                const matchesSearch = titleDesc.includes(searchTerm);
+                let matchesCategory = true;
+                if (category !== 'all') {
+                    const keywords = categoryKeywords[category] || [];
+                    matchesCategory = keywords.some(kw => titleDesc.includes(kw));
+                }
+                return matchesSearch && matchesCategory;
+            });
+            renderFeed(filteredData);
+        }
+
+        function renderFeed(dataToRender) {
+            const feedDiv = document.getElementById('feed');
+            if(dataToRender.length === 0) {
+                feedDiv.innerHTML = `<div class="col-span-full glass-card p-12 md:p-20 text-center border border-white/5"><i class="fa-solid fa-ghost text-4xl md:text-5xl text-slate-600 mb-4 md:mb-6 block"></i><h3 class="text-lg md:text-xl font-black uppercase text-white tracking-[0.2em] md:tracking-[0.3em]">No Matches Found</h3><p class="text-slate-500 text-[9px] md:text-[10px] font-bold tracking-widest mt-3 md:mt-4">Try adjusting your search filters.</p></div>`;
+                return;
+            }
+
+            feedDiv.innerHTML = dataToRender.map((g, index) => {
+                const dateObj = new Date(g.created_at);
+                const fDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const imgUrl = g.image_link || 'https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT';
+
+                return `
+                <div class="fade-up glass-card flex flex-col overflow-hidden group hover:border-yellow-600/40 transition-all duration-500 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.3)]" style="animation-delay: ${index * 0.05}s; opacity: 0;">
+                    <div class="relative w-full h-48 md:h-64 bg-[#020202] overflow-hidden border-b border-white/5 flex justify-center items-center">
+                        <img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover opacity-20 blur-[30px] transition-transform duration-1000 group-hover:scale-125">
+                        <img src="${imgUrl}" class="relative z-10 w-full h-full object-contain p-2 md:p-0 drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-[1.03]" onerror="this.src='https://via.placeholder.com/800x1000/000000/FFFFFF/?text=AURENT'">
+                        <div class="absolute top-3 md:top-4 left-3 md:left-4 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 md:px-3 py-1 md:py-1.5 rounded-full text-[7px] md:text-[8px] font-black text-yellow-500 tracking-widest uppercase z-20 shadow-lg">${fDate}</div>
+                    </div>
+                    <div class="p-6 md:p-8 flex-1 flex flex-col bg-gradient-to-b from-[#0a0a0c] to-[#050505]">
+                        <h3 class="text-base md:text-lg font-black uppercase mb-3 md:mb-4 text-white leading-snug group-hover:text-yellow-500 transition-colors duration-300 font-['Montserrat'] line-clamp-2">${g.title}</h3>
+                        <p class="text-slate-400 text-[10px] md:text-xs mb-6 md:mb-8 leading-relaxed line-clamp-3">${g.description.substring(0, 180)}...</p>
+                        <a href="${g.apply_link}" target="_blank" class="btn-shine mt-auto block w-full text-center bg-transparent border border-white/10 hover:border-yellow-500 hover:bg-yellow-500 transition-all duration-300 text-slate-300 hover:text-black font-black py-3 md:py-4 rounded-lg text-[8px] md:text-[9px] uppercase tracking-[0.2em]"><span>Access Portal</span></a>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        async function addReview() {
+            const name = document.getElementById('r-name').value || "Verified User";
+            const text = document.getElementById('r-msg-vault').value;
+            await _supabase.from('reviews').insert([{ name, text, created_at: new Date() }]);
+            document.getElementById('rev-box').classList.add('hidden');
+            loadReviews();
+        }
+        
+        async function loadReviews() {
+            const { data } = await _supabase.from('reviews').select('*').order('created_at', { ascending: false });
+            if(data) {
+                document.getElementById('rev-feed').innerHTML = data.slice(0, 10).map((r, index) => `
+                    <div class="fade-up glass-card p-6 md:p-8 border-t-2 border-yellow-600 bg-gradient-to-b from-yellow-900/5 to-transparent relative overflow-hidden" style="animation-delay: ${index * 0.1}s; opacity: 0;">
+                        <i class="fa-solid fa-quote-left absolute -left-3 -top-3 md:-left-4 md:-top-4 text-5xl md:text-6xl text-white/5"></i>
+                        <p class="text-slate-300 text-[10px] md:text-xs leading-relaxed italic relative z-10">"${r.text}"</p>
+                        <p class="text-yellow-500 font-black text-[8px] md:text-[9px] mt-4 md:mt-6 tracking-[0.2em] uppercase relative z-10">— ${r.name}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.onload = initDeviceAndTrial;
+        _supabase.channel('aurent-radar').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gigs' }, (payload) => {
+              document.getElementById('notification-sound').play(); loadFeed(); 
+        }).subscribe();
+    </script>
+</body>
+</html>
