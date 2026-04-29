@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurent Premium CV Studio | The Workspace</title>
+    <title>Aurent Premium CV Studio | Pro Workspace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;600;800;900&family=Open+Sans:wght@400;600;700&family=Oswald:wght@400;600&family=Playfair+Display:wght@400;700;900&family=Poppins:wght@400;600;800&family=Raleway:wght@400;600;800&family=Roboto:wght@400;700;900&family=Ubuntu:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -39,12 +39,22 @@
         .template-card span { font-size: 12px; font-weight: 800; letter-spacing: 1px; color: #eee; text-transform: uppercase; }
 
         /* === STEP 3: MAIN APP WRAPPER === */
-        #app-wrapper { display: flex; width: 100vw; height: 100vh; }
-        .toolbox { width: 260px; background-color: #111113; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 20px; z-index: 10; overflow-y: auto; }
-        .properties-panel { width: 300px; background-color: #111113; border-left: 1px solid #222; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
+        #app-wrapper { display: flex; width: 100vw; height: 100vh; position: relative; }
+        
+        /* Floating Left Toolbox */
+        .toolbox { position: absolute; left: -300px; top: 0; height: 100vh; width: 260px; background-color: rgba(17, 17, 19, 0.95); backdrop-filter: blur(10px); border-right: 1px solid #333; display: flex; flex-direction: column; padding: 20px; z-index: 100; overflow-y: auto; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 10px 0 30px rgba(0,0,0,0.5);}
+        .toolbox.open { left: 0; }
+        
+        /* Top Floating Buttons */
+        .floating-controls { position: absolute; top: 20px; left: 20px; z-index: 90; display: flex; gap: 10px; }
+        .fab-btn { background: #151518; color: #d4af37; border: 1px solid #333; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; transition: 0.2s; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center;}
+        .fab-btn i { margin-right: 8px; font-size: 14px;}
+        .fab-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; transform: translateY(-2px);}
+
+        .properties-panel { width: 320px; background-color: #111113; border-left: 1px solid #222; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; z-index: 10;}
         
         /* Figma-style dotted workspace */
-        .workspace { flex-grow: 1; background-color: #0a0a0c; background-image: radial-gradient(circle, #222 1px, transparent 1px); background-size: 30px 30px; display: flex; flex-direction: column; align-items: center; padding: 40px; overflow-y: auto; gap: 40px; }
+        .workspace { flex-grow: 1; background-color: #0a0a0c; background-image: radial-gradient(circle, #222 1px, transparent 1px); background-size: 30px 30px; display: flex; flex-direction: column; align-items: center; padding: 80px 40px 40px 40px; overflow-y: auto; gap: 40px; }
 
         .logo { font-size: 18px; font-weight: 900; letter-spacing: 2px; margin-bottom: 25px; color: #fff; text-transform: uppercase; font-family: 'Montserrat', sans-serif;} .logo span { color: #d4af37; font-style: italic;}
         .prop-title { font-size: 10px; text-transform: uppercase; color: #666; font-weight: 800; margin-bottom: 12px; letter-spacing: 2px; margin-top: 20px; border-bottom: 1px solid #222; padding-bottom: 5px;}
@@ -72,7 +82,9 @@
 
         /* Properties UI */
         .prop-group { margin-bottom: 20px; display: none; background: #151518; padding: 15px; border-radius: 6px; border: 1px solid #222;} 
-        .prop-group.visible { display: block; }
+        .prop-group.visible { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
         .prop-label { display: block; font-size: 10px; text-transform: uppercase; color: #888; margin-bottom: 5px; font-weight: 700; letter-spacing: 1px;}
         .prop-input, .prop-select { width: 100%; background: #0a0a0c; border: 1px solid #333; color: #fff; padding: 8px; border-radius: 4px; font-size: 12px; margin-bottom: 12px; outline: none;}
         .prop-input:focus, .prop-select:focus { border-color: #555; }
@@ -90,9 +102,9 @@
     </style>
 </head>
 <body>
-<a href="index.html" style="position: absolute; top: 20px; left: 20px; z-index: 100000; color: #888; text-decoration: none; font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: #151518; padding: 10px 15px; border: 1px solid #333; border-radius: 4px; transition: 0.2s;"><i class="fa-solid fa-arrow-left"></i> Vault</a>
     
     <div id="step-1" class="wizard-screen">
+        <a href="index.html" style="position: absolute; top: 20px; left: 20px; z-index: 100000; color: #888; text-decoration: none; font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: #151518; padding: 10px 15px; border: 1px solid #333; border-radius: 4px; transition: 0.2s;"><i class="fa-solid fa-arrow-left"></i> Vault</a>
         <div class="wizard-header">
             <div class="wizard-title">Aurent CV Studio</div>
             <div class="wizard-subtitle">Professional Data Intake Protocol</div>
@@ -138,9 +150,14 @@
 
     <div id="app-wrapper" class="hidden-screen">
         
-        <div class="toolbox">
-            <div class="logo">Aurent<span>Studio</span></div>
-            <button class="tool-btn" onclick="backToTemplates()"><i class="fa-solid fa-layer-group"></i> Change Layout</button>
+        <div class="floating-controls">
+            <a href="index.html" class="fab-btn" style="color:#888; border-color:#333;"><i class="fa-solid fa-arrow-left"></i> Vault</a>
+            <button class="fab-btn" id="toggle-tools-btn" onclick="toggleToolbox()"><i class="fa-solid fa-toolbox"></i> Design Tools</button>
+        </div>
+
+        <div class="toolbox" id="toolbox">
+            <div class="logo" style="margin-top: 50px;">Aurent<span>Studio</span></div>
+            
             <button class="tool-btn" onclick="undoAction()"><i class="fa-solid fa-rotate-left"></i> Undo (Ctrl+Z)</button>
 
             <div class="prop-title">Vector Tools</div>
@@ -155,9 +172,8 @@
             <button class="tool-btn" onclick="document.getElementById('image-upload').click()"><i class="fa-solid fa-image"></i> Insert Image</button>
             <input type="file" id="bg-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'background')">
             <button class="tool-btn" onclick="document.getElementById('bg-upload').click()"><i class="fa-solid fa-images"></i> Set Background</button>
-
-            <div class="prop-title">Canvas</div>
-            <button class="tool-btn btn-gold" onclick="addPage()"><i class="fa-solid fa-plus"></i> Add New Page</button>
+            
+            <button class="tool-btn" style="margin-top: auto; justify-content:center; background: transparent; border:none;" onclick="toggleToolbox()"><i class="fa-solid fa-xmark"></i> Close Tools</button>
         </div>
 
         <div class="workspace" id="workspace-container">
@@ -165,6 +181,24 @@
         </div>
 
         <div class="properties-panel">
+            
+            <div id="doc-properties" class="prop-group visible">
+                <div class="prop-title" style="margin-top:0;">Document Settings</div>
+                
+                <button class="tool-btn btn-gold" style="margin-bottom: 20px;" onclick="addPage()"><i class="fa-solid fa-plus"></i> Add Blank Page</button>
+                <button class="tool-btn" style="margin-bottom: 20px;" onclick="backToTemplates()"><i class="fa-solid fa-layer-group"></i> Change Layout</button>
+
+                <label class="prop-label">1-Click Global Themes</label>
+                <select class="prop-select" onchange="applyGlobalTheme(this.value)">
+                    <option value="none">-- Select Theme --</option>
+                    <option value="corporate_blue">Corporate Blue</option>
+                    <option value="midnight_cyber">Midnight Cyber</option>
+                    <option value="rose_gold">Rose Gold</option>
+                    <option value="pure_dark">Pure Dark Mode</option>
+                </select>
+                <div style="font-size: 9px; color: #666; margin-top: 5px; line-height: 1.4;">Applying a theme instantly overrides all colors and fonts on the canvas.</div>
+            </div>
+
             <div class="prop-title">Clipboard</div>
             <div class="btn-row">
                 <button class="icon-btn" onclick="copyElement()" title="Copy (Ctrl+C)"><i class="fa-solid fa-copy"></i></button>
@@ -172,9 +206,8 @@
                 <button class="icon-btn" onclick="pasteElement()" title="Paste (Ctrl+V)"><i class="fa-solid fa-paste"></i></button>
             </div>
 
-            <div class="prop-title">Design Properties</div>
-            
             <div id="text-properties" class="prop-group">
+                <div class="prop-title" style="margin-top:0; color:#d4af37;">Text Properties</div>
                 <label class="prop-label">Typography</label>
                 <select class="prop-select" id="font-family" onchange="updateStyle('fontFamily', this.value)">
                     <option value="'Poppins', sans-serif">Poppins</option>
@@ -202,6 +235,7 @@
             </div>
 
             <div id="visual-properties" class="prop-group">
+                <div class="prop-title" style="margin-top:0; color:#d4af37;">Shape Properties</div>
                 <label class="prop-label">Fill Details</label>
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
                     <input type="color" class="prop-input" style="flex:1; margin:0;" id="shape-color-picker" onchange="updateVisualColor(this.value)">
@@ -233,6 +267,7 @@
             </div>
 
             <div id="image-properties" class="prop-group">
+                <div class="prop-title" style="margin-top:0; color:#d4af37;">Image Properties</div>
                 <label class="prop-label">Image Mask / Crop</label>
                 <div class="btn-row">
                     <button class="icon-btn" onclick="updateStyle('borderRadius', '0%')"><i class="fa-solid fa-square"></i></button>
@@ -260,7 +295,7 @@
                     <button class="icon-btn" onclick="forceLayer('back')" title="Send to Back"><i class="fa-solid fa-arrow-down-to-bracket"></i> Back</button>
                 </div>
                 <button class="tool-btn" id="lock-btn" style="justify-content:center;" onclick="toggleLock()"><i class="fa-solid fa-lock-open"></i> Lock Layer in Place</button>
-                <button class="tool-btn btn-danger" onclick="deleteSelected()"><i class="fa-solid fa-trash"></i> Delete Layer</button>
+                <button class="tool-btn btn-danger" onclick="deleteSelected()"><i class="fa-solid fa-trash"></i> Delete Selected Layer</button>
             </div>
 
             <button class="export-btn" onclick="downloadPDF()"><i class="fa-solid fa-download"></i> Export PDF</button>
@@ -268,7 +303,15 @@
     </div>
 
     <script>
-        let activeEl = null; let zIndexCounter = 10; let pageCount = 1; let clipboard = null; let historyStack = []; let cvData = {};
+        let activeEl = null; let zIndexCounter = 10; let pageCount = 1; let clipboard = null; let cvData = {};
+
+        function toggleToolbox() {
+            document.getElementById('toolbox').classList.toggle('open');
+        }
+
+        function closeToolbox() {
+            document.getElementById('toolbox').classList.remove('open');
+        }
 
         function saveDataAndProceed() {
             cvData = {
@@ -290,7 +333,7 @@
         }
 
         function backToForm() { document.getElementById('step-2').classList.add('hidden-screen'); document.getElementById('step-1').classList.remove('hidden-screen'); }
-        function backToTemplates() { document.getElementById('app-wrapper').classList.add('hidden-screen'); document.getElementById('step-2').classList.remove('hidden-screen'); }
+        function backToTemplates() { document.getElementById('app-wrapper').classList.add('hidden-screen'); document.getElementById('step-2').classList.remove('hidden-screen'); closeToolbox(); }
 
         // 11 DYNAMIC TEMPLATES
         function getTemplateHTML(type) {
@@ -465,42 +508,57 @@
             document.getElementById('page-1').innerHTML = getTemplateHTML(type);
             document.getElementById('page-1').style.backgroundColor = '#ffffff'; 
             document.querySelectorAll('.draggable').forEach(makeDraggable);
-            saveState(); 
+            closeToolbox();
+            
+            // Show document properties
+            document.querySelectorAll('.prop-group').forEach(p => p.classList.remove('visible'));
+            document.getElementById('doc-properties').classList.add('visible');
         }
 
         // --- GLOBAL THEMES ---
         function applyGlobalTheme(themeKey) {
             if (themeKey === 'none') return;
-            const themes = { corporate_blue: { bg: '#ffffff', shape: '#2980b9', font: "'Lato', sans-serif", text: '#2c3e50' }, midnight_cyber: { bg: '#111111', shape: '#00d2d3', font: "'Roboto', sans-serif", text: '#ffffff' }, rose_gold: { bg: '#fdf6e3', shape: '#e84393', font: "'Playfair Display', serif", text: '#2d3436' }, pure_dark: { bg: '#000000', shape: '#ffffff', font: "'Open Sans', sans-serif", text: '#ecf0f1' } };
+            const themes = { 
+                corporate_blue: { bg: '#ffffff', shape: '#2980b9', font: "'Lato', sans-serif", text: '#2c3e50' }, 
+                midnight_cyber: { bg: '#111111', shape: '#00d2d3', font: "'Roboto', sans-serif", text: '#ffffff' }, 
+                rose_gold: { bg: '#fdf6e3', shape: '#e84393', font: "'Playfair Display', serif", text: '#2d3436' }, 
+                pure_dark: { bg: '#000000', shape: '#ffffff', font: "'Open Sans', sans-serif", text: '#ecf0f1' } 
+            };
             const t = themes[themeKey];
             document.querySelectorAll('.canvas-paper').forEach(page => { page.style.backgroundColor = t.bg; });
             document.querySelectorAll('.draggable').forEach(el => {
                 if (el.classList.contains('text-el')) { el.style.fontFamily = t.font; if(t.text) el.style.color = t.text; } 
                 else if (el.classList.contains('shape-el') && !el.style.background.includes('gradient')) { if(parseInt(el.style.width) < 500) el.style.backgroundColor = t.shape; }
             });
-            saveState();
         }
 
         // --- UTILS ---
-        function toggleLock() { if(!activeEl) return; const isLocked = activeEl.getAttribute('data-locked') === 'true'; activeEl.setAttribute('data-locked', !isLocked); document.getElementById('lock-btn').innerHTML = !isLocked ? '<i class="fa-solid fa-lock"></i> Unlock Layer' : '<i class="fa-solid fa-lock-open"></i> Lock Layer in Place'; saveState(); }
-        function removeBackground() { if(!activeEl || !activeEl.classList.contains('shape-el')) return; activeEl.style.background = 'transparent'; activeEl.style.backgroundColor = 'transparent'; saveState(); }
-        function applyGradient() { if(!activeEl || !activeEl.classList.contains('shape-el')) return; activeEl.style.background = `linear-gradient(135deg, ${document.getElementById('grad1').value}, ${document.getElementById('grad2').value})`; saveState(); }
+        function toggleLock() { if(!activeEl) return; const isLocked = activeEl.getAttribute('data-locked') === 'true'; activeEl.setAttribute('data-locked', !isLocked); document.getElementById('lock-btn').innerHTML = !isLocked ? '<i class="fa-solid fa-lock"></i> Unlock Layer' : '<i class="fa-solid fa-lock-open"></i> Lock Layer in Place'; }
+        function removeBackground() { if(!activeEl || !activeEl.classList.contains('shape-el')) return; activeEl.style.background = 'transparent'; activeEl.style.backgroundColor = 'transparent'; }
+        function applyGradient() { if(!activeEl || !activeEl.classList.contains('shape-el')) return; activeEl.style.background = `linear-gradient(135deg, ${document.getElementById('grad1').value}, ${document.getElementById('grad2').value})`; }
         function copyElement() { if (activeEl) { clipboard = activeEl.cloneNode(true); clipboard.classList.remove('active-element'); } }
         function cutElement() { if (activeEl && activeEl.getAttribute('data-locked') !== 'true') { copyElement(); deleteSelected(); } }
-        function pasteElement() { if (!clipboard) return; const newEl = clipboard.cloneNode(true); newEl.style.top = (parseInt(newEl.style.top) + 20) + 'px'; newEl.style.left = (parseInt(newEl.style.left) + 20) + 'px'; zIndexCounter++; newEl.style.zIndex = zIndexCounter; newEl.setAttribute('data-locked', 'false'); document.getElementById(`page-${pageCount}`).appendChild(newEl); makeDraggable(newEl); selectElement(newEl); saveState(); }
-        function deleteSelected() { if (activeEl && activeEl.getAttribute('data-locked') !== 'true') { activeEl.remove(); activeEl = null; document.querySelectorAll('.prop-group').forEach(p => p.classList.remove('visible')); saveState(); } }
+        function pasteElement() { if (!clipboard) return; const newEl = clipboard.cloneNode(true); newEl.style.top = (parseInt(newEl.style.top) + 20) + 'px'; newEl.style.left = (parseInt(newEl.style.left) + 20) + 'px'; zIndexCounter++; newEl.style.zIndex = zIndexCounter; newEl.setAttribute('data-locked', 'false'); document.getElementById(`page-${pageCount}`).appendChild(newEl); makeDraggable(newEl); selectElement(newEl); }
+        function deleteSelected() { 
+            if (activeEl && activeEl.getAttribute('data-locked') !== 'true') { 
+                activeEl.remove(); activeEl = null; 
+                document.querySelectorAll('.prop-group').forEach(p => p.classList.remove('visible')); 
+                document.getElementById('doc-properties').classList.add('visible');
+            } 
+        }
 
         document.addEventListener('keydown', (e) => {
             const isTyping = document.activeElement.isContentEditable || document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA';
             if ((e.key === 'Delete' || e.key === 'Backspace') && !isTyping) { e.preventDefault(); deleteSelected(); }
-            if (e.ctrlKey || e.metaKey) { if (isTyping) return; if (e.key === 'c') copyElement(); if (e.key === 'x') cutElement(); if (e.key === 'v') pasteElement(); if (e.key === 'z') { e.preventDefault(); undoAction(); } }
+            if (e.ctrlKey || e.metaKey) { if (isTyping) return; if (e.key === 'c') copyElement(); if (e.key === 'x') cutElement(); if (e.key === 'v') pasteElement(); }
         });
 
         // --- PAGE & ELEMENTS ---
         function addPage() {
             pageCount++; const newPage = document.createElement('div'); newPage.className = 'canvas-paper'; newPage.id = `page-${pageCount}`; newPage.style.backgroundColor = document.getElementById('page-1').style.backgroundColor;
-            const btn = document.createElement('button'); btn.className = 'delete-page-btn'; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Remove Page'; btn.onclick = function() { newPage.remove(); saveState(); };
-            newPage.appendChild(btn); document.getElementById('cv-document').appendChild(newPage); document.getElementById('workspace-container').scrollTop = document.getElementById('workspace-container').scrollHeight; saveState();
+            const btn = document.createElement('button'); btn.className = 'delete-page-btn'; btn.innerHTML = '<i class="fa-solid fa-trash"></i> Remove Page'; btn.onclick = function() { newPage.remove(); };
+            newPage.appendChild(btn); document.getElementById('cv-document').appendChild(newPage); document.getElementById('workspace-container').scrollTop = document.getElementById('workspace-container').scrollHeight;
+            closeToolbox();
         }
 
         function addElement(type) {
@@ -510,7 +568,7 @@
             else if (type === 'box') { newDiv.classList.add('shape-el'); newDiv.style.width = '200px'; newDiv.style.height = '150px'; newDiv.style.backgroundColor = '#34495e'; } 
             else if (type === 'circle') { newDiv.classList.add('shape-el'); newDiv.style.width = '150px'; newDiv.style.height = '150px'; newDiv.style.backgroundColor = '#e74c3c'; newDiv.style.borderRadius = '50%'; } 
             else if (type === 'line') { newDiv.classList.add('shape-el'); newDiv.style.width = '400px'; newDiv.style.height = '3px'; newDiv.style.backgroundColor = '#2c3e50'; }
-            document.getElementById(`page-${pageCount}`).appendChild(newDiv); makeDraggable(newDiv); selectElement(newDiv); saveState();
+            document.getElementById(`page-${pageCount}`).appendChild(newDiv); makeDraggable(newDiv); selectElement(newDiv);
         }
 
         function handleImageUpload(event, uploadType) {
@@ -520,7 +578,7 @@
                 if(uploadType === 'background') { img.style.top = '0px'; img.style.left = '0px'; img.style.width = '794px'; img.style.height = '1123px'; img.style.zIndex = 0; img.setAttribute('data-locked', 'true'); } 
                 else { img.style.top = '100px'; img.style.left = '100px'; img.style.width = '150px'; img.style.height = '150px'; zIndexCounter++; img.style.zIndex = zIndexCounter; }
                 img.setAttribute('data-pan-x', '50'); img.setAttribute('data-pan-y', '50');
-                document.getElementById(`page-${pageCount}`).appendChild(img); makeDraggable(img); selectElement(img); event.target.value = ''; saveState();
+                document.getElementById(`page-${pageCount}`).appendChild(img); makeDraggable(img); selectElement(img); event.target.value = '';
             }
             reader.readAsDataURL(file);
         }
@@ -529,29 +587,44 @@
         function selectElement(el) {
             if (activeEl) activeEl.classList.remove('active-element'); activeEl = el; activeEl.classList.add('active-element');
             document.getElementById('lock-btn').innerHTML = activeEl.getAttribute('data-locked') === 'true' ? '<i class="fa-solid fa-lock"></i> Unlock Layer' : '<i class="fa-solid fa-lock-open"></i> Lock Layer in Place';
-            document.querySelectorAll('.prop-group').forEach(p => p.classList.remove('visible')); document.getElementById('layer-properties').classList.add('visible');
+            
+            // Hide all prop panels first
+            document.querySelectorAll('.prop-group').forEach(p => p.classList.remove('visible')); 
+            
+            // Show Context Panels
+            document.getElementById('layer-properties').classList.add('visible');
             if (activeEl.classList.contains('text-el')) document.getElementById('text-properties').classList.add('visible');
-            else if (activeEl.classList.contains('shape-el')) { document.getElementById('visual-properties').classList.add('visible'); } 
+            else if (activeEl.classList.contains('shape-el')) document.getElementById('visual-properties').classList.add('visible'); 
             else if (activeEl.classList.contains('image-el')) document.getElementById('image-properties').classList.add('visible');
         }
 
+        // Click outside to deselect and hide toolbox
         document.getElementById('workspace-container').addEventListener('mousedown', (e) => {
+            // Check if clicking directly on the workspace gray area or the paper background
             if (e.target.classList.contains('workspace') || e.target.classList.contains('canvas-paper') || e.target.id === 'cv-document') {
-                if (activeEl) activeEl.classList.remove('active-element'); activeEl = null; document.querySelectorAll('.prop-group').forEach(p => p.classList.remove('visible'));
+                if (activeEl) activeEl.classList.remove('active-element'); 
+                activeEl = null; 
+                
+                // Hide context panels
+                document.querySelectorAll('.prop-group').forEach(p => p.classList.remove('visible'));
+                // Show default Document Settings
+                document.getElementById('doc-properties').classList.add('visible');
+                
+                closeToolbox();
             }
         });
 
-        function updateStyle(prop, value) { if (activeEl && activeEl.getAttribute('data-locked') !== 'true') { activeEl.style[prop] = value; saveState(); } }
-        function updateVisualColor(color) { if (activeEl && activeEl.getAttribute('data-locked') !== 'true') { activeEl.style.background = color; saveState(); } }
-        function toggleStyle(prop, onValue, offValue) { if (!activeEl || activeEl.getAttribute('data-locked') === 'true') return; activeEl.style[prop] = (window.getComputedStyle(activeEl)[prop] === onValue || window.getComputedStyle(activeEl)[prop] === '700') ? offValue : onValue; saveState(); }
-        function adjustLayer(dir) { if (!activeEl) return; activeEl.style.zIndex = (parseInt(window.getComputedStyle(activeEl).zIndex) || 10) + dir; saveState(); }
-        function forceLayer(pos) { if (!activeEl) return; if (pos === 'front') { zIndexCounter++; activeEl.style.zIndex = zIndexCounter; } else { activeEl.style.zIndex = 2; } saveState(); }
-        function updateImagePan(axis, val) { if(!activeEl) return; activeEl.setAttribute(`data-pan-${axis}`, val); activeEl.style.objectPosition = `${activeEl.getAttribute('data-pan-x')||50}% ${activeEl.getAttribute('data-pan-y')||50}%`; saveState(); }
+        function updateStyle(prop, value) { if (activeEl && activeEl.getAttribute('data-locked') !== 'true') { activeEl.style[prop] = value; } }
+        function updateVisualColor(color) { if (activeEl && activeEl.getAttribute('data-locked') !== 'true') { activeEl.style.background = color; } }
+        function toggleStyle(prop, onValue, offValue) { if (!activeEl || activeEl.getAttribute('data-locked') === 'true') return; activeEl.style[prop] = (window.getComputedStyle(activeEl)[prop] === onValue || window.getComputedStyle(activeEl)[prop] === '700') ? offValue : onValue; }
+        function adjustLayer(dir) { if (!activeEl) return; activeEl.style.zIndex = (parseInt(window.getComputedStyle(activeEl).zIndex) || 10) + dir; }
+        function forceLayer(pos) { if (!activeEl) return; if (pos === 'front') { zIndexCounter++; activeEl.style.zIndex = zIndexCounter; } else { activeEl.style.zIndex = 2; } }
+        function updateImagePan(axis, val) { if(!activeEl) return; activeEl.setAttribute(`data-pan-${axis}`, val); activeEl.style.objectPosition = `${activeEl.getAttribute('data-pan-x')||50}% ${activeEl.getAttribute('data-pan-y')||50}%`; }
 
         let isDragging = false; let offsetX = 0, offsetY = 0; let dragged = false;
         function makeDraggable(element) {
             element.addEventListener('mousedown', (e) => {
-                e.stopPropagation(); selectElement(element);
+                e.stopPropagation(); selectElement(element); closeToolbox();
                 if (element.getAttribute('data-locked') === 'true' || (document.activeElement === element && element.classList.contains('text-el'))) return; 
                 isDragging = true; dragged = false; offsetX = e.clientX - element.getBoundingClientRect().left; offsetY = e.clientY - element.getBoundingClientRect().top;
             });
@@ -560,15 +633,7 @@
             if (!isDragging || !activeEl || activeEl.getAttribute('data-locked') === 'true') return;
             dragged = true; const p = activeEl.parentElement.getBoundingClientRect(); activeEl.style.left = `${e.clientX - p.left - offsetX}px`; activeEl.style.top = `${e.clientY - p.top - offsetY}px`;
         });
-        document.addEventListener('mouseup', () => { if (isDragging && dragged) saveState(); isDragging = false; });
-        document.getElementById('cv-document').addEventListener('focusout', (e) => { if(e.target.classList.contains('text-el')) saveState(); });
-
-        function saveState() {
-            // Simplified state saving for undo. Not fully implemented here to save space, but UI is ready.
-        }
-        function undoAction() {
-            // Undo logic placeholder
-        }
+        document.addEventListener('mouseup', () => { isDragging = false; });
 
         function downloadPDF() {
             if(activeEl) activeEl.classList.remove('active-element'); 
