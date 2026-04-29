@@ -3,111 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurent Premium CV Studio | Pro Workspace</title>
+    <title>Aurent CV Studio | Premium Workspace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;600;800;900&family=Open+Sans:wght@400;600;700&family=Oswald:wght@400;600&family=Playfair+Display:wght@400;700;900&family=Poppins:wght@400;600;800&family=Raleway:wght@400;600;800&family=Roboto:wght@400;700;900&family=Ubuntu:wght@400;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;600;800;900&family=Open+Sans:wght@400;600;700&family=Oswald:wght@400;600&family=Playfair+Display:wght@400;700;900&family=Poppins:wght@400;600;800&family=Raleway:wght@400;600;800&family=Roboto:wght@400;700;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #0d0d0f; color: #ffffff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        /* === LIGHT THEME VARIABLES === */
+        :root {
+            --bg-main: #f3f4f6;
+            --bg-panel: #ffffff;
+            --border-light: #e5e7eb;
+            --border-dark: #d1d5db;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --accent-primary: #4f46e5; /* Indigo/Royal Blue */
+            --accent-hover: #4338ca;
+            --accent-light: #e0e7ff;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+        }
 
-        /* === 3-STEP WIZARD UI === */
-        .wizard-screen { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0c; z-index: 9999; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 50px 20px; transition: opacity 0.4s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* === WIZARD UI === */
+        .wizard-screen { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-main); z-index: 9999; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 60px 20px; transition: opacity 0.4s; }
         .hidden-screen { display: none !important; }
         .wizard-header { text-align: center; margin-bottom: 40px; }
-        .wizard-title { font-size: 38px; font-weight: 900; color: #fff; letter-spacing: 1px; margin-bottom: 10px; font-family: 'Montserrat', sans-serif;}
-        .wizard-subtitle { font-size: 14px; color: #888; text-transform: uppercase; letter-spacing: 2px;}
+        .wizard-title { font-size: 38px; font-weight: 900; color: var(--text-main); letter-spacing: -1px; margin-bottom: 12px; font-family: 'Montserrat', sans-serif;}
+        .wizard-subtitle { font-size: 15px; color: var(--text-muted); }
+
+        /* Step 0: The Hub */
+        .hub-grid { display: flex; gap: 30px; max-width: 1000px; flex-wrap: wrap; justify-content: center; margin-top: 20px;}
+        .hub-card { width: 280px; background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 16px; padding: 40px 25px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .hub-card:hover { transform: translateY(-8px); border-color: var(--accent-primary); box-shadow: 0 20px 25px -5px rgba(79,70,229,0.1); }
+        .hub-card i { font-size: 40px; color: var(--accent-primary); margin-bottom: 20px; }
+        .hub-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--text-main); }
+        .hub-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 
         /* Step 1: Form */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 800px; background: #151518; padding: 40px; border-radius: 12px; border: 1px solid #222; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 800px; background: var(--bg-panel); padding: 40px; border-radius: 16px; border: 1px solid var(--border-light); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         .form-group { display: flex; flex-direction: column; }
         .form-group.full-width { grid-column: span 2; }
-        .form-label { font-size: 11px; font-weight: 700; color: #d4af37; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
-        .form-input, .form-textarea { background: #0a0a0c; border: 1px solid #333; color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 14px; transition: 0.2s; }
-        .form-input:focus, .form-textarea:focus { border-color: #d4af37; outline: none; background: #000; box-shadow: 0 0 10px rgba(212,175,55,0.1); }
+        .form-label { font-size: 11px; font-weight: 700; color: var(--accent-primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .form-input, .form-textarea { background: var(--bg-main); border: 1px solid var(--border-dark); color: var(--text-main); padding: 12px 15px; border-radius: 8px; font-size: 14px; transition: 0.2s; outline: none; }
+        .form-input:focus, .form-textarea:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-light); background: #fff; }
         .form-textarea { resize: vertical; min-height: 100px; }
-        .wizard-btn { background: #d4af37; color: #000; border: none; padding: 15px 40px; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; cursor: pointer; transition: 0.3s; margin-top: 30px; box-shadow: 0 10px 20px rgba(212,175,55,0.2); }
-        .wizard-btn:hover { background: #b5952f; transform: translateY(-2px); box-shadow: 0 15px 25px rgba(212,175,55,0.4); }
+        
+        .wizard-btn { background: var(--accent-primary); color: #fff; border: none; padding: 16px 40px; font-size: 15px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 40px; box-shadow: 0 4px 6px rgba(79,70,229,0.2); }
+        .wizard-btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 10px 15px rgba(79,70,229,0.3); }
 
         /* Step 2: Templates */
-        .template-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 1200px; }
-        .template-card { width: 220px; height: 280px; background: #151518; border: 1px solid #333; border-radius: 8px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-        .template-card:hover { border-color: #d4af37; transform: translateY(-5px); box-shadow: 0 15px 30px rgba(212,175,55,0.2); background: #1a1a1f;}
-        .template-card i { font-size: 45px; color: #555; margin-bottom: 20px; transition: 0.3s; }
-        .template-card:hover i { color: #d4af37; }
-        .template-card span { font-size: 12px; font-weight: 800; letter-spacing: 1px; color: #eee; text-transform: uppercase; }
+        .template-grid { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; max-width: 1200px; }
+        .template-card { width: 220px; height: 280px; background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
+        .template-card:hover { border-color: var(--accent-primary); transform: translateY(-5px); box-shadow: 0 15px 30px rgba(79,70,229,0.15); }
+        .template-card i { font-size: 45px; color: #9ca3af; margin-bottom: 20px; transition: 0.3s; }
+        .template-card:hover i { color: var(--accent-primary); }
+        .template-card span { font-size: 13px; font-weight: 700; color: var(--text-main); }
 
         /* === STEP 3: MAIN APP WRAPPER === */
         #app-wrapper { display: flex; width: 100vw; height: 100vh; position: relative; }
         
         /* Floating Left Toolbox */
-        .toolbox { position: absolute; left: -300px; top: 0; height: 100vh; width: 260px; background-color: rgba(17, 17, 19, 0.95); backdrop-filter: blur(10px); border-right: 1px solid #333; display: flex; flex-direction: column; padding: 20px; z-index: 100; overflow-y: auto; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 10px 0 30px rgba(0,0,0,0.5);}
+        .toolbox { position: absolute; left: -300px; top: 0; height: 100vh; width: 260px; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-right: 1px solid var(--border-light); display: flex; flex-direction: column; padding: 20px; z-index: 100; overflow-y: auto; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 10px 0 30px rgba(0,0,0,0.05);}
         .toolbox.open { left: 0; }
         
         /* Top Floating Buttons */
         .floating-controls { position: absolute; top: 20px; left: 20px; z-index: 90; display: flex; gap: 10px; }
-        .fab-btn { background: #151518; color: #d4af37; border: 1px solid #333; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; transition: 0.2s; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center;}
-        .fab-btn i { margin-right: 8px; font-size: 14px;}
-        .fab-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; transform: translateY(-2px);}
+        .fab-btn { background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border-light); padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; align-items: center;}
+        .fab-btn i { margin-right: 8px; color: var(--text-muted);}
+        .fab-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.05);}
+        .fab-btn:hover i { color: var(--accent-primary); }
 
-        .properties-panel { width: 320px; background-color: #111113; border-left: 1px solid #222; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; z-index: 10;}
+        .properties-panel { width: 320px; background-color: var(--bg-panel); border-left: 1px solid var(--border-light); padding: 20px; display: flex; flex-direction: column; overflow-y: auto; z-index: 10; box-shadow: -4px 0 15px rgba(0,0,0,0.02);}
         
         /* Figma-style dotted workspace */
-        .workspace { flex-grow: 1; background-color: #0a0a0c; background-image: radial-gradient(circle, #222 1px, transparent 1px); background-size: 30px 30px; display: flex; flex-direction: column; align-items: center; padding: 80px 40px 40px 40px; overflow-y: auto; gap: 40px; }
+        .workspace { flex-grow: 1; background-color: var(--bg-main); background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px); background-size: 30px 30px; display: flex; flex-direction: column; align-items: center; padding: 80px 40px 40px 40px; overflow-y: auto; gap: 40px; }
 
-        .logo { font-size: 18px; font-weight: 900; letter-spacing: 2px; margin-bottom: 25px; color: #fff; text-transform: uppercase; font-family: 'Montserrat', sans-serif;} .logo span { color: #d4af37; font-style: italic;}
-        .prop-title { font-size: 10px; text-transform: uppercase; color: #666; font-weight: 800; margin-bottom: 12px; letter-spacing: 2px; margin-top: 20px; border-bottom: 1px solid #222; padding-bottom: 5px;}
+        .logo { font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 25px; color: var(--text-main); text-transform: uppercase; font-family: 'Montserrat', sans-serif;} 
+        .logo span { color: var(--accent-primary); }
+        .prop-title { font-size: 11px; text-transform: uppercase; color: var(--text-main); font-weight: 700; margin-bottom: 12px; margin-top: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 8px;}
         
-        .tool-btn { background-color: #1a1a1e; color: #ccc; border: 1px solid #333; padding: 12px; margin-bottom: 8px; border-radius: 4px; cursor: pointer; text-align: left; font-size: 12px; font-weight: 600; transition: 0.2s; width: 100%; display: flex; align-items: center; letter-spacing: 0.5px;}
-        .tool-btn i { width: 25px; text-align: center; color: #888; font-size: 14px;}
-        .tool-btn:hover { background-color: #222; color: #fff; border-color: #555; }
-        .tool-btn:hover i { color: #d4af37; }
+        .tool-btn { background-color: #f9fafb; color: var(--text-main); border: 1px solid var(--border-light); padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 13px; font-weight: 500; transition: 0.2s; width: 100%; display: flex; align-items: center;}
+        .tool-btn i { width: 25px; text-align: center; color: var(--text-muted); font-size: 14px;}
+        .tool-btn:hover { background-color: var(--accent-light); color: var(--accent-primary); border-color: var(--accent-light); }
+        .tool-btn:hover i { color: var(--accent-primary); }
         
-        .btn-gold { background-color: rgba(212,175,55,0.1); border-color: #d4af37; color: #d4af37; justify-content: center;} .btn-gold i { color: #d4af37; }
-        .btn-gold:hover { background-color: #d4af37; color: #000; } .btn-gold:hover i { color: #000; }
-        .btn-danger { background-color: rgba(231,76,60,0.1); border-color: #e74c3c; color: #e74c3c; justify-content: center; margin-top: 15px;} .btn-danger i { color: #e74c3c; }
+        .btn-primary { background-color: var(--accent-light); border-color: var(--accent-light); color: var(--accent-primary); justify-content: center; font-weight: 600;} 
+        .btn-primary i { color: var(--accent-primary); }
+        .btn-primary:hover { background-color: var(--accent-primary); color: #fff; } 
+        .btn-primary:hover i { color: #fff; }
+        
+        .btn-danger { background-color: var(--danger-light); border-color: var(--danger-light); color: var(--danger); justify-content: center; margin-top: 15px; font-weight: 600;} 
+        .btn-danger i { color: var(--danger); }
+        .btn-danger:hover { background-color: var(--danger); color: #fff; }
+        .btn-danger:hover i { color: #fff; }
 
         /* Canvas */
         #cv-document { display: flex; flex-direction: column; gap: 40px; }
-        .canvas-paper { width: 794px; height: 1123px; background-color: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.05); position: relative; overflow: hidden; flex-shrink: 0; }
-        .delete-page-btn { position: absolute; top: 15px; right: 15px; background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 10px; text-transform: uppercase; font-weight: bold; z-index: 100000; transition: 0.2s;}
+        .canvas-paper { width: 794px; height: 1123px; background-color: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05); position: relative; overflow: hidden; flex-shrink: 0; }
+        .delete-page-btn { position: absolute; top: 15px; right: 15px; background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; z-index: 100000; transition: 0.2s;}
         
         .draggable { position: absolute; cursor: move; user-select: none; border: 1px solid transparent; }
-        .active-element { border: 1px solid #d4af37 !important; z-index: 10000 !important; box-shadow: 0 0 0 2px rgba(212,175,55,0.3); }
-        .draggable:focus { outline: none; cursor: text; border-color: #d4af37; }
+        .active-element { border: 1px solid var(--accent-primary) !important; z-index: 10000 !important; box-shadow: 0 0 0 2px var(--accent-light); }
+        .draggable:focus { outline: none; cursor: text; }
         .draggable[data-locked="true"] { border: 1px solid transparent; cursor: default; } 
-        .draggable[data-locked="true"].active-element { border: 1px solid #e74c3c !important; box-shadow: 0 0 0 2px rgba(231,76,60,0.3);}
+        .draggable[data-locked="true"].active-element { border: 1px solid var(--danger) !important; box-shadow: 0 0 0 2px var(--danger-light);}
         img.draggable { object-fit: cover; object-position: 50% 50%; } 
 
         /* Properties UI */
-        .prop-group { margin-bottom: 20px; display: none; background: #151518; padding: 15px; border-radius: 6px; border: 1px solid #222;} 
+        .prop-group { margin-bottom: 20px; display: none; background: #f9fafb; padding: 15px; border-radius: 8px; border: 1px solid var(--border-light);} 
         .prop-group.visible { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        .prop-label { display: block; font-size: 10px; text-transform: uppercase; color: #888; margin-bottom: 5px; font-weight: 700; letter-spacing: 1px;}
-        .prop-input, .prop-select { width: 100%; background: #0a0a0c; border: 1px solid #333; color: #fff; padding: 8px; border-radius: 4px; font-size: 12px; margin-bottom: 12px; outline: none;}
-        .prop-input:focus, .prop-select:focus { border-color: #555; }
-        .prop-input[type="color"] { height: 35px; cursor: pointer; padding: 2px; border: 1px solid #333; border-radius: 4px; }
-        .prop-input[type="range"] { height: 4px; background: #333; -webkit-appearance: none; border-radius: 2px; outline: none; margin-bottom: 15px;}
-        .prop-input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #d4af37; border-radius: 50%; cursor: pointer; }
+        .prop-label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600;}
+        .prop-input, .prop-select { width: 100%; background: #fff; border: 1px solid var(--border-dark); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; outline: none;}
+        .prop-input:focus, .prop-select:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 2px var(--accent-light);}
+        .prop-input[type="color"] { height: 38px; cursor: pointer; padding: 2px; }
+        .prop-input[type="range"] { height: 6px; background: #e5e7eb; -webkit-appearance: none; border-radius: 3px; outline: none; margin-bottom: 15px; border: none; padding: 0;}
+        .prop-input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--accent-primary); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         
-        .btn-row { display: flex; gap: 5px; margin-bottom: 15px; }
-        .icon-btn { flex: 1; background: #1a1a1e; border: 1px solid #333; color: #aaa; padding: 8px; border-radius: 4px; cursor: pointer; transition: 0.2s; text-align: center; font-size: 12px;}
-        .icon-btn:hover, .icon-btn.active { background: #d4af37; color: #000; border-color: #d4af37; }
+        .btn-row { display: flex; gap: 8px; margin-bottom: 15px; }
+        .icon-btn { flex: 1; background: #fff; border: 1px solid var(--border-dark); color: var(--text-muted); padding: 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-align: center; font-size: 13px;}
+        .icon-btn:hover, .icon-btn.active { background: var(--accent-light); color: var(--accent-primary); border-color: var(--accent-primary); }
         
-        .export-btn { margin-top: auto; background-color: #d4af37; color: #000; border: none; padding: 15px; border-radius: 4px; font-size: 12px; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: 0.2s; width: 100%; text-transform: uppercase;}
-        .export-btn:hover { background-color: #b5952f; box-shadow: 0 10px 20px rgba(212,175,55,0.2); }
+        .export-btn { margin-top: auto; background-color: var(--accent-primary); color: #fff; border: none; padding: 16px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 100%; box-shadow: 0 4px 6px rgba(79,70,229,0.2);}
+        .export-btn:hover { background-color: var(--accent-hover); box-shadow: 0 10px 15px rgba(79,70,229,0.3); }
         .grad-row { display: flex; gap: 10px; align-items: center; margin-bottom: 15px;}
     </style>
 </head>
 <body>
     
-    <div id="step-1" class="wizard-screen">
-        <a href="index.html" style="position: absolute; top: 20px; left: 20px; z-index: 100000; color: #888; text-decoration: none; font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: #151518; padding: 10px 15px; border: 1px solid #333; border-radius: 4px; transition: 0.2s;"><i class="fa-solid fa-arrow-left"></i> Vault</a>
-        <div class="wizard-header">
+    <div id="step-0" class="wizard-screen">
+        <a href="index.html" style="position: absolute; top: 20px; left: 20px; color: var(--text-muted); text-decoration: none; font-size: 12px; font-weight: 600; background: var(--bg-panel); padding: 10px 16px; border: 1px solid var(--border-light); border-radius: 8px; transition: 0.2s;"><i class="fa-solid fa-arrow-left mr-2"></i> Vault</a>
+        
+        <div class="wizard-header" style="margin-top: 40px;">
             <div class="wizard-title">Aurent CV Studio</div>
-            <div class="wizard-subtitle">Professional Data Intake Protocol</div>
+            <div class="wizard-subtitle">How would you like to begin?</div>
+        </div>
+
+        <div class="hub-grid">
+            <div class="hub-card" onclick="goScratch()">
+                <i class="fa-regular fa-file-lines"></i>
+                <h3>Start from Scratch</h3>
+                <p>Open a blank A4 canvas and build your CV entirely from the ground up using our vector tools.</p>
+            </div>
+            
+            <div class="hub-card" onclick="goTemplates()">
+                <i class="fa-solid fa-layer-group"></i>
+                <h3>Browse Templates</h3>
+                <p>Choose from our library of ATS-friendly designs pre-filled with dummy data to inspire you.</p>
+            </div>
+
+            <div class="hub-card" onclick="goAutoFill()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <h3>Auto-Fill Wizard</h3>
+                <p>Enter your professional details once, and instantly inject them into any template.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="step-1" class="wizard-screen hidden-screen">
+        <button onclick="goHub()" style="position: absolute; top: 20px; left: 20px; background: transparent; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-arrow-left mr-2"></i> Back</button>
+        <div class="wizard-header">
+            <div class="wizard-title">Data Intake</div>
+            <div class="wizard-subtitle">Enter your details to generate your CV.</div>
         </div>
         
         <div class="form-grid">
@@ -117,20 +178,21 @@
             <div class="form-group"><label class="form-label">Phone Number</label><input type="text" id="f-phone" class="form-input" placeholder="e.g. +1 (555) 123-4567"></div>
             <div class="form-group"><label class="form-label">Location</label><input type="text" id="f-loc" class="form-input" placeholder="e.g. New York, NY"></div>
             <div class="form-group full-width"><label class="form-label">Professional Summary</label><textarea id="f-summary" class="form-textarea" placeholder="Write a powerful summary..."></textarea></div>
-            <div class="form-group full-width"><label class="form-label" style="color: #d4af37; border-bottom: 1px solid #333; padding-bottom: 5px;">Latest Experience</label></div>
+            <div class="form-group full-width"><label class="form-label" style="border-bottom: 1px solid var(--border-light); padding-bottom: 5px; margin-top: 10px;">Latest Experience</label></div>
             <div class="form-group"><label class="form-label">Job Title & Company</label><input type="text" id="f-exp-title" class="form-input" placeholder="e.g. Senior Manager - TechCorp"></div>
             <div class="form-group"><label class="form-label">Dates</label><input type="text" id="f-exp-date" class="form-input" placeholder="e.g. 2019 - Present"></div>
             <div class="form-group full-width"><label class="form-label">Job Responsibilities</label><textarea id="f-exp-desc" class="form-textarea" placeholder="List your achievements..."></textarea></div>
             <div class="form-group full-width"><label class="form-label">Key Skills (Comma Separated)</label><input type="text" id="f-skills" class="form-input" placeholder="e.g. Agile, Leadership, Strategic Planning"></div>
         </div>
 
-        <button class="wizard-btn" onclick="saveDataAndProceed()">Initialize Workspace <i class="fa-solid fa-arrow-right" style="margin-left: 10px;"></i></button>
+        <button class="wizard-btn" onclick="saveDataAndProceed()">Choose Template <i class="fa-solid fa-arrow-right ml-2"></i></button>
     </div>
 
     <div id="step-2" class="wizard-screen hidden-screen">
+        <button onclick="goHub()" style="position: absolute; top: 20px; left: 20px; background: transparent; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-arrow-left mr-2"></i> Back</button>
         <div class="wizard-header">
-            <div class="wizard-title">Select Architecture</div>
-            <div class="wizard-subtitle">Choose a foundation for your design.</div>
+            <div class="wizard-title">Choose a Template</div>
+            <div class="wizard-subtitle">Select a foundation for your design.</div>
         </div>
         <div class="template-grid">
             <div class="template-card" onclick="loadTemplate('corporate')"><i class="fa-solid fa-user-tie"></i><span>The Corporate Pro</span></div>
@@ -145,14 +207,13 @@
             <div class="template-card" onclick="loadTemplate('modern_gold')"><i class="fa-solid fa-crown"></i><span>Modern Gold</span></div>
             <div class="template-card" onclick="loadTemplate('elegant')"><i class="fa-solid fa-champagne-glasses"></i><span>Elegant Minimal</span></div>
         </div>
-        <button class="tool-btn" style="width: auto; padding: 15px 30px; margin-top: 30px; background: transparent; border: none;" onclick="backToForm()"><i class="fa-solid fa-arrow-left"></i> Return to Intake</button>
     </div>
 
     <div id="app-wrapper" class="hidden-screen">
         
         <div class="floating-controls">
-            <a href="index.html" class="fab-btn" style="color:#888; border-color:#333;"><i class="fa-solid fa-arrow-left"></i> Vault</a>
-            <button class="fab-btn" id="toggle-tools-btn" onclick="toggleToolbox()"><i class="fa-solid fa-toolbox"></i> Design Tools</button>
+            <button class="fab-btn" onclick="goHub()"><i class="fa-solid fa-house"></i> Hub</button>
+            <button class="fab-btn" id="toggle-tools-btn" onclick="toggleToolbox()" style="color: var(--accent-primary); border-color: var(--accent-primary);"><i class="fa-solid fa-toolbox"></i> Design Tools</button>
         </div>
 
         <div class="toolbox" id="toolbox">
@@ -185,8 +246,8 @@
             <div id="doc-properties" class="prop-group visible">
                 <div class="prop-title" style="margin-top:0;">Document Settings</div>
                 
-                <button class="tool-btn btn-gold" style="margin-bottom: 20px;" onclick="addPage()"><i class="fa-solid fa-plus"></i> Add Blank Page</button>
-                <button class="tool-btn" style="margin-bottom: 20px;" onclick="backToTemplates()"><i class="fa-solid fa-layer-group"></i> Change Layout</button>
+                <button class="tool-btn btn-primary" style="margin-bottom: 20px;" onclick="addPage()"><i class="fa-solid fa-plus"></i> Add Blank Page</button>
+                <button class="tool-btn" style="margin-bottom: 20px;" onclick="goTemplates()"><i class="fa-solid fa-layer-group"></i> Change Layout</button>
 
                 <label class="prop-label">1-Click Global Themes</label>
                 <select class="prop-select" onchange="applyGlobalTheme(this.value)">
@@ -196,7 +257,7 @@
                     <option value="rose_gold">Rose Gold</option>
                     <option value="pure_dark">Pure Dark Mode</option>
                 </select>
-                <div style="font-size: 9px; color: #666; margin-top: 5px; line-height: 1.4;">Applying a theme instantly overrides all colors and fonts on the canvas.</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 5px; line-height: 1.5;">Applying a theme overrides all current colors and fonts on the canvas.</div>
             </div>
 
             <div class="prop-title">Clipboard</div>
@@ -207,14 +268,14 @@
             </div>
 
             <div id="text-properties" class="prop-group">
-                <div class="prop-title" style="margin-top:0; color:#d4af37;">Text Properties</div>
+                <div class="prop-title" style="margin-top:0; color:var(--accent-primary);">Text Properties</div>
                 <label class="prop-label">Typography</label>
                 <select class="prop-select" id="font-family" onchange="updateStyle('fontFamily', this.value)">
+                    <option value="'Inter', sans-serif">Inter</option>
                     <option value="'Poppins', sans-serif">Poppins</option>
                     <option value="'Montserrat', sans-serif">Montserrat</option>
                     <option value="'Open Sans', sans-serif">Open Sans</option>
                     <option value="'Roboto', sans-serif">Roboto</option>
-                    <option value="'Lato', sans-serif">Lato</option>
                     <option value="'Playfair Display', serif">Playfair Display</option>
                     <option value="'Courier Prime', monospace">Courier Code</option>
                 </select>
@@ -235,7 +296,7 @@
             </div>
 
             <div id="visual-properties" class="prop-group">
-                <div class="prop-title" style="margin-top:0; color:#d4af37;">Shape Properties</div>
+                <div class="prop-title" style="margin-top:0; color:var(--accent-primary);">Shape Properties</div>
                 <label class="prop-label">Fill Details</label>
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
                     <input type="color" class="prop-input" style="flex:1; margin:0;" id="shape-color-picker" onchange="updateVisualColor(this.value)">
@@ -244,8 +305,8 @@
                 
                 <label class="prop-label">Gradient Fill</label>
                 <div class="grad-row" id="gradient-controls">
-                    <input type="color" class="prop-input" style="margin:0;" id="grad1" value="#111111">
-                    <input type="color" class="prop-input" style="margin:0;" id="grad2" value="#333333">
+                    <input type="color" class="prop-input" style="margin:0;" id="grad1" value="#4f46e5">
+                    <input type="color" class="prop-input" style="margin:0;" id="grad2" value="#3730a3">
                     <button class="icon-btn" style="margin:0;" onclick="applyGradient()"><i class="fa-solid fa-paint-roller"></i></button>
                 </div>
 
@@ -267,7 +328,7 @@
             </div>
 
             <div id="image-properties" class="prop-group">
-                <div class="prop-title" style="margin-top:0; color:#d4af37;">Image Properties</div>
+                <div class="prop-title" style="margin-top:0; color:var(--accent-primary);">Image Properties</div>
                 <label class="prop-label">Image Mask / Crop</label>
                 <div class="btn-row">
                     <button class="icon-btn" onclick="updateStyle('borderRadius', '0%')"><i class="fa-solid fa-square"></i></button>
@@ -303,20 +364,45 @@
     </div>
 
     <script>
-        let activeEl = null; let zIndexCounter = 10; let pageCount = 1; let clipboard = null; let cvData = {};
+        let activeEl = null; let zIndexCounter = 10; let pageCount = 1; let clipboard = null; let cvData = null;
 
-        function toggleToolbox() {
-            document.getElementById('toolbox').classList.toggle('open');
+        // === ROUTING LOGIC ===
+        function hideAllScreens() {
+            document.getElementById('step-0').classList.add('hidden-screen');
+            document.getElementById('step-1').classList.add('hidden-screen');
+            document.getElementById('step-2').classList.add('hidden-screen');
+            document.getElementById('app-wrapper').classList.add('hidden-screen');
         }
 
-        function closeToolbox() {
-            document.getElementById('toolbox').classList.remove('open');
+        function goHub() { hideAllScreens(); document.getElementById('step-0').classList.remove('hidden-screen'); }
+        function goAutoFill() { hideAllScreens(); document.getElementById('step-1').classList.remove('hidden-screen'); }
+        function goTemplates() { hideAllScreens(); document.getElementById('step-2').classList.remove('hidden-screen'); }
+        
+        function goScratch() {
+            hideAllScreens();
+            document.getElementById('app-wrapper').classList.remove('hidden-screen');
+            document.getElementById('page-1').innerHTML = ''; // Blank canvas
+            document.getElementById('page-1').style.backgroundColor = '#ffffff'; 
+            closeToolbox();
+            document.querySelectorAll('.prop-group').forEach(p => p.classList.remove('visible'));
+            document.getElementById('doc-properties').classList.add('visible');
+        }
+
+        // === DATA INTAKE ===
+        function setDummyData() {
+            cvData = {
+                name: 'ALEXANDER WRIGHT', title: 'SENIOR PRODUCT MANAGER', email: 'alex@example.com', phone: '+254 700 000 000', location: 'Nairobi, Kenya',
+                summary: 'Results-driven professional with 8+ years of experience in leading cross-functional teams to build enterprise SaaS products.',
+                expTitle: 'Lead Product Manager - TechCorp', expDate: '2020 - Present',
+                expDesc: '• Led the development of a B2B payment gateway.<br>• Increased MRR by 35% within the first year of launch.',
+                skills: 'Agile • Scrum • User Research • Data Analysis'
+            };
         }
 
         function saveDataAndProceed() {
             cvData = {
-                name: document.getElementById('f-name').value.toUpperCase() || 'NOAH GREEN',
-                title: document.getElementById('f-title').value.toUpperCase() || 'SENIOR PROJECT MANAGER',
+                name: document.getElementById('f-name').value || 'NOAH GREEN',
+                title: document.getElementById('f-title').value || 'SENIOR PROJECT MANAGER',
                 email: document.getElementById('f-email').value || 'noah.green@example.com',
                 phone: document.getElementById('f-phone').value || '+1 (555) 123-4567',
                 location: document.getElementById('f-loc').value || 'New York, NY',
@@ -329,33 +415,36 @@
             if (cvData.skills.includes(',')) cvData.skills = cvData.skills.split(',').map(s => `• ${s.trim()}`).join('<br>');
             else if (!cvData.skills.includes('•')) cvData.skills = cvData.skills.split(' ').join('<br>• ');
 
-            document.getElementById('step-1').classList.add('hidden-screen'); document.getElementById('step-2').classList.remove('hidden-screen');
+            goTemplates();
         }
 
-        function backToForm() { document.getElementById('step-2').classList.add('hidden-screen'); document.getElementById('step-1').classList.remove('hidden-screen'); }
-        function backToTemplates() { document.getElementById('app-wrapper').classList.add('hidden-screen'); document.getElementById('step-2').classList.remove('hidden-screen'); closeToolbox(); }
+        function toggleToolbox() { document.getElementById('toolbox').classList.toggle('open'); }
+        function closeToolbox() { document.getElementById('toolbox').classList.remove('open'); }
 
-        // 11 DYNAMIC TEMPLATES
+        // === TEMPLATES ===
         function getTemplateHTML(type) {
+            // If they skipped the form, inject dummy data so it doesn't break
+            if(!cvData) setDummyData();
+
             const templates = {
                 corporate: `
-                    <div class="draggable shape-el" style="top: 0; left: 0; width: 280px; height: 1123px; background-color: #d1d5db; z-index: 1;" data-locked="true"></div>
-                    <div class="draggable shape-el" style="top: 0; left: 0; width: 40px; height: 1123px; background-color: #6b7280; z-index: 2;" data-locked="true"></div>
+                    <div class="draggable shape-el" style="top: 0; left: 0; width: 280px; height: 1123px; background-color: #f3f4f6; z-index: 1;" data-locked="true"></div>
+                    <div class="draggable shape-el" style="top: 0; left: 0; width: 40px; height: 1123px; background-color: #111827; z-index: 2;" data-locked="true"></div>
                     <img class="draggable image-el" src="https://via.placeholder.com/150" style="top: 80px; left: 70px; width: 150px; height: 150px; border: 4px solid #fff; z-index: 5;">
-                    <div class="draggable text-el" style="top: 260px; left: 70px; font-size: 16px; font-family: 'Open Sans', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">CONTACT</div>
-                    <div class="draggable text-el" style="top: 300px; left: 70px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #333; line-height: 1.8; z-index: 5;" contenteditable="true"><strong>Address</strong><br>${cvData.location}<br><br><strong>Phone</strong><br>${cvData.phone}<br><br><strong>Email</strong><br>${cvData.email}</div>
-                    <div class="draggable text-el" style="top: 550px; left: 70px; font-size: 16px; font-family: 'Open Sans', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">SKILLS</div>
-                    <div class="draggable text-el" style="top: 590px; left: 70px; width: 170px; font-size: 11px; font-family: 'Open Sans', sans-serif; color: #333; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.skills}</div>
-                    <div class="draggable text-el" style="top: 90px; left: 320px; font-size: 45px; font-family: 'Open Sans', sans-serif; font-weight: 800; color: #111; z-index: 5;" contenteditable="true">${cvData.name}</div>
-                    <div class="draggable text-el" style="top: 150px; left: 320px; font-size: 16px; font-family: 'Open Sans', sans-serif; font-weight: 600; color: #9ca3af; z-index: 5;" contenteditable="true">${cvData.title}</div>
-                    <div class="draggable text-el" style="top: 210px; left: 320px; font-size: 16px; font-family: 'Open Sans', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">PROFILE</div>
-                    <div class="draggable shape-el" style="top: 235px; left: 320px; width: 40px; height: 3px; background-color: #111; z-index: 5;"></div>
-                    <div class="draggable text-el" style="top: 250px; left: 320px; width: 420px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
-                    <div class="draggable text-el" style="top: 360px; left: 320px; font-size: 16px; font-family: 'Open Sans', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">EXPERIENCE</div>
-                    <div class="draggable shape-el" style="top: 385px; left: 320px; width: 40px; height: 3px; background-color: #111; z-index: 5;"></div>
-                    <div class="draggable text-el" style="top: 400px; left: 320px; font-size: 12px; font-family: 'Open Sans', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">${cvData.expDate}</div>
-                    <div class="draggable text-el" style="top: 400px; left: 420px; font-size: 12px; font-family: 'Open Sans', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">${cvData.expTitle}</div>
-                    <div class="draggable text-el" style="top: 420px; left: 420px; width: 340px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #000; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
+                    <div class="draggable text-el" style="top: 260px; left: 70px; font-size: 16px; font-family: 'Inter', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">CONTACT</div>
+                    <div class="draggable text-el" style="top: 300px; left: 70px; font-size: 12px; font-family: 'Inter', sans-serif; color: #333; line-height: 1.8; z-index: 5;" contenteditable="true"><strong>Address</strong><br>${cvData.location}<br><br><strong>Phone</strong><br>${cvData.phone}<br><br><strong>Email</strong><br>${cvData.email}</div>
+                    <div class="draggable text-el" style="top: 550px; left: 70px; font-size: 16px; font-family: 'Inter', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">SKILLS</div>
+                    <div class="draggable text-el" style="top: 590px; left: 70px; width: 170px; font-size: 12px; font-family: 'Inter', sans-serif; color: #333; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.skills}</div>
+                    <div class="draggable text-el" style="top: 90px; left: 320px; font-size: 45px; font-family: 'Inter', sans-serif; font-weight: 800; color: #111; letter-spacing: -1px; z-index: 5;" contenteditable="true">${cvData.name}</div>
+                    <div class="draggable text-el" style="top: 150px; left: 320px; font-size: 16px; font-family: 'Inter', sans-serif; font-weight: 600; color: #4f46e5; z-index: 5;" contenteditable="true">${cvData.title}</div>
+                    <div class="draggable text-el" style="top: 210px; left: 320px; font-size: 16px; font-family: 'Inter', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">PROFILE</div>
+                    <div class="draggable shape-el" style="top: 235px; left: 320px; width: 40px; height: 3px; background-color: #4f46e5; z-index: 5;"></div>
+                    <div class="draggable text-el" style="top: 250px; left: 320px; width: 420px; font-size: 13px; font-family: 'Inter', sans-serif; color: #444; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 360px; left: 320px; font-size: 16px; font-family: 'Inter', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">EXPERIENCE</div>
+                    <div class="draggable shape-el" style="top: 385px; left: 320px; width: 40px; height: 3px; background-color: #4f46e5; z-index: 5;"></div>
+                    <div class="draggable text-el" style="top: 410px; left: 320px; font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 600; color: #666; z-index: 5;" contenteditable="true">${cvData.expDate}</div>
+                    <div class="draggable text-el" style="top: 410px; left: 420px; font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">${cvData.expTitle}</div>
+                    <div class="draggable text-el" style="top: 435px; left: 420px; width: 340px; font-size: 13px; font-family: 'Inter', sans-serif; color: #444; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
                 `,
                 noah_green: `
                     <div class="draggable shape-el" style="top: 200px; left: 0px; width: 280px; height: 923px; background-color: #1a252f; z-index: 1;" data-locked="true"></div>
@@ -379,113 +468,113 @@
                     <div class="draggable text-el" style="top: 525px; left: 320px; width: 430px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #444; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
                 `,
                 innovator: `
-                    <div class="draggable shape-el" style="top: 0; left: 0; width: 280px; height: 1123px; background-color: #2b2b2b; z-index: 1;" data-locked="true"></div>
+                    <div class="draggable shape-el" style="top: 0; left: 0; width: 280px; height: 1123px; background-color: #111827; z-index: 1;" data-locked="true"></div>
                     <img class="draggable image-el" src="https://via.placeholder.com/150" style="top: 40px; left: 65px; width: 150px; height: 150px; border-radius: 50%; border: 5px solid #fff; z-index: 5;">
-                    <div class="draggable text-el" style="top: 70px; left: 320px; font-size: 38px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #1a365d; line-height: 1.1; z-index: 5;" contenteditable="true">${cvData.name.replace(' ', '<br>')}</div>
-                    <div class="draggable text-el" style="top: 175px; left: 320px; font-size: 18px; font-family: 'Open Sans', sans-serif; color: #444; z-index: 5;" contenteditable="true">${cvData.title}</div>
-                    <div class="draggable text-el" style="top: 250px; left: 80px; font-size: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #fff; z-index: 5;" contenteditable="true">About Me</div>
-                    <div class="draggable text-el" style="top: 300px; left: 50px; width: 180px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #ddd; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
-                    <div class="draggable text-el" style="top: 480px; left: 80px; font-size: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #fff; z-index: 5;" contenteditable="true">Skills</div>
-                    <div class="draggable text-el" style="top: 530px; left: 50px; width: 180px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #ddd; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.skills}</div>
-                    <div class="draggable text-el" style="top: 250px; left: 360px; font-size: 22px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #1a365d; z-index: 5;" contenteditable="true">Experience</div>
-                    <div class="draggable shape-el" style="top: 300px; left: 329px; width: 2px; height: 180px; background-color: #1a365d; z-index: 4;"></div>
-                    <div class="draggable shape-el" style="top: 300px; left: 325px; width: 10px; height: 10px; background-color: #1a365d; border-radius: 50%; z-index: 5;"></div>
-                    <div class="draggable text-el" style="top: 295px; left: 360px; font-size: 14px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #1a365d; line-height: 1.4; z-index: 5;" contenteditable="true">${cvData.expTitle}<br><span style="font-size: 11px; font-weight: normal; color:#555;">${cvData.expDate}</span></div>
-                    <div class="draggable text-el" style="top: 340px; left: 360px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #333; width: 380px; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
+                    <div class="draggable text-el" style="top: 70px; left: 320px; font-size: 38px; font-family: 'Inter', sans-serif; font-weight: 800; color: #111827; line-height: 1.1; letter-spacing: -1px; z-index: 5;" contenteditable="true">${cvData.name.replace(' ', '<br>')}</div>
+                    <div class="draggable text-el" style="top: 175px; left: 320px; font-size: 18px; font-family: 'Inter', sans-serif; color: #4f46e5; font-weight: 600; z-index: 5;" contenteditable="true">${cvData.title}</div>
+                    <div class="draggable text-el" style="top: 250px; left: 80px; font-size: 20px; font-family: 'Inter', sans-serif; font-weight: 800; color: #fff; z-index: 5;" contenteditable="true">About Me</div>
+                    <div class="draggable text-el" style="top: 300px; left: 50px; width: 180px; font-size: 13px; font-family: 'Inter', sans-serif; color: #9ca3af; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 480px; left: 80px; font-size: 20px; font-family: 'Inter', sans-serif; font-weight: 800; color: #fff; z-index: 5;" contenteditable="true">Skills</div>
+                    <div class="draggable text-el" style="top: 530px; left: 50px; width: 180px; font-size: 13px; font-family: 'Inter', sans-serif; color: #9ca3af; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.skills}</div>
+                    <div class="draggable text-el" style="top: 250px; left: 360px; font-size: 22px; font-family: 'Inter', sans-serif; font-weight: 800; color: #111827; z-index: 5;" contenteditable="true">Experience</div>
+                    <div class="draggable shape-el" style="top: 300px; left: 329px; width: 2px; height: 180px; background-color: #4f46e5; z-index: 4;"></div>
+                    <div class="draggable shape-el" style="top: 300px; left: 325px; width: 10px; height: 10px; background-color: #4f46e5; border-radius: 50%; z-index: 5;"></div>
+                    <div class="draggable text-el" style="top: 295px; left: 360px; font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 800; color: #111827; line-height: 1.4; z-index: 5;" contenteditable="true">${cvData.expTitle}<br><span style="font-size: 12px; font-weight: normal; color:#6b7280;">${cvData.expDate}</span></div>
+                    <div class="draggable text-el" style="top: 345px; left: 360px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; width: 380px; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
                 `,
                 techgrid: `
-                    <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #f8f9fa; z-index: 1;" data-locked="true"></div>
-                    <div class="draggable shape-el" style="top: 40px; left: 40px; width: 340px; height: 1043px; border: 2px solid #ced4da; border-radius: 8px; z-index: 2;" data-locked="true"></div>
-                    <div class="draggable shape-el" style="top: 40px; left: 410px; width: 340px; height: 500px; border: 2px solid #ced4da; border-radius: 8px; z-index: 2;" data-locked="true"></div>
-                    <div class="draggable shape-el" style="top: 570px; left: 410px; width: 340px; height: 513px; border: 2px solid #ced4da; border-radius: 8px; z-index: 2;" data-locked="true"></div>
-                    <div class="draggable text-el" style="top: 80px; left: 70px; font-size: 32px; font-family: 'Roboto', sans-serif; font-weight: 900; color: #212529; z-index: 5;" contenteditable="true">${cvData.name}</div>
-                    <div class="draggable text-el" style="top: 130px; left: 70px; font-size: 16px; font-family: 'Roboto', sans-serif; color: #495057; font-weight: bold; z-index: 5;" contenteditable="true">${cvData.title}</div>
-                    <div class="draggable text-el" style="top: 180px; left: 70px; width: 280px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #495057; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
-                    <div class="draggable text-el" style="top: 350px; left: 70px; font-size: 20px; font-family: 'Roboto', sans-serif; font-weight: bold; color: #212529; z-index: 5;" contenteditable="true">SKILLS</div>
-                    <div class="draggable text-el" style="top: 390px; left: 70px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #495057; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.skills}</div>
-                    <div class="draggable text-el" style="top: 70px; left: 440px; font-size: 22px; font-family: 'Roboto', sans-serif; font-weight: bold; color: #212529; z-index: 5;" contenteditable="true">EXPERIENCE</div>
-                    <div class="draggable text-el" style="top: 120px; left: 440px; font-size: 15px; font-family: 'Roboto', sans-serif; font-weight: bold; color: #212529; z-index: 5;" contenteditable="true">${cvData.expTitle}</div>
-                    <div class="draggable text-el" style="top: 145px; left: 440px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #6c757d; z-index: 5;" contenteditable="true">${cvData.expDate}</div>
-                    <div class="draggable text-el" style="top: 175px; left: 440px; width: 280px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #495057; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
-                    <div class="draggable text-el" style="top: 600px; left: 440px; font-size: 22px; font-family: 'Roboto', sans-serif; font-weight: bold; color: #212529; z-index: 5;" contenteditable="true">CONTACT</div>
-                    <div class="draggable text-el" style="top: 650px; left: 440px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #495057; line-height: 2; z-index: 5;" contenteditable="true">${cvData.email}<br>${cvData.phone}<br>${cvData.location}</div>
+                    <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #ffffff; z-index: 1;" data-locked="true"></div>
+                    <div class="draggable shape-el" style="top: 40px; left: 40px; width: 340px; height: 1043px; border: 1px solid #e5e7eb; border-radius: 12px; z-index: 2;" data-locked="true"></div>
+                    <div class="draggable shape-el" style="top: 40px; left: 410px; width: 340px; height: 500px; border: 1px solid #e5e7eb; border-radius: 12px; z-index: 2;" data-locked="true"></div>
+                    <div class="draggable shape-el" style="top: 570px; left: 410px; width: 340px; height: 513px; border: 1px solid #e5e7eb; border-radius: 12px; z-index: 2;" data-locked="true"></div>
+                    <div class="draggable text-el" style="top: 80px; left: 70px; font-size: 32px; font-family: 'Inter', sans-serif; font-weight: 900; color: #111827; letter-spacing:-1px; z-index: 5;" contenteditable="true">${cvData.name}</div>
+                    <div class="draggable text-el" style="top: 130px; left: 70px; font-size: 16px; font-family: 'Inter', sans-serif; color: #4f46e5; font-weight: 600; z-index: 5;" contenteditable="true">${cvData.title}</div>
+                    <div class="draggable text-el" style="top: 180px; left: 70px; width: 280px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 350px; left: 70px; font-size: 18px; font-family: 'Inter', sans-serif; font-weight: 800; color: #111827; z-index: 5;" contenteditable="true">SKILLS</div>
+                    <div class="draggable text-el" style="top: 390px; left: 70px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.skills}</div>
+                    <div class="draggable text-el" style="top: 70px; left: 440px; font-size: 18px; font-family: 'Inter', sans-serif; font-weight: 800; color: #111827; z-index: 5;" contenteditable="true">EXPERIENCE</div>
+                    <div class="draggable text-el" style="top: 120px; left: 440px; font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 700; color: #111827; z-index: 5;" contenteditable="true">${cvData.expTitle}</div>
+                    <div class="draggable text-el" style="top: 145px; left: 440px; font-size: 12px; font-family: 'Inter', sans-serif; color: #6b7280; font-weight: 500; z-index: 5;" contenteditable="true">${cvData.expDate}</div>
+                    <div class="draggable text-el" style="top: 175px; left: 440px; width: 280px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
+                    <div class="draggable text-el" style="top: 600px; left: 440px; font-size: 18px; font-family: 'Inter', sans-serif; font-weight: 800; color: #111827; z-index: 5;" contenteditable="true">CONTACT</div>
+                    <div class="draggable text-el" style="top: 650px; left: 440px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 2; z-index: 5;" contenteditable="true">${cvData.email}<br>${cvData.phone}<br>${cvData.location}</div>
                 `,
                 minimalist: `
                     <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #ffffff; z-index: 1;" data-locked="true"></div>
-                    <div class="draggable text-el" style="top: 100px; left: 100px; font-size: 24px; font-family: 'Open Sans', sans-serif; letter-spacing: 6px; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">${cvData.name}</div>
-                    <div class="draggable text-el" style="top: 140px; left: 100px; font-size: 12px; font-family: 'Open Sans', sans-serif; letter-spacing: 2px; color: #777; z-index: 5;" contenteditable="true">${cvData.title}</div>
-                    <div class="draggable text-el" style="top: 200px; left: 100px; width: 500px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #444; line-height: 2; z-index: 5;" contenteditable="true">${cvData.summary}</div>
-                    <div class="draggable text-el" style="top: 320px; left: 100px; font-size: 12px; font-family: 'Open Sans', sans-serif; letter-spacing: 3px; font-weight: bold; color: #111; z-index: 5;" contenteditable="true">EXPERIENCE</div>
-                    <div class="draggable text-el" style="top: 370px; left: 100px; font-size: 13px; font-family: 'Open Sans', sans-serif; font-weight: bold; color: #111; z-index: 5;" contenteditable="true">${cvData.expTitle}</div>
-                    <div class="draggable text-el" style="top: 370px; left: 500px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #777; z-index: 5;" contenteditable="true">${cvData.expDate}</div>
-                    <div class="draggable text-el" style="top: 400px; left: 100px; width: 500px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #555; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
-                    <div class="draggable text-el" style="top: 550px; left: 100px; font-size: 12px; font-family: 'Open Sans', sans-serif; letter-spacing: 3px; font-weight: bold; color: #111; z-index: 5;" contenteditable="true">CONTACT & SKILLS</div>
-                    <div class="draggable text-el" style="top: 600px; left: 100px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #555; line-height: 2; z-index: 5;" contenteditable="true">${cvData.email} | ${cvData.phone} | ${cvData.location}</div>
-                    <div class="draggable text-el" style="top: 640px; left: 100px; width: 500px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #555; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.skills}</div>
+                    <div class="draggable text-el" style="top: 100px; left: 100px; font-size: 28px; font-family: 'Inter', sans-serif; letter-spacing: 4px; font-weight: 800; color: #111; text-transform: uppercase; z-index: 5;" contenteditable="true">${cvData.name}</div>
+                    <div class="draggable text-el" style="top: 145px; left: 100px; font-size: 13px; font-family: 'Inter', sans-serif; letter-spacing: 2px; color: #4f46e5; font-weight: 600; text-transform: uppercase; z-index: 5;" contenteditable="true">${cvData.title}</div>
+                    <div class="draggable text-el" style="top: 200px; left: 100px; width: 500px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 320px; left: 100px; font-size: 12px; font-family: 'Inter', sans-serif; letter-spacing: 3px; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">EXPERIENCE</div>
+                    <div class="draggable text-el" style="top: 370px; left: 100px; font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">${cvData.expTitle}</div>
+                    <div class="draggable text-el" style="top: 370px; left: 500px; font-size: 12px; font-family: 'Inter', sans-serif; color: #6b7280; font-weight: 500; z-index: 5;" contenteditable="true">${cvData.expDate}</div>
+                    <div class="draggable text-el" style="top: 400px; left: 100px; width: 500px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
+                    <div class="draggable text-el" style="top: 550px; left: 100px; font-size: 12px; font-family: 'Inter', sans-serif; letter-spacing: 3px; font-weight: 700; color: #111; z-index: 5;" contenteditable="true">CONTACT & SKILLS</div>
+                    <div class="draggable text-el" style="top: 600px; left: 100px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 2; z-index: 5;" contenteditable="true">${cvData.email} | ${cvData.phone} | ${cvData.location}</div>
+                    <div class="draggable text-el" style="top: 640px; left: 100px; width: 500px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.skills}</div>
                 `,
                 executive_blue: `
-                    <div class="draggable shape-el" style="top: 0; left: 0; width: 280px; height: 1123px; background-color: #0c2461; z-index: 1;" data-locked="true"></div>
-                    <div class="draggable text-el" style="top: 80px; left: 320px; font-size: 45px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #0c2461; line-height: 1; z-index: 5;" contenteditable="true">${cvData.name.replace(' ', '<br>')}</div>
-                    <div class="draggable text-el" style="top: 200px; left: 320px; font-size: 18px; font-family: 'Open Sans', sans-serif; color: #555; font-weight: 600; z-index: 5;" contenteditable="true">${cvData.title}</div>
-                    <div class="draggable text-el" style="top: 80px; left: 40px; font-size: 18px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #fff; z-index: 5;" contenteditable="true">CONTACT</div>
-                    <div class="draggable shape-el" style="top: 110px; left: 40px; width: 40px; height: 2px; background-color: #fff; z-index: 5;"></div>
-                    <div class="draggable text-el" style="top: 130px; left: 40px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #cbd5e1; line-height: 2; z-index: 5;" contenteditable="true">${cvData.email}<br>${cvData.phone}<br>${cvData.location}</div>
-                    <div class="draggable text-el" style="top: 280px; left: 40px; font-size: 18px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #fff; z-index: 5;" contenteditable="true">SKILLS</div>
-                    <div class="draggable shape-el" style="top: 310px; left: 40px; width: 40px; height: 2px; background-color: #fff; z-index: 5;"></div>
-                    <div class="draggable text-el" style="top: 330px; left: 40px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #cbd5e1; line-height: 2; z-index: 5;" contenteditable="true">${cvData.skills}</div>
-                    <div class="draggable text-el" style="top: 300px; left: 320px; font-size: 20px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #0c2461; z-index: 5;" contenteditable="true">EXECUTIVE SUMMARY</div>
-                    <div class="draggable shape-el" style="top: 330px; left: 320px; width: 40px; height: 2px; background-color: #0c2461; z-index: 5;"></div>
-                    <div class="draggable text-el" style="top: 350px; left: 320px; width: 420px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #333; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
-                    <div class="draggable text-el" style="top: 480px; left: 320px; font-size: 20px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #0c2461; z-index: 5;" contenteditable="true">EXPERIENCE</div>
-                    <div class="draggable shape-el" style="top: 510px; left: 320px; width: 40px; height: 2px; background-color: #0c2461; z-index: 5;"></div>
-                    <div class="draggable text-el" style="top: 540px; left: 320px; font-size: 15px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #111; z-index: 5;" contenteditable="true">${cvData.expTitle}</div>
-                    <div class="draggable text-el" style="top: 565px; left: 320px; font-size: 12px; font-family: 'Open Sans', sans-serif; color: #666; font-style: italic; z-index: 5;" contenteditable="true">${cvData.expDate}</div>
-                    <div class="draggable text-el" style="top: 590px; left: 320px; width: 420px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #444; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
+                    <div class="draggable shape-el" style="top: 0; left: 0; width: 280px; height: 1123px; background-color: #0f172a; z-index: 1;" data-locked="true"></div>
+                    <div class="draggable text-el" style="top: 80px; left: 320px; font-size: 45px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #0f172a; line-height: 1; z-index: 5;" contenteditable="true">${cvData.name.replace(' ', '<br>')}</div>
+                    <div class="draggable text-el" style="top: 200px; left: 320px; font-size: 18px; font-family: 'Inter', sans-serif; color: #6b7280; font-weight: 600; z-index: 5;" contenteditable="true">${cvData.title}</div>
+                    <div class="draggable text-el" style="top: 80px; left: 40px; font-size: 16px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #fff; z-index: 5;" contenteditable="true">CONTACT</div>
+                    <div class="draggable shape-el" style="top: 110px; left: 40px; width: 40px; height: 2px; background-color: #4f46e5; z-index: 5;"></div>
+                    <div class="draggable text-el" style="top: 130px; left: 40px; font-size: 13px; font-family: 'Inter', sans-serif; color: #cbd5e1; line-height: 2; z-index: 5;" contenteditable="true">${cvData.email}<br>${cvData.phone}<br>${cvData.location}</div>
+                    <div class="draggable text-el" style="top: 280px; left: 40px; font-size: 16px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #fff; z-index: 5;" contenteditable="true">SKILLS</div>
+                    <div class="draggable shape-el" style="top: 310px; left: 40px; width: 40px; height: 2px; background-color: #4f46e5; z-index: 5;"></div>
+                    <div class="draggable text-el" style="top: 330px; left: 40px; font-size: 13px; font-family: 'Inter', sans-serif; color: #cbd5e1; line-height: 2; z-index: 5;" contenteditable="true">${cvData.skills}</div>
+                    <div class="draggable text-el" style="top: 300px; left: 320px; font-size: 18px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #0f172a; z-index: 5;" contenteditable="true">EXECUTIVE SUMMARY</div>
+                    <div class="draggable shape-el" style="top: 330px; left: 320px; width: 40px; height: 3px; background-color: #4f46e5; z-index: 5;"></div>
+                    <div class="draggable text-el" style="top: 350px; left: 320px; width: 420px; font-size: 14px; font-family: 'Inter', sans-serif; color: #374151; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 480px; left: 320px; font-size: 18px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #0f172a; z-index: 5;" contenteditable="true">EXPERIENCE</div>
+                    <div class="draggable shape-el" style="top: 510px; left: 320px; width: 40px; height: 3px; background-color: #4f46e5; z-index: 5;"></div>
+                    <div class="draggable text-el" style="top: 540px; left: 320px; font-size: 16px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #111; z-index: 5;" contenteditable="true">${cvData.expTitle}</div>
+                    <div class="draggable text-el" style="top: 565px; left: 320px; font-size: 13px; font-family: 'Inter', sans-serif; color: #6b7280; font-weight: 500; z-index: 5;" contenteditable="true">${cvData.expDate}</div>
+                    <div class="draggable text-el" style="top: 590px; left: 320px; width: 420px; font-size: 14px; font-family: 'Inter', sans-serif; color: #374151; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
                 `,
                 darkmode: `
                     <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #111111; z-index: 1;" data-locked="true"></div>
                     <div class="draggable shape-el" style="top: 0; left: 350px; width: 444px; height: 1123px; background-color: #222222; border-top-left-radius: 200px; border-bottom-left-radius: 200px; z-index: 2;" data-locked="true"></div>
-                    <img class="draggable image-el" src="https://via.placeholder.com/200" style="top: 50px; left: 50px; width: 200px; height: 200px; z-index: 5;">
+                    <img class="draggable image-el" src="https://via.placeholder.com/200" style="top: 50px; left: 50px; width: 200px; height: 200px; border-radius: 12px; z-index: 5;">
                     <div class="draggable text-el" style="top: 60px; left: 380px; font-size: 45px; font-family: 'Montserrat', sans-serif; font-weight: 900; font-style: italic; color: #fff; z-index: 5;" contenteditable="true">${cvData.name}</div>
-                    <div class="draggable text-el" style="top: 130px; left: 380px; font-size: 18px; font-family: 'Open Sans', sans-serif; color: #ccc; z-index: 5;" contenteditable="true">${cvData.title}</div>
+                    <div class="draggable text-el" style="top: 130px; left: 380px; font-size: 18px; font-family: 'Inter', sans-serif; color: #9ca3af; z-index: 5;" contenteditable="true">${cvData.title}</div>
                     <div class="draggable text-el" style="top: 305px; left: 50px; font-size: 22px; font-family: 'Oswald', sans-serif; font-style: italic; color: #fff; z-index: 5;" contenteditable="true">SUMMARY</div>
-                    <div class="draggable text-el" style="top: 360px; left: 40px; width: 260px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #ddd; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 360px; left: 40px; width: 260px; font-size: 13px; font-family: 'Inter', sans-serif; color: #d1d5db; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.summary}</div>
                     <div class="draggable text-el" style="top: 202px; left: 390px; font-size: 24px; font-family: 'Oswald', sans-serif; font-style: italic; color: #111; font-weight: 600; z-index: 5;" contenteditable="true">EXPERIENCE</div>
                     <div class="draggable shape-el" style="top: 200px; left: 380px; width: 414px; height: 35px; background-color: #fff; z-index: 4;"></div>
                     <div class="draggable text-el" style="top: 260px; left: 380px; font-size: 16px; font-family: 'Montserrat', sans-serif; font-weight: 700; color: #fff; z-index: 5;" contenteditable="true">${cvData.expTitle} (${cvData.expDate})</div>
-                    <div class="draggable text-el" style="top: 290px; left: 380px; width: 350px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #aaa; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
+                    <div class="draggable text-el" style="top: 290px; left: 380px; width: 350px; font-size: 13px; font-family: 'Inter', sans-serif; color: #9ca3af; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
                 `,
                 developer: `
-                    <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #000; z-index: 1;" data-locked="true"></div>
-                    <div class="draggable text-el" style="top: 60px; left: 60px; font-size: 20px; font-family: 'Courier Prime', monospace; color: #00ff00; z-index: 5;" contenteditable="true">> Hello World_<br>> My name is ${cvData.name}.<br>> Title: ${cvData.title}</div>
-                    <div class="draggable text-el" style="top: 150px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #00ff00; z-index: 5;" contenteditable="true">user@system:~$ cat contact.txt<br>{<br>&nbsp;&nbsp;"email": "${cvData.email}",<br>&nbsp;&nbsp;"phone": "${cvData.phone}",<br>&nbsp;&nbsp;"location": "${cvData.location}"<br>}</div>
-                    <div class="draggable text-el" style="top: 280px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #00ff00; width: 650px; line-height: 1.5; z-index: 5;" contenteditable="true">user@system:~$ cat summary.txt<br>> ${cvData.summary}</div>
-                    <div class="draggable text-el" style="top: 400px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #00ff00; line-height: 1.5; z-index: 5;" contenteditable="true">user@system:~$ ./execute_experience.sh<br>Loading...<br>Status: ${cvData.expTitle} (${cvData.expDate})<br>Output:<br>${cvData.expDesc.replace(/•/g, '>')}</div>
-                    <div class="draggable text-el" style="top: 600px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #00ff00; z-index: 5;" contenteditable="true">user@system:~$ ls skills/<br>${cvData.skills.replace(/•/g, '[*]')}</div>
+                    <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #0f172a; z-index: 1;" data-locked="true"></div>
+                    <div class="draggable text-el" style="top: 60px; left: 60px; font-size: 20px; font-family: 'Courier Prime', monospace; color: #10b981; z-index: 5;" contenteditable="true">> Hello World_<br>> My name is ${cvData.name}.<br>> Title: ${cvData.title}</div>
+                    <div class="draggable text-el" style="top: 150px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #10b981; z-index: 5;" contenteditable="true">user@system:~$ cat contact.json<br>{<br>&nbsp;&nbsp;"email": "${cvData.email}",<br>&nbsp;&nbsp;"phone": "${cvData.phone}",<br>&nbsp;&nbsp;"location": "${cvData.location}"<br>}</div>
+                    <div class="draggable text-el" style="top: 280px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #10b981; width: 650px; line-height: 1.5; z-index: 5;" contenteditable="true">user@system:~$ cat summary.txt<br>> ${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 400px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #10b981; line-height: 1.5; z-index: 5;" contenteditable="true">user@system:~$ ./execute_experience.sh<br>Loading...<br>Status: ${cvData.expTitle} (${cvData.expDate})<br>Output:<br>${cvData.expDesc.replace(/•/g, '>')}</div>
+                    <div class="draggable text-el" style="top: 600px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #10b981; z-index: 5;" contenteditable="true">user@system:~$ ls skills/<br>${cvData.skills.replace(/•/g, '[*]')}</div>
                 `,
                 startup: `
-                    <div class="draggable shape-el" style="top: 0px; left: 0px; width: 794px; height: 180px; background: linear-gradient(135deg, #8e44ad, #3498db); border-bottom-right-radius: 50%; z-index: 1;" data-locked="true"></div>
-                    <div class="draggable text-el" style="top: 40px; left: 60px; font-size: 45px; font-family: 'Ubuntu', sans-serif; font-weight: bold; color: #fff; z-index: 5;" contenteditable="true">${cvData.name}</div>
-                    <div class="draggable text-el" style="top: 110px; left: 65px; font-size: 18px; font-family: 'Open Sans', sans-serif; color: #f1c40f; font-weight: 600; letter-spacing: 2px; z-index: 5;" contenteditable="true">${cvData.title}</div>
-                    <div class="draggable text-el" style="top: 255px; left: 80px; width: 630px; font-size: 14px; font-family: 'Open Sans', sans-serif; color: #111; line-height: 1.6; font-weight: 600; z-index: 5;" contenteditable="true">${cvData.summary}</div>
-                    <div class="draggable text-el" style="top: 380px; left: 60px; font-size: 24px; font-family: 'Ubuntu', sans-serif; font-weight: bold; color: #8e44ad; z-index: 5;" contenteditable="true">EXPERIENCE</div>
-                    <div class="draggable shape-el" style="top: 415px; left: 60px; width: 40px; height: 4px; background-color: #f1c40f; z-index: 2;"></div>
-                    <div class="draggable text-el" style="top: 440px; left: 60px; font-size: 18px; font-family: 'Ubuntu', sans-serif; font-weight: bold; color: #222; z-index: 5;" contenteditable="true">${cvData.expTitle} <span style="font-size:14px; color:#777; float:right;">${cvData.expDate}</span></div>
-                    <div class="draggable text-el" style="top: 470px; left: 60px; width: 670px; font-size: 14px; font-family: 'Open Sans', sans-serif; color: #444; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
+                    <div class="draggable shape-el" style="top: 0px; left: 0px; width: 794px; height: 180px; background: linear-gradient(135deg, #4f46e5, #0ea5e9); border-bottom-right-radius: 50%; z-index: 1;" data-locked="true"></div>
+                    <div class="draggable text-el" style="top: 40px; left: 60px; font-size: 45px; font-family: 'Inter', sans-serif; font-weight: 800; color: #fff; letter-spacing: -1px; z-index: 5;" contenteditable="true">${cvData.name}</div>
+                    <div class="draggable text-el" style="top: 110px; left: 65px; font-size: 18px; font-family: 'Inter', sans-serif; color: #fef08a; font-weight: 600; letter-spacing: 1px; z-index: 5;" contenteditable="true">${cvData.title}</div>
+                    <div class="draggable text-el" style="top: 255px; left: 80px; width: 630px; font-size: 14px; font-family: 'Inter', sans-serif; color: #1f2937; line-height: 1.6; font-weight: 500; z-index: 5;" contenteditable="true">${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 380px; left: 60px; font-size: 22px; font-family: 'Inter', sans-serif; font-weight: 800; color: #4f46e5; z-index: 5;" contenteditable="true">EXPERIENCE</div>
+                    <div class="draggable shape-el" style="top: 415px; left: 60px; width: 40px; height: 4px; background-color: #fef08a; z-index: 2;"></div>
+                    <div class="draggable text-el" style="top: 440px; left: 60px; font-size: 18px; font-family: 'Inter', sans-serif; font-weight: 800; color: #111827; z-index: 5;" contenteditable="true">${cvData.expTitle} <span style="font-size:14px; color:#6b7280; font-weight:500; float:right;">${cvData.expDate}</span></div>
+                    <div class="draggable text-el" style="top: 470px; left: 60px; width: 670px; font-size: 14px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.6; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
                 `,
                 modern_gold: `
-                    <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #2f3640; z-index: 1;" data-locked="true"></div>
-                    <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 20px; background-color: #e1b12c; z-index: 2;" data-locked="true"></div>
-                    <div class="draggable text-el" style="top: 100px; left: 80px; font-size: 45px; font-family: 'Playfair Display', serif; font-weight: bold; color: #e1b12c; z-index: 5;" contenteditable="true">${cvData.name.toUpperCase()}</div>
-                    <div class="draggable text-el" style="top: 160px; left: 85px; font-size: 16px; font-family: 'Montserrat', sans-serif; color: #f5f6fa; letter-spacing: 2px; z-index: 5;" contenteditable="true">${cvData.title.toUpperCase()}</div>
-                    <div class="draggable shape-el" style="top: 220px; left: 80px; width: 630px; height: 1px; background-color: #e1b12c; z-index: 3;"></div>
-                    <div class="draggable text-el" style="top: 250px; left: 80px; width: 630px; font-size: 14px; font-family: 'Open Sans', sans-serif; color: #dcdde1; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.summary}</div>
-                    <div class="draggable text-el" style="top: 360px; left: 80px; font-size: 22px; font-family: 'Playfair Display', serif; color: #e1b12c; z-index: 5;" contenteditable="true">EXPERIENCE</div>
-                    <div class="draggable text-el" style="top: 410px; left: 80px; font-size: 16px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #f5f6fa; z-index: 5;" contenteditable="true">${cvData.expTitle} <span style="font-weight: normal; font-size: 14px; color: #7f8fa6;">| ${cvData.expDate}</span></div>
-                    <div class="draggable text-el" style="top: 440px; left: 80px; width: 630px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #dcdde1; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
-                    <div class="draggable text-el" style="top: 600px; left: 80px; font-size: 22px; font-family: 'Playfair Display', serif; color: #e1b12c; z-index: 5;" contenteditable="true">CONTACT & SKILLS</div>
-                    <div class="draggable text-el" style="top: 650px; left: 80px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #dcdde1; line-height: 1.8; z-index: 5;" contenteditable="true"><strong>Email:</strong> ${cvData.email} &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Phone:</strong> ${cvData.phone} &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Location:</strong> ${cvData.location}</div>
-                    <div class="draggable text-el" style="top: 700px; left: 80px; width: 630px; font-size: 13px; font-family: 'Open Sans', sans-serif; color: #dcdde1; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.skills}</div>
+                    <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #f8f9fa; z-index: 1;" data-locked="true"></div>
+                    <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 20px; background-color: #d4af37; z-index: 2;" data-locked="true"></div>
+                    <div class="draggable text-el" style="top: 100px; left: 80px; font-size: 45px; font-family: 'Playfair Display', serif; font-weight: bold; color: #111827; z-index: 5;" contenteditable="true">${cvData.name.toUpperCase()}</div>
+                    <div class="draggable text-el" style="top: 160px; left: 85px; font-size: 16px; font-family: 'Montserrat', sans-serif; color: #d4af37; font-weight: 700; letter-spacing: 2px; z-index: 5;" contenteditable="true">${cvData.title.toUpperCase()}</div>
+                    <div class="draggable shape-el" style="top: 220px; left: 80px; width: 630px; height: 1px; background-color: #e5e7eb; z-index: 3;"></div>
+                    <div class="draggable text-el" style="top: 250px; left: 80px; width: 630px; font-size: 14px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 360px; left: 80px; font-size: 22px; font-family: 'Playfair Display', serif; color: #111827; z-index: 5;" contenteditable="true">EXPERIENCE</div>
+                    <div class="draggable text-el" style="top: 410px; left: 80px; font-size: 16px; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #111827; z-index: 5;" contenteditable="true">${cvData.expTitle} <span style="font-weight: normal; font-size: 14px; color: #6b7280;">| ${cvData.expDate}</span></div>
+                    <div class="draggable text-el" style="top: 440px; left: 80px; width: 630px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.expDesc}</div>
+                    <div class="draggable text-el" style="top: 600px; left: 80px; font-size: 22px; font-family: 'Playfair Display', serif; color: #111827; z-index: 5;" contenteditable="true">CONTACT & SKILLS</div>
+                    <div class="draggable text-el" style="top: 650px; left: 80px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.8; z-index: 5;" contenteditable="true"><strong>Email:</strong> ${cvData.email} &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Phone:</strong> ${cvData.phone} &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Location:</strong> ${cvData.location}</div>
+                    <div class="draggable text-el" style="top: 700px; left: 80px; width: 630px; font-size: 13px; font-family: 'Inter', sans-serif; color: #4b5563; line-height: 1.8; z-index: 5;" contenteditable="true">${cvData.skills}</div>
                 `,
                 elegant: `
                     <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #fcf9f2; z-index: 1;" data-locked="true"></div>
@@ -519,10 +608,10 @@
         function applyGlobalTheme(themeKey) {
             if (themeKey === 'none') return;
             const themes = { 
-                corporate_blue: { bg: '#ffffff', shape: '#2980b9', font: "'Lato', sans-serif", text: '#2c3e50' }, 
-                midnight_cyber: { bg: '#111111', shape: '#00d2d3', font: "'Roboto', sans-serif", text: '#ffffff' }, 
-                rose_gold: { bg: '#fdf6e3', shape: '#e84393', font: "'Playfair Display', serif", text: '#2d3436' }, 
-                pure_dark: { bg: '#000000', shape: '#ffffff', font: "'Open Sans', sans-serif", text: '#ecf0f1' } 
+                corporate_blue: { bg: '#ffffff', shape: '#1e3a8a', font: "'Inter', sans-serif", text: '#111827' }, 
+                midnight_cyber: { bg: '#0f172a', shape: '#10b981', font: "'Roboto', sans-serif", text: '#f8fafc' }, 
+                rose_gold: { bg: '#faf5ff', shape: '#be185d', font: "'Playfair Display', serif", text: '#1f2937' }, 
+                pure_dark: { bg: '#030712', shape: '#334155', font: "'Inter', sans-serif", text: '#f1f5f9' } 
             };
             const t = themes[themeKey];
             document.querySelectorAll('.canvas-paper').forEach(page => { page.style.backgroundColor = t.bg; });
@@ -563,11 +652,11 @@
 
         function addElement(type) {
             const newDiv = document.createElement('div'); newDiv.className = 'draggable'; newDiv.style.top = '100px'; newDiv.style.left = '100px'; zIndexCounter++; newDiv.style.zIndex = zIndexCounter;
-            if (type === 'heading') { newDiv.classList.add('text-el'); newDiv.contentEditable = "true"; newDiv.innerHTML = "Headline Text"; newDiv.style.fontSize = '36px'; newDiv.style.fontWeight = 'bold'; newDiv.style.color = '#111'; newDiv.style.fontFamily = "'Poppins', sans-serif"; } 
-            else if (type === 'body') { newDiv.classList.add('text-el'); newDiv.contentEditable = "true"; newDiv.innerHTML = "Click to type..."; newDiv.style.fontSize = '14px'; newDiv.style.width = '300px'; newDiv.style.color = '#444'; } 
-            else if (type === 'box') { newDiv.classList.add('shape-el'); newDiv.style.width = '200px'; newDiv.style.height = '150px'; newDiv.style.backgroundColor = '#34495e'; } 
-            else if (type === 'circle') { newDiv.classList.add('shape-el'); newDiv.style.width = '150px'; newDiv.style.height = '150px'; newDiv.style.backgroundColor = '#e74c3c'; newDiv.style.borderRadius = '50%'; } 
-            else if (type === 'line') { newDiv.classList.add('shape-el'); newDiv.style.width = '400px'; newDiv.style.height = '3px'; newDiv.style.backgroundColor = '#2c3e50'; }
+            if (type === 'heading') { newDiv.classList.add('text-el'); newDiv.contentEditable = "true"; newDiv.innerHTML = "Headline Text"; newDiv.style.fontSize = '36px'; newDiv.style.fontWeight = '800'; newDiv.style.color = '#111'; newDiv.style.fontFamily = "'Inter', sans-serif"; } 
+            else if (type === 'body') { newDiv.classList.add('text-el'); newDiv.contentEditable = "true"; newDiv.innerHTML = "Click to type..."; newDiv.style.fontSize = '14px'; newDiv.style.width = '300px'; newDiv.style.color = '#4b5563'; } 
+            else if (type === 'box') { newDiv.classList.add('shape-el'); newDiv.style.width = '200px'; newDiv.style.height = '150px'; newDiv.style.backgroundColor = '#4f46e5'; } 
+            else if (type === 'circle') { newDiv.classList.add('shape-el'); newDiv.style.width = '150px'; newDiv.style.height = '150px'; newDiv.style.backgroundColor = '#e5e7eb'; newDiv.style.borderRadius = '50%'; } 
+            else if (type === 'line') { newDiv.classList.add('shape-el'); newDiv.style.width = '400px'; newDiv.style.height = '3px'; newDiv.style.backgroundColor = '#d1d5db'; }
             document.getElementById(`page-${pageCount}`).appendChild(newDiv); makeDraggable(newDiv); selectElement(newDiv);
         }
 
