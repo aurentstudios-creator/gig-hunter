@@ -3,181 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurent CV Studio | Premium Workspace</title>
+    <title>Aurent Studio | Next-Gen Workspace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;600;800;900&family=Open+Sans:wght@400;600;700&family=Oswald:wght@400;600&family=Playfair+Display:wght@400;700;900&family=Poppins:wght@400;600;800&family=Raleway:wght@400;600;800&family=Roboto:wght@400;700;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        /* === HIGH-CONTRAST MONOCHROME THEME === */
+        /* === NEXT-GEN CYBER-GLASS THEME === */
         :root {
-            --bg-main: #0a0a0c;
-            --bg-panel: #111113;
-            --bg-input: #050505;
-            --border-light: #2a2a2e;
-            --border-dark: #1f1f22;
+            --bg-main: #050507;
+            --glass-bg: rgba(13, 13, 18, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --text-main: #ffffff;
-            --text-muted: #888888;
-            --accent-primary: #ffffff; /* Stark White Accent */
-            --accent-hover: #e5e7eb;
-            --accent-light: rgba(255, 255, 255, 0.1);
-            --danger: #ef4444;
-            --danger-light: rgba(239, 68, 68, 0.1);
+            --text-muted: #8b8b99;
+            --accent-glow: #00f2fe;
+            --accent-purple: #4facfe;
+            --danger: #ff0844;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
+            /* Ambient Glowing Orbs */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(79, 172, 254, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 242, 254, 0.1), transparent 25%);
+        }
 
         /* Scrollbars */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-main); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-glow); }
 
         /* === WIZARD UI === */
-        .wizard-screen { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-main); z-index: 9999; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 60px 20px; transition: opacity 0.4s; }
+        .wizard-screen { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; backdrop-filter: blur(30px); z-index: 9999; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 60px 20px; transition: opacity 0.5s ease; }
         .hidden-screen { display: none !important; }
-        .wizard-header { text-align: center; margin-bottom: 40px; }
-        .wizard-title { font-size: 38px; font-weight: 900; color: var(--text-main); letter-spacing: -1px; margin-bottom: 12px; font-family: 'Montserrat', sans-serif;}
-        .wizard-subtitle { font-size: 14px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;}
+        
+        .wizard-header { text-align: center; margin-bottom: 50px; }
+        .wizard-title { font-size: 46px; font-weight: 900; background: linear-gradient(to right, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; margin-bottom: 12px; font-family: 'Montserrat', sans-serif;}
+        .wizard-subtitle { font-size: 13px; font-weight: 600; color: var(--accent-glow); text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 15px rgba(0, 242, 254, 0.5);}
 
         /* Step 0: The Hub */
-        .hub-grid { display: flex; gap: 30px; max-width: 1000px; flex-wrap: wrap; justify-content: center; margin-top: 20px;}
-        .hub-card { width: 280px; background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 12px; padding: 40px 25px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .hub-card:hover { transform: translateY(-8px); border-color: var(--accent-primary); box-shadow: 0 20px 30px rgba(255,255,255,0.05); background: #151518;}
-        .hub-card i { font-size: 40px; color: var(--text-main); margin-bottom: 20px; transition: 0.3s;}
-        .hub-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--text-main); }
-        .hub-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .hub-grid { display: flex; gap: 30px; max-width: 1000px; flex-wrap: wrap; justify-content: center;}
+        .hub-card { width: 280px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px 25px; text-align: center; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; overflow: hidden;}
+        .hub-card::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%); opacity: 0; transition: 0.4s; }
+        .hub-card:hover { transform: translateY(-10px); border-color: rgba(0, 242, 254, 0.5); box-shadow: 0 20px 40px rgba(0, 242, 254, 0.15); }
+        .hub-card:hover::before { opacity: 1; }
+        .hub-card i { font-size: 45px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; transition: 0.3s; filter: drop-shadow(0 0 10px rgba(0,242,254,0.4));}
+        .hub-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; color: #fff; }
+        .hub-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
         /* Step 1: Form */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 800px; background: var(--bg-panel); padding: 40px; border-radius: 12px; border: 1px solid var(--border-light); box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 800px; background: var(--glass-bg); padding: 40px; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: 0 20px 50px rgba(0,0,0,0.8); backdrop-filter: blur(20px);}
         .form-group { display: flex; flex-direction: column; }
         .form-group.full-width { grid-column: span 2; }
-        .form-label { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
-        .form-input, .form-textarea { background: var(--bg-input); border: 1px solid var(--border-light); color: var(--text-main); padding: 12px 15px; border-radius: 6px; font-size: 14px; transition: 0.2s; outline: none; }
-        .form-input:focus, .form-textarea:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-light); }
+        .form-label { font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1.5px;}
+        .form-input, .form-textarea { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 14px 15px; border-radius: 8px; font-size: 14px; transition: 0.3s; outline: none; }
+        .form-input:focus, .form-textarea:focus { border-color: var(--accent-glow); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); background: rgba(0,0,0,0.8); }
         .form-textarea { resize: vertical; min-height: 100px; }
         
-        .wizard-btn { background: var(--accent-primary); color: #000; border: none; padding: 16px 40px; font-size: 15px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: 0.3s; margin-top: 40px; box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
-        .wizard-btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 15px 25px rgba(255,255,255,0.2); }
+        .wizard-btn { background: linear-gradient(135deg, var(--accent-purple), var(--accent-glow)); color: #000; border: none; padding: 16px 45px; font-size: 14px; font-weight: 800; border-radius: 30px; cursor: pointer; transition: 0.3s; margin-top: 40px; box-shadow: 0 10px 25px rgba(0, 242, 254, 0.3); text-transform: uppercase; letter-spacing: 2px;}
+        .wizard-btn:hover { transform: scale(1.05); box-shadow: 0 15px 35px rgba(0, 242, 254, 0.5); }
 
         /* Step 2: Templates */
         .template-grid { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; max-width: 1200px; }
-        .template-card { width: 220px; height: 280px; background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);}
-        .template-card:hover { border-color: var(--accent-primary); transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255,255,255,0.05); background: #151518;}
-        .template-card i { font-size: 45px; color: #555; margin-bottom: 20px; transition: 0.3s; }
-        .template-card:hover i { color: var(--text-main); }
-        .template-card span { font-size: 13px; font-weight: 700; color: var(--text-muted); transition: 0.3s; }
-        .template-card:hover span { color: var(--text-main); }
+        .template-card { width: 220px; height: 280px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; cursor: pointer; transition: 0.4s; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); backdrop-filter: blur(10px);}
+        .template-card:hover { border-color: var(--accent-glow); transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0, 242, 254, 0.2); background: rgba(25,25,30,0.8);}
+        .template-card i { font-size: 45px; color: rgba(255,255,255,0.2); margin-bottom: 20px; transition: 0.4s; }
+        .template-card:hover i { color: var(--accent-glow); filter: drop-shadow(0 0 10px rgba(0,242,254,0.6)); transform: scale(1.1);}
+        .template-card span { font-size: 12px; font-weight: 700; color: var(--text-muted); transition: 0.3s; letter-spacing: 1px; text-transform: uppercase;}
+        .template-card:hover span { color: #fff; }
 
         /* === STEP 3: MAIN APP WRAPPER === */
         #app-wrapper { display: flex; width: 100vw; height: 100vh; position: relative; }
         
         /* Floating Left Toolbox */
-        .toolbox { position: absolute; left: -300px; top: 0; height: 100vh; width: 260px; background-color: rgba(17, 17, 19, 0.95); backdrop-filter: blur(10px); border-right: 1px solid var(--border-light); display: flex; flex-direction: column; padding: 20px; z-index: 100; overflow-y: auto; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 10px 0 30px rgba(0,0,0,0.5);}
+        .toolbox { position: absolute; left: -320px; top: 20px; height: calc(100vh - 40px); width: 280px; background-color: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 0 16px 16px 0; display: flex; flex-direction: column; padding: 25px; z-index: 100; overflow-y: auto; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 10px 0 40px rgba(0,0,0,0.6);}
         .toolbox.open { left: 0; }
         
         /* Top Floating Buttons */
-        .floating-controls { position: absolute; top: 20px; left: 20px; z-index: 90; display: flex; gap: 10px; }
-        .fab-btn { background: var(--bg-panel); color: var(--text-muted); border: 1px solid var(--border-light); padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: 0.2s; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center;}
+        .floating-controls { position: absolute; top: 25px; left: 25px; z-index: 90; display: flex; gap: 15px; }
+        .fab-btn { background: var(--glass-bg); backdrop-filter: blur(10px); color: #fff; border: 1px solid var(--glass-border); padding: 12px 20px; border-radius: 30px; cursor: pointer; font-size: 12px; font-weight: 700; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center; letter-spacing: 1px; text-transform: uppercase;}
         .fab-btn i { margin-right: 8px; color: var(--text-muted); transition: 0.2s;}
-        .fab-btn:hover { border-color: var(--accent-primary); color: var(--text-main); transform: translateY(-2px);}
-        .fab-btn:hover i { color: var(--text-main); }
-        .fab-primary { color: #000 !important; background: #fff !important; border-color: #fff !important; }
+        .fab-btn:hover { border-color: var(--accent-glow); background: rgba(0, 242, 254, 0.1); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 242, 254, 0.2);}
+        .fab-btn:hover i { color: var(--accent-glow); }
+        .fab-primary { background: linear-gradient(135deg, var(--accent-purple), var(--accent-glow)) !important; color: #000 !important; border: none !important; }
         .fab-primary i { color: #000 !important; }
 
-        .properties-panel { width: 320px; background-color: var(--bg-panel); border-left: 1px solid var(--border-light); padding: 20px; display: flex; flex-direction: column; overflow-y: auto; z-index: 10; box-shadow: -10px 0 30px rgba(0,0,0,0.5);}
+        /* Right Panel */
+        .properties-panel { width: 340px; background-color: var(--glass-bg); backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border); padding: 25px; display: flex; flex-direction: column; overflow-y: auto; z-index: 10; box-shadow: -10px 0 40px rgba(0,0,0,0.6);}
         
-        /* Figma-style dotted workspace */
-        .workspace { flex-grow: 1; background-color: var(--bg-main); background-image: radial-gradient(circle, #333 1px, transparent 1px); background-size: 30px 30px; display: flex; flex-direction: column; align-items: center; padding: 80px 40px 40px 40px; overflow-y: auto; gap: 40px; }
+        /* Neon Mesh Workspace */
+        .workspace { flex-grow: 1; background-color: transparent; background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 40px 40px; display: flex; flex-direction: column; align-items: center; padding: 100px 40px 60px 40px; overflow-y: auto; gap: 50px; }
 
-        .logo { font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 25px; color: var(--text-main); text-transform: uppercase; font-family: 'Montserrat', sans-serif;} 
-        .logo span { color: var(--text-muted); font-weight: 400;}
-        .prop-title { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 12px; margin-top: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 8px; letter-spacing: 1px;}
+        .logo { font-size: 22px; font-weight: 900; letter-spacing: 2px; margin-bottom: 30px; color: #fff; text-transform: uppercase; font-family: 'Montserrat', sans-serif;} 
+        .logo span { background: linear-gradient(135deg, var(--accent-purple), var(--accent-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
         
-        .tool-btn { background-color: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-light); padding: 12px; margin-bottom: 8px; border-radius: 6px; cursor: pointer; text-align: left; font-size: 13px; font-weight: 500; transition: 0.2s; width: 100%; display: flex; align-items: center;}
-        .tool-btn i { width: 25px; text-align: center; color: var(--text-muted); font-size: 14px;}
-        .tool-btn:hover { background-color: var(--accent-primary); color: #000; border-color: var(--accent-primary); }
-        .tool-btn:hover i { color: #000; }
+        .prop-title { font-size: 10px; text-transform: uppercase; color: var(--accent-glow); font-weight: 800; margin-bottom: 15px; margin-top: 25px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,242,254,0.3);}
         
-        .btn-primary { background-color: var(--accent-primary); border-color: var(--accent-primary); color: #000; justify-content: center; font-weight: 700;} 
-        .btn-primary i { color: #000; }
-        .btn-primary:hover { background-color: var(--accent-hover); } 
+        .tool-btn { background-color: rgba(0,0,0,0.3); color: #ccc; border: 1px solid rgba(255,255,255,0.05); padding: 14px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 13px; font-weight: 500; transition: 0.3s; width: 100%; display: flex; align-items: center;}
+        .tool-btn i { width: 30px; text-align: center; color: var(--text-muted); font-size: 15px; transition: 0.3s;}
+        .tool-btn:hover { background-color: rgba(0, 242, 254, 0.1); border-color: var(--accent-glow); color: #fff; transform: translateX(5px);}
+        .tool-btn:hover i { color: var(--accent-glow); filter: drop-shadow(0 0 5px var(--accent-glow));}
         
-        .btn-danger { background-color: var(--danger-light); border-color: transparent; color: var(--danger); justify-content: center; margin-top: 15px; font-weight: 600;} 
+        .btn-danger { background-color: rgba(255, 8, 68, 0.1); border-color: rgba(255, 8, 68, 0.3); color: var(--danger); justify-content: center; margin-top: 20px; font-weight: 600;} 
         .btn-danger i { color: var(--danger); }
-        .btn-danger:hover { background-color: var(--danger); color: #fff; }
+        .btn-danger:hover { background-color: var(--danger); color: #fff; transform: none; box-shadow: 0 0 20px rgba(255, 8, 68, 0.4);}
         .btn-danger:hover i { color: #fff; }
 
         /* Canvas */
-        #cv-document { display: flex; flex-direction: column; gap: 40px; }
-        .canvas-paper { width: 794px; height: 1123px; background-color: #ffffff; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05); position: relative; overflow: hidden; flex-shrink: 0; }
-        .delete-page-btn { position: absolute; top: 15px; right: 15px; background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 700; text-transform: uppercase; z-index: 100000; transition: 0.2s;}
+        #cv-document { display: flex; flex-direction: column; gap: 50px; }
+        .canvas-paper { width: 794px; height: 1123px; background-color: #ffffff; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1); position: relative; overflow: hidden; flex-shrink: 0; }
+        .delete-page-btn { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); color: var(--danger); border: 1px solid var(--danger); padding: 8px 15px; border-radius: 30px; cursor: pointer; font-size: 10px; font-weight: 800; text-transform: uppercase; z-index: 100000; transition: 0.3s;}
+        .delete-page-btn:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(255, 8, 68, 0.5);}
         
         .draggable { position: absolute; cursor: move; user-select: none; border: 1px solid transparent; }
-        .active-element { border: 1px solid var(--accent-primary) !important; z-index: 10000 !important; box-shadow: 0 0 0 3px var(--accent-light); }
+        .active-element { border: 1px solid var(--accent-glow) !important; z-index: 10000 !important; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); }
         .draggable:focus { outline: none; cursor: text; }
         .draggable[data-locked="true"] { border: 1px solid transparent; cursor: default; } 
-        .draggable[data-locked="true"].active-element { border: 1px solid var(--danger) !important; box-shadow: 0 0 0 3px var(--danger-light);}
+        .draggable[data-locked="true"].active-element { border: 1px solid var(--danger) !important; box-shadow: 0 0 15px rgba(255, 8, 68, 0.4);}
         img.draggable { object-fit: cover; object-position: 50% 50%; } 
 
         /* Properties UI */
-        .prop-group { margin-bottom: 20px; display: none; background: var(--bg-main); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light);} 
-        .prop-group.visible { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .prop-group { margin-bottom: 20px; display: none; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);} 
+        .prop-group.visible { display: block; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .prop-label { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
-        .prop-input, .prop-select { width: 100%; background: var(--bg-input); border: 1px solid var(--border-light); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; outline: none;}
-        .prop-input:focus, .prop-select:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 2px var(--accent-light);}
-        .prop-input[type="color"] { height: 38px; cursor: pointer; padding: 2px; }
-        .prop-input[type="range"] { height: 4px; background: var(--border-light); -webkit-appearance: none; border-radius: 2px; outline: none; margin-bottom: 15px; border: none; padding: 0;}
-        .prop-input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--accent-primary); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .prop-label { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
+        .prop-input, .prop-select { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; outline: none; transition: 0.3s;}
+        .prop-input:focus, .prop-select:focus { border-color: var(--accent-glow); box-shadow: 0 0 10px rgba(0,242,254,0.2);}
+        .prop-input[type="color"] { height: 40px; cursor: pointer; padding: 2px; }
+        .prop-input[type="range"] { height: 4px; background: rgba(255,255,255,0.1); -webkit-appearance: none; border-radius: 2px; outline: none; margin-bottom: 20px; border: none; padding: 0;}
+        .prop-input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: #fff; border: 2px solid var(--accent-glow); border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); }
         
-        .btn-row { display: flex; gap: 8px; margin-bottom: 15px; }
-        .icon-btn { flex: 1; background: var(--bg-input); border: 1px solid var(--border-light); color: var(--text-muted); padding: 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-align: center; font-size: 13px;}
-        .icon-btn:hover, .icon-btn.active { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); }
+        .btn-row { display: flex; gap: 8px; margin-bottom: 20px; }
+        .icon-btn { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; text-align: center; font-size: 14px;}
+        .icon-btn:hover, .icon-btn.active { background: rgba(0, 242, 254, 0.1); color: var(--accent-glow); border-color: var(--accent-glow); box-shadow: 0 0 10px rgba(0,242,254,0.2);}
         
-        .export-btn { margin-top: auto; background-color: var(--accent-primary); color: #000; border: none; padding: 16px; border-radius: 6px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
-        .export-btn:hover { background-color: var(--accent-hover); box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
-        .grad-row { display: flex; gap: 10px; align-items: center; margin-bottom: 15px;}
+        .export-btn { margin-top: auto; background: linear-gradient(135deg, var(--accent-purple), var(--accent-glow)); color: #000; border: none; padding: 18px; border-radius: 30px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 10px 20px rgba(0,242,254,0.3);}
+        .export-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0,242,254,0.5); }
     </style>
 </head>
 <body>
     
     <div id="step-0" class="wizard-screen">
-        <a href="index.html" style="position: absolute; top: 20px; left: 20px; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: var(--bg-panel); padding: 10px 16px; border: 1px solid var(--border-light); border-radius: 6px; transition: 0.2s;"><i class="fa-solid fa-arrow-left mr-2"></i> Vault</a>
+        <a href="index.html" class="fab-btn" style="position: absolute; top: 25px; left: 25px; text-decoration: none;"><i class="fa-solid fa-arrow-left"></i> Vault</a>
         
-        <div class="wizard-header" style="margin-top: 40px;">
+        <div class="wizard-header" style="margin-top: 60px;">
             <div class="wizard-title">Aurent CV Studio</div>
-            <div class="wizard-subtitle">How would you like to begin?</div>
+            <div class="wizard-subtitle">Initialize Your Workspace</div>
         </div>
 
         <div class="hub-grid">
             <div class="hub-card" onclick="goScratch()">
                 <i class="fa-regular fa-file-lines"></i>
                 <h3>Start from Scratch</h3>
-                <p>Open a blank A4 canvas and build your CV entirely from the ground up using our vector tools.</p>
+                <p>Open a blank A4 canvas and build your CV entirely from the ground up using vector tools.</p>
             </div>
             
             <div class="hub-card" onclick="goTemplates()">
                 <i class="fa-solid fa-layer-group"></i>
                 <h3>Browse Templates</h3>
-                <p>Choose from our library of ATS-friendly designs pre-filled with dummy data to inspire you.</p>
+                <p>Choose from our library of ATS-friendly designs pre-filled with dynamic layouts.</p>
             </div>
 
             <div class="hub-card" onclick="goAutoFill()">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <h3>Auto-Fill Wizard</h3>
-                <p>Enter your professional details once, and instantly inject them into any template.</p>
+                <p>Enter your professional details once to instantly inject them into any template.</p>
             </div>
         </div>
     </div>
 
     <div id="step-1" class="wizard-screen hidden-screen">
-        <button onclick="goHub()" style="position: absolute; top: 20px; left: 20px; background: var(--bg-panel); padding: 10px 16px; border-radius: 6px; border: 1px solid var(--border-light); color: var(--text-muted); font-size: 11px; text-transform: uppercase; cursor: pointer; font-weight: 700; letter-spacing: 1px;"><i class="fa-solid fa-arrow-left mr-2"></i> Back</button>
+        <button onclick="goHub()" class="fab-btn" style="position: absolute; top: 25px; left: 25px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        
         <div class="wizard-header">
             <div class="wizard-title">Data Intake</div>
-            <div class="wizard-subtitle">Enter your details to generate your CV.</div>
+            <div class="wizard-subtitle">Inject your profile metrics</div>
         </div>
         
         <div class="form-grid">
@@ -187,21 +194,22 @@
             <div class="form-group"><label class="form-label">Phone Number</label><input type="text" id="f-phone" class="form-input" placeholder="e.g. +1 (555) 123-4567"></div>
             <div class="form-group"><label class="form-label">Location</label><input type="text" id="f-loc" class="form-input" placeholder="e.g. New York, NY"></div>
             <div class="form-group full-width"><label class="form-label">Professional Summary</label><textarea id="f-summary" class="form-textarea" placeholder="Write a powerful summary..."></textarea></div>
-            <div class="form-group full-width"><label class="form-label" style="border-bottom: 1px solid var(--border-light); padding-bottom: 5px; margin-top: 10px; color: var(--text-main);">Latest Experience</label></div>
+            <div class="form-group full-width"><label class="form-label" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-top: 10px; color: var(--accent-glow);">Latest Experience</label></div>
             <div class="form-group"><label class="form-label">Job Title & Company</label><input type="text" id="f-exp-title" class="form-input" placeholder="e.g. Senior Manager - TechCorp"></div>
             <div class="form-group"><label class="form-label">Dates</label><input type="text" id="f-exp-date" class="form-input" placeholder="e.g. 2019 - Present"></div>
             <div class="form-group full-width"><label class="form-label">Job Responsibilities</label><textarea id="f-exp-desc" class="form-textarea" placeholder="List your achievements..."></textarea></div>
             <div class="form-group full-width"><label class="form-label">Key Skills (Comma Separated)</label><input type="text" id="f-skills" class="form-input" placeholder="e.g. Agile, Leadership, Strategic Planning"></div>
         </div>
 
-        <button class="wizard-btn" onclick="saveDataAndProceed()">Choose Template <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></button>
+        <button class="wizard-btn" onclick="saveDataAndProceed()">Load Architecture <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></button>
     </div>
 
     <div id="step-2" class="wizard-screen hidden-screen">
-        <button onclick="goHub()" style="position: absolute; top: 20px; left: 20px; background: var(--bg-panel); padding: 10px 16px; border-radius: 6px; border: 1px solid var(--border-light); color: var(--text-muted); font-size: 11px; text-transform: uppercase; cursor: pointer; font-weight: 700; letter-spacing: 1px;"><i class="fa-solid fa-arrow-left mr-2"></i> Back</button>
+        <button onclick="goHub()" class="fab-btn" style="position: absolute; top: 25px; left: 25px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        
         <div class="wizard-header">
-            <div class="wizard-title">Choose a Template</div>
-            <div class="wizard-subtitle">Select a foundation for your design.</div>
+            <div class="wizard-title">Select Architecture</div>
+            <div class="wizard-subtitle">Choose a foundation for your design.</div>
         </div>
         <div class="template-grid">
             <div class="template-card" onclick="loadTemplate('corporate')"><i class="fa-solid fa-user-tie"></i><span>The Corporate Pro</span></div>
@@ -222,14 +230,12 @@
         
         <div class="floating-controls">
             <button class="fab-btn" onclick="goHub()"><i class="fa-solid fa-house"></i> Hub</button>
-            <button class="fab-btn fab-primary" id="toggle-tools-btn" onclick="toggleToolbox()"><i class="fa-solid fa-toolbox"></i> Design Tools</button>
+            <button class="fab-btn fab-primary" id="toggle-tools-btn" onclick="toggleToolbox()"><i class="fa-solid fa-layer-group" style="color:#000;"></i> Design Tools</button>
         </div>
 
         <div class="toolbox" id="toolbox">
-            <div class="logo" style="margin-top: 50px;">Aurent<span>Studio</span></div>
+            <div class="logo" style="margin-top: 60px;">Aurent<span>Studio</span></div>
             
-            <button class="tool-btn" onclick="undoAction()"><i class="fa-solid fa-rotate-left"></i> Undo (Ctrl+Z)</button>
-
             <div class="prop-title">Vector Tools</div>
             <button class="tool-btn" onclick="addElement('heading')"><i class="fa-solid fa-heading"></i> Heading</button>
             <button class="tool-btn" onclick="addElement('body')"><i class="fa-solid fa-align-left"></i> Text Block</button>
@@ -237,13 +243,13 @@
             <button class="tool-btn" onclick="addElement('circle')"><i class="fa-solid fa-circle"></i> Circle</button>
             <button class="tool-btn" onclick="addElement('line')"><i class="fa-solid fa-minus"></i> Line</button>
             
-            <div class="prop-title">Media</div>
+            <div class="prop-title">Media Elements</div>
             <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'standard')">
             <button class="tool-btn" onclick="document.getElementById('image-upload').click()"><i class="fa-solid fa-image"></i> Insert Image</button>
             <input type="file" id="bg-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'background')">
             <button class="tool-btn" onclick="document.getElementById('bg-upload').click()"><i class="fa-solid fa-images"></i> Set Background</button>
             
-            <button class="tool-btn" style="margin-top: auto; justify-content:center; background: transparent; border-color: var(--border-light);" onclick="toggleToolbox()"><i class="fa-solid fa-xmark"></i> Close Tools</button>
+            <button class="tool-btn" style="margin-top: auto; justify-content:center; background: transparent; border-color: rgba(255,255,255,0.1);" onclick="toggleToolbox()"><i class="fa-solid fa-xmark"></i> Close Tools</button>
         </div>
 
         <div class="workspace" id="workspace-container">
@@ -253,12 +259,12 @@
         <div class="properties-panel">
             
             <div id="doc-properties" class="prop-group visible">
-                <div class="prop-title" style="margin-top:0;">Document Settings</div>
+                <div class="prop-title" style="margin-top:0;">Document Level</div>
                 
-                <button class="tool-btn btn-primary" style="margin-bottom: 20px;" onclick="addPage()"><i class="fa-solid fa-plus"></i> Add Blank Page</button>
-                <button class="tool-btn" style="margin-bottom: 20px;" onclick="goTemplates()"><i class="fa-solid fa-layer-group"></i> Change Layout</button>
+                <button class="tool-btn" style="background: rgba(0, 242, 254, 0.1); color: var(--accent-glow); border-color: var(--accent-glow); justify-content:center; margin-bottom: 20px;" onclick="addPage()"><i class="fa-solid fa-plus" style="color:var(--accent-glow);"></i> Add Blank Page</button>
+                <button class="tool-btn" style="justify-content:center; margin-bottom: 20px;" onclick="goTemplates()"><i class="fa-solid fa-border-all"></i> Change Layout</button>
 
-                <label class="prop-label" style="color: var(--text-main);">1-Click Global Themes</label>
+                <label class="prop-label" style="color: #fff;">1-Click Global Themes</label>
                 <select class="prop-select" onchange="applyGlobalTheme(this.value)">
                     <option value="none">-- Select Theme --</option>
                     <option value="corporate_blue">Corporate Navy</option>
@@ -266,10 +272,9 @@
                     <option value="rose_gold">Rose Crimson</option>
                     <option value="pure_dark">Pure Monochrome</option>
                 </select>
-                <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px; line-height: 1.5;">Applying a theme overrides all current colors and fonts on the canvas.</div>
             </div>
 
-            <div class="prop-title">Clipboard</div>
+            <div class="prop-title">Action Clipboard</div>
             <div class="btn-row">
                 <button class="icon-btn" onclick="copyElement()" title="Copy (Ctrl+C)"><i class="fa-solid fa-copy"></i></button>
                 <button class="icon-btn" onclick="cutElement()" title="Cut (Ctrl+X)"><i class="fa-solid fa-scissors"></i></button>
@@ -277,7 +282,7 @@
             </div>
 
             <div id="text-properties" class="prop-group">
-                <div class="prop-title" style="margin-top:0; color:var(--text-main);">Text Properties</div>
+                <div class="prop-title" style="margin-top:0;">Text Properties</div>
                 <label class="prop-label">Typography</label>
                 <select class="prop-select" id="font-family" onchange="updateStyle('fontFamily', this.value)">
                     <option value="'Inter', sans-serif">Inter</option>
@@ -305,8 +310,8 @@
             </div>
 
             <div id="visual-properties" class="prop-group">
-                <div class="prop-title" style="margin-top:0; color:var(--text-main);">Shape Properties</div>
-                <label class="prop-label">Fill Details</label>
+                <div class="prop-title" style="margin-top:0;">Shape Details</div>
+                <label class="prop-label">Solid Fill</label>
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
                     <input type="color" class="prop-input" style="flex:1; margin:0;" id="shape-color-picker" onchange="updateVisualColor(this.value)">
                     <button class="icon-btn" style="margin:0;" onclick="removeBackground()" title="Remove Fill"><i class="fa-solid fa-droplet-slash"></i></button>
@@ -314,15 +319,15 @@
                 
                 <label class="prop-label">Gradient Fill</label>
                 <div class="grad-row" id="gradient-controls">
-                    <input type="color" class="prop-input" style="margin:0;" id="grad1" value="#111111">
-                    <input type="color" class="prop-input" style="margin:0;" id="grad2" value="#333333">
+                    <input type="color" class="prop-input" style="margin:0;" id="grad1" value="#00f2fe">
+                    <input type="color" class="prop-input" style="margin:0;" id="grad2" value="#4facfe">
                     <button class="icon-btn" style="margin:0;" onclick="applyGradient()"><i class="fa-solid fa-paint-roller"></i></button>
                 </div>
 
                 <label class="prop-label">Stroke & Border</label>
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
                     <input type="color" class="prop-input" style="flex:1; margin:0;" id="border-color" onchange="updateStyle('borderColor', this.value); updateStyle('borderStyle', 'solid');">
-                    <input type="number" class="prop-input" style="width:60px; margin:0;" min="0" max="50" value="0" oninput="updateStyle('borderWidth', this.value + 'px'); updateStyle('borderStyle', 'solid');">
+                    <input type="number" class="prop-input" style="width:60px; margin:0; background:rgba(0,0,0,0.5); color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:8px; text-align:center;" min="0" max="50" value="0" oninput="updateStyle('borderWidth', this.value + 'px'); updateStyle('borderStyle', 'solid');">
                 </div>
 
                 <label class="prop-label">Opacity / Transparency</label>
@@ -337,8 +342,8 @@
             </div>
 
             <div id="image-properties" class="prop-group">
-                <div class="prop-title" style="margin-top:0; color:var(--text-main);">Image Properties</div>
-                <label class="prop-label">Image Mask / Crop</label>
+                <div class="prop-title" style="margin-top:0;">Image Controls</div>
+                <label class="prop-label">Image Mask</label>
                 <div class="btn-row">
                     <button class="icon-btn" onclick="updateStyle('borderRadius', '0%')"><i class="fa-solid fa-square"></i></button>
                     <button class="icon-btn" onclick="updateStyle('borderRadius', '50%')"><i class="fa-solid fa-circle"></i></button>
@@ -351,24 +356,24 @@
                 <input type="range" class="prop-input" min="50" max="1123" oninput="updateStyle('width', this.value + 'px')">
                 <input type="range" class="prop-input" min="50" max="1123" oninput="updateStyle('height', this.value + 'px')">
                 
-                <label class="prop-label">Pan Photo Inside Mask (X / Y)</label>
+                <label class="prop-label">Pan Inside Mask (X / Y)</label>
                 <input type="range" class="prop-input" min="0" max="100" value="50" oninput="updateImagePan('x', this.value)">
                 <input type="range" class="prop-input" min="0" max="100" value="50" oninput="updateImagePan('y', this.value)">
             </div>
 
             <div id="layer-properties" class="prop-group">
-                <label class="prop-label">Layer Z-Index</label>
+                <label class="prop-label">Layer Matrix</label>
                 <div class="btn-row">
                     <button class="icon-btn" onclick="adjustLayer(1)" title="Bring Forward"><i class="fa-solid fa-angle-up"></i></button>
                     <button class="icon-btn" onclick="adjustLayer(-1)" title="Send Backward"><i class="fa-solid fa-angle-down"></i></button>
-                    <button class="icon-btn" onclick="forceLayer('front')" title="Bring to Front"><i class="fa-solid fa-arrow-up-from-bracket"></i> Front</button>
-                    <button class="icon-btn" onclick="forceLayer('back')" title="Send to Back"><i class="fa-solid fa-arrow-down-to-bracket"></i> Back</button>
+                    <button class="icon-btn" onclick="forceLayer('front')" title="Bring to Front"><i class="fa-solid fa-arrow-up-from-bracket"></i></button>
+                    <button class="icon-btn" onclick="forceLayer('back')" title="Send to Back"><i class="fa-solid fa-arrow-down-to-bracket"></i></button>
                 </div>
-                <button class="tool-btn" id="lock-btn" style="justify-content:center;" onclick="toggleLock()"><i class="fa-solid fa-lock-open"></i> Lock Layer in Place</button>
-                <button class="tool-btn btn-danger" onclick="deleteSelected()"><i class="fa-solid fa-trash"></i> Delete Selected Layer</button>
+                <button class="tool-btn" id="lock-btn" style="justify-content:center; background: rgba(255,255,255,0.05);" onclick="toggleLock()"><i class="fa-solid fa-lock-open"></i> Lock Layer</button>
+                <button class="tool-btn btn-danger" onclick="deleteSelected()"><i class="fa-solid fa-trash"></i> Delete Layer</button>
             </div>
 
-            <button class="export-btn" onclick="downloadPDF()"><i class="fa-solid fa-download mr-2"></i> Export PDF</button>
+            <button class="export-btn" onclick="downloadPDF()">Generate PDF <i class="fa-solid fa-bolt ml-2"></i></button>
         </div>
     </div>
 
@@ -554,11 +559,11 @@
                 `,
                 developer: `
                     <div class="draggable shape-el" style="top: 0; left: 0; width: 794px; height: 1123px; background-color: #0f172a; z-index: 1;" data-locked="true"></div>
-                    <div class="draggable text-el" style="top: 60px; left: 60px; font-size: 20px; font-family: 'Courier Prime', monospace; color: #e5e7eb; z-index: 5;" contenteditable="true">> Hello World_<br>> My name is ${cvData.name}.<br>> Title: ${cvData.title}</div>
-                    <div class="draggable text-el" style="top: 150px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #e5e7eb; z-index: 5;" contenteditable="true">user@system:~$ cat contact.json<br>{<br>&nbsp;&nbsp;"email": "${cvData.email}",<br>&nbsp;&nbsp;"phone": "${cvData.phone}",<br>&nbsp;&nbsp;"location": "${cvData.location}"<br>}</div>
-                    <div class="draggable text-el" style="top: 280px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #e5e7eb; width: 650px; line-height: 1.5; z-index: 5;" contenteditable="true">user@system:~$ cat summary.txt<br>> ${cvData.summary}</div>
-                    <div class="draggable text-el" style="top: 400px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #e5e7eb; line-height: 1.5; z-index: 5;" contenteditable="true">user@system:~$ ./execute_experience.sh<br>Loading...<br>Status: ${cvData.expTitle} (${cvData.expDate})<br>Output:<br>${cvData.expDesc.replace(/•/g, '>')}</div>
-                    <div class="draggable text-el" style="top: 600px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #e5e7eb; z-index: 5;" contenteditable="true">user@system:~$ ls skills/<br>${cvData.skills.replace(/•/g, '[*]')}</div>
+                    <div class="draggable text-el" style="top: 60px; left: 60px; font-size: 20px; font-family: 'Courier Prime', monospace; color: #10b981; z-index: 5;" contenteditable="true">> Hello World_<br>> My name is ${cvData.name}.<br>> Title: ${cvData.title}</div>
+                    <div class="draggable text-el" style="top: 150px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #10b981; z-index: 5;" contenteditable="true">user@system:~$ cat contact.json<br>{<br>&nbsp;&nbsp;"email": "${cvData.email}",<br>&nbsp;&nbsp;"phone": "${cvData.phone}",<br>&nbsp;&nbsp;"location": "${cvData.location}"<br>}</div>
+                    <div class="draggable text-el" style="top: 280px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #10b981; width: 650px; line-height: 1.5; z-index: 5;" contenteditable="true">user@system:~$ cat summary.txt<br>> ${cvData.summary}</div>
+                    <div class="draggable text-el" style="top: 400px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #10b981; line-height: 1.5; z-index: 5;" contenteditable="true">user@system:~$ ./execute_experience.sh<br>Loading...<br>Status: ${cvData.expTitle} (${cvData.expDate})<br>Output:<br>${cvData.expDesc.replace(/•/g, '>')}</div>
+                    <div class="draggable text-el" style="top: 600px; left: 60px; font-size: 14px; font-family: 'Courier Prime', monospace; color: #10b981; z-index: 5;" contenteditable="true">user@system:~$ ls skills/<br>${cvData.skills.replace(/•/g, '[*]')}</div>
                 `,
                 startup: `
                     <div class="draggable shape-el" style="top: 0px; left: 0px; width: 794px; height: 180px; background: linear-gradient(135deg, #111827, #374151); border-bottom-right-radius: 50%; z-index: 1;" data-locked="true"></div>
